@@ -5,15 +5,15 @@ from sqlalchemy import create_engine
 
 class QueryHandler(ABC):
     def __init__(self):
-        self.dpPathOrUrl = ''
+        self.dbPathOrUrl = ''
     
     def getDbPathOrUrl(self) -> str:
-        return self._dbPathOrUrl          #return the path or URL of the current database 
+        return self.dbPathOrUrl          #return the path or URL of the current database 
     
     def setDbPathOrUrl(self, path_or_url: str):
         if not isinstance(path_or_url, str):           #set path or URL of the database
             raise ValueError("The datatype of path/URL of the database must be string")
-        self._dbPathOrUrl = path_or_url
+        self.dbPathOrUrl = path_or_url
     
     @abstractmethod                                    #Use the @abstractmethod decorator to mark getById as an abstract method, forcing subclasses to implement it.
     def getById(self, entity_id: str) -> pd.DataFrame:
