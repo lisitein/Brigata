@@ -24,7 +24,7 @@ class CategoryUploadHandler(UploadHandler):
             print('Number of journals in the dataset:', len(json_content))     #the json file contains len(json_content) journals
         
 
-        #I created an image of the tables in my relational database: daniele_relational_database_structure.png
+        #I created an image of the tables in my relational database and I uploaded on GitHub: daniele_relational_database_structure.png
 
         # let's create the table "Journal"              
         journal_internal_id=[]
@@ -179,4 +179,4 @@ class CategoryUploadHandler(UploadHandler):
 #cat = CategoryUploadHandler()
 #cat.setDbPathOrUrl(rel_path)
 #cat.pushDataToDb("reduced_dataset.json")
-#I load on github the small database: 
+#I load on github the small database: daniele_small_database.db
