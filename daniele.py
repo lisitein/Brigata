@@ -24,7 +24,7 @@ class CategoryUploadHandler(UploadHandler):
             print('Number of journals in the dataset:', len(json_content))     #the json file contains len(json_content) journals
         
 
-        #I created an image of the tables in my relational database: href="Relational Database Structure.png"
+        #I created an image of the tables in my relational database: daniele_relational_database_structure.png
 
         # let's create the table "Journal"              
         journal_internal_id=[]
