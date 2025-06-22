@@ -56,8 +56,11 @@ class CategoryUploadHandler(UploadHandler):
             for elem in j['categories']:
                 if [elem["id"]] not in all_categories_list:            #this instruction aims to avoid duplicates
                     this_journal_categories.append([elem["id"]])
-                if ([elem["id"]][0],elem["quartile"]) not in couples_category_quartile: #a list of tuples category-quartile
-                    couples_category_quartile.append(([elem["id"]][0],elem["quartile"]))  #for every couple, as id I use only the first of the hypothetical many
+                if "quartile" in elem:
+                    if ([elem["id"]][0],elem["quartile"]) not in couples_category_quartile: #a list of tuples category-quartile
+                        couples_category_quartile.append(([elem["id"]][0],elem["quartile"]))  #for every couple, as id I use only the first of the hypothetical many
+                    else:
+                        couples_category_quartile.append(([elem["id"]][0],''))
             all_categories_list.extend(this_journal_categories)        #in the end, I got a list of lists
 
         category_internal_id=[]
