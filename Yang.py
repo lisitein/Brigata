@@ -37,7 +37,7 @@ class JournalQueryHandler(QueryHandler):
         PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher ?licence ?apc
         WHERE {{
-            ?journal a base_url:Journal ;
+            ?journal a :Journal ;
                     :id "{journal_id}" ;
                     :title ?title ;
                     :publisher ?publisher ;
@@ -248,9 +248,9 @@ class JournalQueryHandler(QueryHandler):
         PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?seal
         WHERE {
-            ?journal a base_url:Journal ;
-                    base_url:title ?title ;
-                    base_url:seal ?seal .
+            ?journal a :Journal ;
+                    :title ?title ;
+                    :seal ?seal .
             FILTER (?seal = true)
         }
         """
