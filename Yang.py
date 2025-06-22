@@ -11,10 +11,11 @@ class QueryHandler(ABC):
     def getDbPathOrUrl(self) -> str:
         return self.dbPathOrUrl          #It directly returns the value of self.dbPathOrUrl, and prints the string you set previously.
     
-    def setDbPathOrUrl(self, path_or_url: str):
-        if not isinstance(path_or_url, str):          
+    def setDbPathOrUrl(self, url: str):
+        if not isinstance(url, str):          
             raise ValueError("The datatype of path/URL of the database must be string")
-        self.dbPathOrUrl = path_or_url                 #This value will override the empty string in __init__
+        self.dbPathOrUrl = url                 #This value will override the empty string in __init__
+        return True
     
     @abstractmethod                                    #Use the @abstractmethod decorator to mark getById as an abstract method, forcing subclasses to implement it.
     def getById(self, entity_id: str) -> pd.DataFrame:
