@@ -34,7 +34,7 @@ class JournalQueryHandler(QueryHandler):
     
         sparql = SPARQLWrapper(self.getDbPathOrUrl())     #Constructing SPARQL queries from the path or URL of the current database
         query = f"""
-        PREFIX : <http://example.org/>
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher ?licence ?apc
         WHERE {{
             ?journal a base_url:Journal ;
@@ -71,7 +71,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())       #Constructing SPARQL queries from the path or URL of the current database
         query = """
-        PREFIX : <http://example.org/>
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher
         WHERE {
             ?journal a :Journal ;
@@ -104,7 +104,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())             #constructing queries
         query = f"""
-        PREFIX : <http://example.org/>
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title
         WHERE {{
             ?journal a :Journal ;
@@ -139,7 +139,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
-        PREFIX : <http://example.org/>
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher
         WHERE {{
             ?journal a :Journal ;
@@ -181,7 +181,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
-        PREFIX : <http://example.org/>
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?license
         WHERE {{
             ?journal a :Journal ;
@@ -213,7 +213,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
-        PREFIX : <http://example.org/>
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?apc
         WHERE {
             ?journal a :Journal ;
@@ -245,7 +245,6 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
-        PREFIX : <http://example.org/>
         PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?seal
         WHERE {
