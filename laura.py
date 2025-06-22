@@ -1,11 +1,9 @@
-# hey guys! I will add the comements between today and tomorrow
-
-# importing libraries & tools
-
 import pandas as pd
 from typing import List, Set, Optional
 
+# --------------------
 # DATA MODEL
+# --------------------
 
 class IdentifiableEntity:
     def __init__(self, id: str):
@@ -14,9 +12,11 @@ class IdentifiableEntity:
     def getId(self) -> str:
         return self.id
 
+
 class Area(IdentifiableEntity):
     def __init__(self, id: str):
         super().__init__(id)
+
 
 class Category(IdentifiableEntity):
     def __init__(self, id: str, quartile: str):
@@ -25,6 +25,7 @@ class Category(IdentifiableEntity):
 
     def getQuartile(self) -> str:
         return self.quartile
+
 
 class Journal(IdentifiableEntity):
     def __init__(self,
@@ -72,7 +73,10 @@ class Journal(IdentifiableEntity):
     def getHasArea(self) -> List[str]:
         return self.hasArea
 
+
+# --------------------
 # BASIC QUERY ENGINE
+# --------------------
 
 class BasicQueryEngine:
     def __init__(self):
@@ -161,69 +165,72 @@ class BasicQueryEngine:
             journals.append(journal)
         return journals
 
+
+# --------------------
 # FULL QUERY ENGINE
+# --------------------
 
 class FullQueryEngine(BasicQueryEngine):
-    def getJournalsInCategoriesWithQuartile(self, category_ids: Set[str], quartiles: Set[str]) -> List:
+    def getJournalsInCategoriesWithQuartile(self, category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
         df_match = pd.DataFrame()
         for handler in self.categoryHandlers:
-            df = handler.getAllCategoryAssignments()
+            df_cat = handler.getAllCategoryAssignments()
             if category_ids:
-                df = df[df['category_id'].isin(category_ids)]
+                df_cat = df_cat[df_cat['category_id'].isin(category_ids)]
             if quartiles:
-                df = df[df['category_quartile'].isin(quartiles)]
-            df_match = pd.concat([df_match, df])
+                df_cat = df_cat[df_cat['category_quartile'].isin(quartiles)]
+            df_match = pd.concat([df_match, df_cat])
 
         identifiers = df_match['identifiers'].dropna().unique().tolist()
 
         result = []
         for handler in self.journalHandlers:
-            df_journals = handler.getAllJournals()
-            df_journals['identifiers'] = df_journals['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
-            df_journals = df_journals.explode('identifiers')
-            df_journals = df_journals[df_journals['identifiers'].isin(identifiers)]
-            result.extend(self._createJournalObjects(df_journals))
+            df_j = handler.getAllJournals()
+            df_j['identifiers'] = df_j['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_j = df_j.explode('identifiers')
+            df_j = df_j[df_j['identifiers'].isin(identifiers)]
+            result.extend(self._createJournalObjects(df_j))
         return result
 
-    def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List:
+    def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List[Journal]:
         df_match = pd.DataFrame()
         for handler in self.categoryHandlers:
-            df = handler.getAllAreaAssignments()
+            df_area = handler.getAllAreaAssignments()
             if areas:
-                df = df[df['area'].isin(areas)]
-            df_match = pd.concat([df_match, df])
+                df_area = df_area[df_area['area'].isin(areas)]
+            df_match = pd.concat([df_match, df_area])
 
         identifiers = df_match['identifiers'].dropna().unique().tolist()
 
         result = []
         for handler in self.journalHandlers:
-            df_journals = handler.getJournalsWithLicense(licenses)
-            df_journals['identifiers'] = df_journals['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
-            df_journals = df_journals.explode('identifiers')
-            df_journals = df_journals[df_journals['identifiers'].isin(identifiers)]
-            result.extend(self._createJournalObjects(df_journals))
+            df_j = handler.getJournalsWithLicense(licenses)
+            df_j['identifiers'] = df_j['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_j = df_j.explode('identifiers')
+            df_j = df_j[df_j['identifiers'].isin(identifiers)]
+            result.extend(self._createJournalObjects(df_j))
         return result
 
-    def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List:
+    def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
         df_match = pd.DataFrame()
         for handler in self.categoryHandlers:
-            df = handler.getAllAssignments()
+            df_all = handler.getAllAssignments()
             if areas:
-                df = df[df['area'].isin(areas)]
+                df_all = df_all[df_all['area'].isin(areas)]
             if category_ids:
-                df = df[df['category_id'].isin(category_ids)]
+                df_all = df_all[df_all['category_id'].isin(category_ids)]
             if quartiles:
-                df = df[df['category_quartile'].isin(quartiles)]
-            df_match = pd.concat([df_match, df])
+                df_all = df_all[df_all['category_quartile'].isin(quartiles)]
+            df_match = pd.concat([df_match, df_all])
 
         identifiers = df_match['identifiers'].dropna().unique().tolist()
 
         result = []
         for handler in self.journalHandlers:
-            df_journals = handler.getAllJournals()
-            df_journals = df_journals[df_journals['apc'].isin(['No', False])]
-            df_journals['identifiers'] = df_journals['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
-            df_journals = df_journals.explode('identifiers')
-            df_journals = df_journals[df_journals['identifiers'].isin(identifiers)]
-            result.extend(self._createJournalObjects(df_journals))
+            df_j = handler.getAllJournals()
+            df_j = df_j[df_j['apc'].isin(['No', False])]
+            df_j['identifiers'] = df_j['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_j = df_j.explode('identifiers')
+            df_j = df_j[df_j['identifiers'].isin(identifiers)]
+            result.extend(self._createJournalObjects(df_j))
         return result
