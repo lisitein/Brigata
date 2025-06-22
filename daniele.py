@@ -1,21 +1,7 @@
 from pandas import *
 from json import load
 from sqlite3 import connect
-
-class Handler:
-    def __init__(self):
-        self.dbPathOrUrl=''
-    def getDbPathOrUrl(self):
-        return self.dbPathOrUrl
-    def setDbPathOrUrl(self,pathOrUrl):
-        self.dbPathOrUrl=str(pathOrUrl)
-        return True
-
-
-class UploadHandler(Handler):
-    def pushDataToDb(self, path):
-        raise NotImplementedError("Subclasses must implement this method")
-
+from baseHandler import UploadHandler
 
 class CategoryUploadHandler(UploadHandler):
     def pushDataToDb(self, path):
