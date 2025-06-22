@@ -13,10 +13,11 @@ class QueryHandler(ABC):
     def getDbPathOrUrl(self) -> str:
         return self.dbPathOrUrl          #It directly returns the value of self.dbPathOrUrl, and prints the string you set previously.
     
-    def setDbPathOrUrl(self, path_or_url: str):
-        if not isinstance(path_or_url, str):          
+    def setDbPathOrUrl(self, url: str):
+        if not isinstance(url, str):          
             raise ValueError("The datatype of path/URL of the database must be string")
-        self.dbPathOrUrl = path_or_url                 #This value will override the empty string in __init__
+        self.dbPathOrUrl = url                 #This value will override the empty string in __init__
+        return True
     
     @abstractmethod                                    #Use the @abstractmethod decorator to mark getById as an abstract method, forcing subclasses to implement it.
     def getById(self, entity_id: str) -> pd.DataFrame:
@@ -33,7 +34,7 @@ class JournalQueryHandler(QueryHandler):
     
         sparql = SPARQLWrapper(self.getDbPathOrUrl())     #Constructing SPARQL queries from the path or URL of the current database
         query = f"""
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://example.org/>
         SELECT ?journal ?title ?publisher ?licence ?apc
         WHERE {{
             ?journal a base_url:Journal ;
@@ -70,6 +71,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())       #Constructing SPARQL queries from the path or URL of the current database
         query = """
+        PREFIX : <http://example.org/>
         SELECT ?journal ?title ?publisher
         WHERE {
             ?journal a :Journal ;
@@ -101,7 +103,8 @@ class JournalQueryHandler(QueryHandler):
             raise ValueError("Graph database endpoint not set")
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())             #constructing queries
-        query = f"""                                              
+        query = f"""
+        PREFIX : <http://example.org/>
         SELECT ?journal ?title
         WHERE {{
             ?journal a :Journal ;
@@ -136,6 +139,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
+        PREFIX : <http://example.org/>
         SELECT ?journal ?title ?publisher
         WHERE {{
             ?journal a :Journal ;
@@ -177,6 +181,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
+        PREFIX : <http://example.org/>
         SELECT ?journal ?title ?license
         WHERE {{
             ?journal a :Journal ;
@@ -208,6 +213,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
+        PREFIX : <http://example.org/>
         SELECT ?journal ?title ?apc
         WHERE {
             ?journal a :Journal ;
@@ -239,6 +245,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
+        PREFIX : <http://example.org/>
         PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?seal
         WHERE {
