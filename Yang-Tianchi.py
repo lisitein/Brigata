@@ -1,24 +1,29 @@
 from abc import ABC, abstractmethod
 import pandas as pd
-from SPARQLWrapper import SPARQLWrapper, JSON
-from sqlalchemy import create_engine
+
+# An abstract base class defines methods that subclasses must implement (called "abstract methods"). 
+# If a subclass does not implement these methods, Python will simply throw an error when instantiating the subclass.
 
 class QueryHandler(ABC):
     def __init__(self):
         self.dbPathOrUrl = ''
     
     def getDbPathOrUrl(self) -> str:
-        return self.dbPathOrUrl          #return the path or URL of the current database 
+        return self.dbPathOrUrl          #It directly returns the value of self.dbPathOrUrl, and prints the string you set previously.
     
     def setDbPathOrUrl(self, path_or_url: str):
-        if not isinstance(path_or_url, str):           #set path or URL of the database
+        if not isinstance(path_or_url, str):          
             raise ValueError("The datatype of path/URL of the database must be string")
-        self.dbPathOrUrl = path_or_url
+        self.dbPathOrUrl = path_or_url                 #This value will override the empty string in __init__
     
     @abstractmethod                                    #Use the @abstractmethod decorator to mark getById as an abstract method, forcing subclasses to implement it.
     def getById(self, entity_id: str) -> pd.DataFrame:
         #query the instance according to the ID
         pass
+    # Because Python's function body must have "content" (even if it does nothing), you have to write something in the function body.
+    # But you can't write real code (because you don't plan to implement it here), so use pass - which means "do nothing".
+
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 # All the query of sparql refers to the code given by LLM
 
@@ -29,17 +34,18 @@ class JournalQueryHandler(QueryHandler):
             raise ValueError("The graph database endpoint is not set, please call setDbPathOrUrl() first")
     
         sparql = SPARQLWrapper(self.getDbPathOrUrl())     #Constructing SPARQL queries from the path or URL of the current database
-        query = f"""                                      
-        SELECT ?journal ?title ?publisher ?license ?apc
+        query = f"""
+        PREFIX base_url: <http://Brigata.github.org/journal/>
+        SELECT ?journal ?title ?publisher ?licence ?apc
         WHERE {{
-            ?journal a :Journal ;
-                    :id "{journal_id}" ;
-                    :title ?title ;
-                    :publisher ?publisher ;
-                    :license ?license ;
-                    :apc ?apc .
-            }}
-            """
+            ?journal a base_url:Journal ;
+                    base_url:id "{journal_id}" ;
+                    base_url:title ?title ;
+                    base_url:publisher ?publisher ;
+                    base_url:licence ?licence ;
+                    base_url:apc ?apc .
+        }}
+        """
         sparql.setQuery(query)              #Set the query statement
         sparql.setReturnFormat(JSON)        #Set the return format
 
@@ -50,11 +56,11 @@ class JournalQueryHandler(QueryHandler):
         
         data = []                                        #Initialize the data list
         for result in results["results"]["bindings"]:    #results["results"]["bindings"] is a list containing all query results
-            data.append({
+            data.append({                                #The final value of data is a list of dictionaries.
                 "id": journal_id,
                 "title": result["title"]["value"],
                 "publisher": result["publisher"]["value"],
-                "license": result["license"]["value"],
+                "license": result["licence"]["value"],
                 "apc": result["apc"]["value"]
                 })
         return pd.DataFrame(data)                         # return data frame
@@ -235,12 +241,13 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
+        PREFIX base_url: <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?seal
         WHERE {
-            ?journal a :Journal ;
-                    :title ?title ;
-                    :hasDOAJSeal ?seal .
-            FILTER (?seal = true)  # Assuming a Boolean flag is used
+            ?journal a base_url:Journal ;
+                    base_url:title ?title ;
+                    base_url:seal ?seal .
+            FILTER (?seal = true)
         }
         """
         sparql.setQuery(query)
@@ -259,6 +266,8 @@ class JournalQueryHandler(QueryHandler):
         
         return pd.DataFrame(data)
     
+from sqlalchemy import create_engine
+
 class CategoryQueryHandler(QueryHandler):
     def getById(self, category_id: str) -> pd.DataFrame: #If the subclass does not implement getById, Python will report an error during instantiation.
         """Query detailed information by category ID"""
@@ -268,7 +277,6 @@ class CategoryQueryHandler(QueryHandler):
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}") #connect the engine with the URL
         query = f"SELECT * FROM Categories WHERE id = '{category_id}'" #the SQL query
         return pd.read_sql(query, engine)
-
     
     def getAllCategories(self) -> pd.DataFrame:
         """Get all categories (de-duplicate)"""
@@ -344,4 +352,15 @@ class CategoryQueryHandler(QueryHandler):
             WHERE ca.category_id IN ({category_ids_str})
             """
 
+            return pd.read_sql(query, engine)
+        
+    def getAllAreas(self) -> pd.DataFrame:
+        """Get all areas"""
+        if not self.getDbPathOrUrl():
+            raise ValueError("The relational database path is not set")
+
+        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        query = "SELECT DISTINCT * FROM Area"
         return pd.read_sql(query, engine)
+
+        
