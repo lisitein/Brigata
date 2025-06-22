@@ -365,4 +365,148 @@ class CategoryQueryHandler(QueryHandler):
         query = "SELECT DISTINCT * FROM Area"
         return pd.read_sql(query, engine)
 
-        
+# YANG!! try like this
+
+from abc import ABC, abstractmethod
+import pandas as pd
+from SPARQLWrapper import SPARQLWrapper, JSON
+from sqlalchemy import create_engine
+
+# INTERFACCIA ASTRATTA
+class QueryHandler(ABC):
+    def __init__(self):
+        self.dbPathOrUrl = ''
+    
+    def getDbPathOrUrl(self) -> str:
+        return self.dbPathOrUrl
+    
+    def setDbPathOrUrl(self, url: str):
+        if not isinstance(url, str):
+            raise ValueError("The path/URL must be a string")
+        self.dbPathOrUrl = url
+        return True
+
+    @abstractmethod
+    def getById(self, entity_id: str) -> pd.DataFrame:
+        pass
+
+
+# QUERY HANDLER GRAFO: JOURNAL
+class JournalQueryHandler(QueryHandler):
+    def getById(self, journal_id: str) -> pd.DataFrame:
+        if not self.dbPathOrUrl:
+            raise ValueError("Set the graph database endpoint first.")
+        sparql = SPARQLWrapper(self.dbPathOrUrl)
+        query = f"""
+        PREFIX : <http://Brigata.github.org/journal/>
+        SELECT ?title ?publisher ?licence ?apc
+        WHERE {{
+            ?journal a :Journal ;
+                     :id "{journal_id}" ;
+                     :title ?title ;
+                     :publisher ?publisher ;
+                     :licence ?licence ;
+                     :apc ?apc .
+        }}
+        """
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        try:
+            results = sparql.query().convert()
+        except Exception as e:
+            raise ConnectionError(f"SPARQL error: {str(e)}")
+
+        data = []
+        for res in results["results"]["bindings"]:
+            data.append({
+                "id": journal_id,
+                "title": res["title"]["value"],
+                "publisher": res["publisher"]["value"],
+                "license": res["licence"]["value"],
+                "apc": res["apc"]["value"]
+            })
+        return pd.DataFrame(data)
+
+    def getAllJournals(self) -> pd.DataFrame:
+        if not self.dbPathOrUrl:
+            raise ValueError("Graph database endpoint not set.")
+        sparql = SPARQLWrapper(self.dbPathOrUrl)
+        query = """
+        PREFIX : <http://Brigata.github.org/journal/>
+        SELECT ?journal ?title ?publisher
+        WHERE {
+            ?journal a :Journal ;
+                     :title ?title ;
+                     :publisher ?publisher .
+        }
+        """
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+
+        data = []
+        for res in results["results"]["bindings"]:
+            data.append({
+                "id": res["journal"]["value"].split("/")[-1],
+                "title": res["title"]["value"],
+                "publisher": res["publisher"]["value"]
+            })
+        return pd.DataFrame(data)
+
+
+# QUERY HANDLER RELAZIONALE: CATEGORY
+class CategoryQueryHandler(QueryHandler):
+    def getById(self, category_id: str) -> pd.DataFrame:
+        if not self.dbPathOrUrl:
+            raise ValueError("Database path not set.")
+        engine = create_engine(f"sqlite:///{self.dbPathOrUrl}")
+        query = f"SELECT * FROM Category WHERE id = '{category_id}'"
+        return pd.read_sql(query, engine)
+
+    def getAllCategories(self) -> pd.DataFrame:
+        engine = create_engine(f"sqlite:///{self.dbPathOrUrl}")
+        return pd.read_sql("SELECT DISTINCT * FROM Category", engine)
+
+    def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
+        if not quartiles:
+            quartiles = {"Q1", "Q2", "Q3", "Q4"}
+        q_str = ", ".join(f"'{q}'" for q in quartiles)
+        query = f"SELECT * FROM Category WHERE quartile IN ({q_str})"
+        engine = create_engine(f"sqlite:///{self.dbPathOrUrl}")
+        return pd.read_sql(query, engine)
+
+    def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
+        engine = create_engine(f"sqlite:///{self.dbPathOrUrl}")
+        if not area_ids:
+            query = """
+            SELECT DISTINCT c.id, c.quartile
+            FROM Category c JOIN CategoryArea ca ON c.id = ca.category_id
+            """
+        else:
+            ids = ", ".join(f"'{i}'" for i in area_ids)
+            query = f"""
+            SELECT DISTINCT c.id, c.quartile
+            FROM Category c JOIN CategoryArea ca ON c.id = ca.category_id
+            WHERE ca.area_id IN ({ids})
+            """
+        return pd.read_sql(query, engine)
+
+    def getAreasAssignedToCategories(self, category_ids: set[str]) -> pd.DataFrame:
+        engine = create_engine(f"sqlite:///{self.dbPathOrUrl}")
+        if not category_ids:
+            query = """
+            SELECT DISTINCT a.id
+            FROM Area a JOIN CategoryArea ca ON a.id = ca.area_id
+            """
+        else:
+            ids = ", ".join(f"'{i}'" for i in category_ids)
+            query = f"""
+            SELECT DISTINCT a.id
+            FROM Area a JOIN CategoryArea ca ON a.id = ca.area_id
+            WHERE ca.category_id IN ({ids})
+            """
+        return pd.read_sql(query, engine)
+
+    def getAllAreas(self) -> pd.DataFrame:
+        engine = create_engine(f"sqlite:///{self.dbPathOrUrl}")
+        return pd.read_sql("SELECT DISTINCT * FROM Area", engine)
