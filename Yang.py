@@ -34,15 +34,15 @@ class JournalQueryHandler(QueryHandler):
     
         sparql = SPARQLWrapper(self.getDbPathOrUrl())     #Constructing SPARQL queries from the path or URL of the current database
         query = f"""
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher ?licence ?apc
         WHERE {{
             ?journal a base_url:Journal ;
-                    base_url:id "{journal_id}" ;
-                    base_url:title ?title ;
-                    base_url:publisher ?publisher ;
-                    base_url:licence ?licence ;
-                    base_url:apc ?apc .
+                    :id "{journal_id}" ;
+                    :title ?title ;
+                    :publisher ?publisher ;
+                    :licence ?licence ;
+                    :apc ?apc .
         }}
         """
         sparql.setQuery(query)              #Set the query statement
@@ -71,7 +71,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())       #Constructing SPARQL queries from the path or URL of the current database
         query = """
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher
         WHERE {
             ?journal a :Journal ;
@@ -104,7 +104,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())             #constructing queries
         query = f"""
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title
         WHERE {{
             ?journal a :Journal ;
@@ -139,7 +139,7 @@ class JournalQueryHandler(QueryHandler):
         
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?publisher
         WHERE {{
             ?journal a :Journal ;
@@ -181,7 +181,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?license
         WHERE {{
             ?journal a :Journal ;
@@ -213,7 +213,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?apc
         WHERE {
             ?journal a :Journal ;
@@ -245,7 +245,7 @@ class JournalQueryHandler(QueryHandler):
 
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
-        PREFIX base_url: <http://Brigata.github.org/journal/>
+        PREFIX : <http://Brigata.github.org/journal/>
         SELECT ?journal ?title ?seal
         WHERE {
             ?journal a base_url:Journal ;
