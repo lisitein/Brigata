@@ -1,7 +1,8 @@
-from daniele import Handler, CategoryUploadHandler
-from li import UploadHandler, JournalUploadHandler
-from Yang import QueryHandler, JournalQueryHandler, CategoryQueryHandler
-from laura import IdentifiableEntity, Area, Category, Journal, BasicQueryEngine, FullQueryEngine
+# -*- coding: utf-8 -*-
+from laura import Journal, Category, Area, BasicQueryEngine, FullQueryEngine
+from daniele import CategoryUploadHandler, CategoryQueryHandler
+from li import JournalUploadHandler
+from yang_tianchi import JournalQueryHandler
 
 __all__ = [
     "Handler", "UploadHandler", "JournalUploadHandler", "CategoryUploadHandler",
