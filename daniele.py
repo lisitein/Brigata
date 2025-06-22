@@ -104,7 +104,10 @@ class CategoryUploadHandler(UploadHandler):
             number_of_categories_quartiles=len(json_content[n]['categories'])
             for m in range(number_of_categories_quartiles):
                 journals_for_categories_quartiles.append(f'journal-{n}')
-                categories_quartiles_for_journals.append(f'{[json_content[n]['categories'][m]["id"]][0]} - {json_content[n]['categories'][m]["quartile"]}') 
+                if "quartile" in json_content[n]['categories']:
+                    categories_quartiles_for_journals.append(f'{[json_content[n]['categories'][m]["id"]][0]} - {json_content[n]['categories'][m]["quartile"]}') 
+                else:
+                    categories_quartiles_for_journals.append(f'{[json_content[n]['categories'][m]["id"]][0]} - ') 
         
         journal_category=DataFrame()     
         journal_category.insert(0, 'Journal', Series(journals_for_categories_quartiles, dtype="string"))
