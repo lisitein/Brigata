@@ -1,9 +1,5 @@
-# hey guys! I will add the comements between today and tomorrow
-
-# importing libraries & tools
-
 import pandas as pd
-from typing import List, Set, Optional
+from typing import List, Set, Optional, Union
 
 # DATA MODEL
 
@@ -79,11 +75,21 @@ class BasicQueryEngine:
         self.journalHandlers = []
         self.categoryHandlers = []
 
-    def addJournalHandler(self, handler):
+    def addJournalHandler(self, handler) -> bool:
         self.journalHandlers.append(handler)
+        return True
 
-    def addCategoryHandler(self, handler):
+    def addCategoryHandler(self, handler) -> bool:
         self.categoryHandlers.append(handler)
+        return True
+
+    def cleanJournalHandlers(self) -> bool:
+        self.journalHandlers = []
+        return True
+
+    def cleanCategoryHandlers(self) -> bool:
+        self.categoryHandlers = []
+        return True
 
     def getAllJournals(self) -> List[Journal]:
         journals = []
@@ -96,6 +102,13 @@ class BasicQueryEngine:
         journals = []
         for handler in self.journalHandlers:
             df = handler.getJournalsWithTitle(partialTitle)
+            journals.extend(self._createJournalObjects(df))
+        return journals
+
+    def getJournalsPublishedBy(self, publisher: str) -> List[Journal]:
+        journals = []
+        for handler in self.journalHandlers:
+            df = handler.getJournalsPublishedBy(publisher)
             journals.extend(self._createJournalObjects(df))
         return journals
 
@@ -128,7 +141,7 @@ class BasicQueryEngine:
                 categories.append(Category(row['category_id'], row['category_quartile']))
         return categories
 
-    def getCategoriesWithQuartile(self, quartiles: List[str]) -> List[Category]:
+    def getCategoriesWithQuartile(self, quartiles: Set[str]) -> List[Category]:
         categories = []
         for handler in self.categoryHandlers:
             df = handler.getCategoriesWithQuartile(quartiles)
@@ -164,7 +177,38 @@ class BasicQueryEngine:
 # FULL QUERY ENGINE
 
 class FullQueryEngine(BasicQueryEngine):
-    def getJournalsInCategoriesWithQuartile(self, category_ids: Set[str], quartiles: Set[str]) -> List:
+    def getEntityById(self, id: str) -> Optional[Union[Journal, Category, Area]]:
+        for handler in self.journalHandlers:
+            df = handler.getById(id)
+            if not df.empty:
+                return self._createJournalObjects(df)[0]
+        for handler in self.categoryHandlers:
+            df = handler.getById(id)
+            if not df.empty:
+                row = df.iloc[0]
+                if 'category_quartile' in row:
+                    return Category(row['category_id'], row['category_quartile'])
+                else:
+                    return Area(row['area'])
+        return None
+
+    def getCategoriesAssignedToAreas(self, areas: Set[str]) -> List[Category]:
+        result = []
+        for handler in self.categoryHandlers:
+            df = handler.getCategoriesAssignedToAreas(areas)
+            for _, row in df.iterrows():
+                result.append(Category(row['category_id'], row['category_quartile']))
+        return result
+
+    def getAreasAssignedToCategories(self, categories: Set[str]) -> List[Area]:
+        result = []
+        for handler in self.categoryHandlers:
+            df = handler.getAreasAssignedToCategories(categories)
+            for _, row in df.iterrows():
+                result.append(Area(row['area']))
+        return result
+
+    def getJournalsInCategoriesWithQuartile(self, category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
         df_match = pd.DataFrame()
         for handler in self.categoryHandlers:
             df = handler.getAllCategoryAssignments()
@@ -185,7 +229,7 @@ class FullQueryEngine(BasicQueryEngine):
             result.extend(self._createJournalObjects(df_journals))
         return result
 
-    def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List:
+    def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List[Journal]:
         df_match = pd.DataFrame()
         for handler in self.categoryHandlers:
             df = handler.getAllAreaAssignments()
@@ -204,7 +248,7 @@ class FullQueryEngine(BasicQueryEngine):
             result.extend(self._createJournalObjects(df_journals))
         return result
 
-    def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List:
+    def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
         df_match = pd.DataFrame()
         for handler in self.categoryHandlers:
             df = handler.getAllAssignments()

@@ -3,7 +3,7 @@ import json
 import csv
 from daniele import Handler, CategoryUploadHandler
 
-#goal of UploadHandler is to recognize the format of the file
+#goal of UploadHandler is to recognize the format of the file  
 class UploadHandler(Handler): 
     def __init__(self):
         super().__init__()   
@@ -20,11 +20,11 @@ class UploadHandler(Handler):
             return result
         elif path.endswith('.json'):
             category_handler = CategoryUploadHandler()
-            category_handler.setDbPathOrUrl(db_path)
+            category_handler.setDbPathOrUrl(db_path)  
             result = category_handler.pushDataToDb(path)
-            return result
+            return result  
         else:
-            print("Error: Unsupported file format: {path}")
+            print("Error: Unsupported file format: {path}")  
             return False
         
     
@@ -34,7 +34,7 @@ from rdflib.namespace import RDF
 #implements the method of the superclass to handle the specific scenario
 #JournalUploadHandler to handle CSV files in input and to store their data in a graph database
 class JournalUploadHandler(UploadHandler):
-    def __init__(self):
+    def __init__(self):  
         super().__init__()
 
     def pushDataToDb(self, path):
@@ -50,12 +50,12 @@ class JournalUploadHandler(UploadHandler):
                               header=0,
                               dtype={
                                   "Journal title":str,
-                                  "Journal ISSN (print version)":str,
+                                  "Journal ISSN (print version)":str,  
                                   "Journal EISSN (online version)":str,
                                   "Languages in which the journal accepts manuscripts":str,
                                   "Publisher":str,
                                   "DOAJ Seal":bool,
-                                  "Journal license":str,
+                                  "Journal license":str,  
                                   "APC":bool
                                   }) #Read the CSV file into a pandas DataFrame and change the columns' name
         # print(journal)                       
@@ -81,7 +81,7 @@ class JournalUploadHandler(UploadHandler):
                 if attribute:
                     predicate = URIRef(base_url[column])
                     if column in ['seal', 'apc']:
-                        booleanvalue = attribute.lower() in ['true', '1', 't', 'y', 'yes']
+                        booleanvalue = attribute.lower() in ['true', '1', 't', 'y', 'yes']  
                         object = Literal(booleanvalue)
                     else:
                         object = Literal(attribute)
@@ -91,8 +91,8 @@ class JournalUploadHandler(UploadHandler):
                 id_value = str(row[column])
                 if id_value:
                     predicate = URIRef(base_url["id"])
-                    self.graph.add((subject, predicate, Literal(id)))
-# do i need to add relations between Journal and Category\ Journal and Area?
+                    self.graph.add((subject, predicate, Literal(id_value)))  
+# do i need to add relations between Journal and Category\ Journal and Area?  
 # Jounal - hasCategory -> Category (but Journal has Area?? what is area?)
         # return self.graph
 
