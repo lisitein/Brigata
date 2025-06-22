@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
+from SPARQLWrapper import SPARQLWrapper, JSON
+from sqlalchemy import create_engine
 
 # An abstract base class defines methods that subclasses must implement (called "abstract methods"). 
 # If a subclass does not implement these methods, Python will simply throw an error when instantiating the subclass.
@@ -23,10 +25,6 @@ class QueryHandler(ABC):
         pass
     # Because Python's function body must have "content" (even if it does nothing), you have to write something in the function body.
     # But you can't write real code (because you don't plan to implement it here), so use pass - which means "do nothing".
-
-from SPARQLWrapper import SPARQLWrapper, JSON
-
-# All the query of sparql refers to the code given by LLM
 
 class JournalQueryHandler(QueryHandler):
     def getById(self, journal_id: str) -> pd.DataFrame:   #If the subclass does not implement getById, Python will report an error during instantiation.
@@ -273,8 +271,6 @@ class JournalQueryHandler(QueryHandler):
         
         return pd.DataFrame(data)
     
-from sqlalchemy import create_engine
-
 class CategoryQueryHandler(QueryHandler):
     def getById(self, category_id: str) -> pd.DataFrame: #If the subclass does not implement getById, Python will report an error during instantiation.
         """Query detailed information by category ID"""
