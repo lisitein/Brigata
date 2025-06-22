@@ -18,9 +18,9 @@ Each dataset has been normalized and loaded into its respective database type th
 
 ## Project Architecture
 
-![Workflow](workflow.png)  
+<img width="1136" alt="workflow" src="https://github.com/user-attachments/assets/aeb1a702-6430-49d2-84a0-c5673705d637" />
 
-1. **CategoryUploadHandler** loads JSON data into the **relational database** (SQLite).
+1. **CategoryUploadHandler** loads JSON data into the **relational database** (SQLite).  
 2. **JournalUploadHandler** loads CSV data into the **graph database** (RDF triples or Neo4j-like structure).
 3. **CategoryQueryHandler** and **JournalQueryHandler** retrieve relevant data as Pandas DataFrames.
 4. **FullQueryEngine** integrates the data from both sources and transforms it into Python objects.
