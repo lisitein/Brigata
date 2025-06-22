@@ -277,20 +277,20 @@ class CategoryQueryHandler(QueryHandler):
             raise ValueError("The relational database path is not set")
 
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}") #connect the engine with the URL
-        query = f"SELECT * FROM Categories WHERE id = '{category_id}'" #the SQL query
+        query = f"SELECT * FROM Category WHERE id = '{category_id}'" #the SQL query
         return pd.read_sql(query, engine)
     
     def getAllCategories(self) -> pd.DataFrame:
-        """Get all categories (de-duplicate)"""
+        """Get all category (de-duplicate)"""
         if not self.getDbPathOrUrl():
             raise ValueError("The relational database path is not set")
 
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}") #connect the engine with the URL
-        query = "SELECT DISTINCT * FROM Categories"                  #the SQL query
+        query = "SELECT DISTINCT * FROM Category"                  #the SQL query
         return pd.read_sql(query, engine)
     
     def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
-        """Filter categories by quartile"""
+        """Filter category by quartile"""
         if not self.getDbPathOrUrl():
             raise ValueError("The relational database path is not set")
 
@@ -301,11 +301,11 @@ class CategoryQueryHandler(QueryHandler):
         #Input: A set quartiles containing quartile identifiers (e.g. "Q1", "Q2").
         #Output: A string that conforms to the SQL IN clause, in the format 'Q1', 'Q2', 'Q3'.
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        query = f"SELECT * FROM Categories WHERE quartile IN ({quartiles_str})"
+        query = f"SELECT * FROM Category WHERE quartile IN ({quartiles_str})"
         return pd.read_sql(query, engine)
     
     def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
-        """Get all categories assigned to a specified area (de-duplicated)"""
+        """Get all category assigned to a specified area (de-duplicated)"""
         if not self.getDbPathOrUrl():
             raise ValueError("The relational database path is not set")
 
@@ -315,7 +315,7 @@ class CategoryQueryHandler(QueryHandler):
         if not area_ids:
             query = """
             SELECT DISTINCT c.id, c.name, c.quartile
-            FROM Categories c
+            FROM Category c
             JOIN CategoryArea ca ON c.id = ca.category_id
             """
         else:
@@ -323,7 +323,7 @@ class CategoryQueryHandler(QueryHandler):
             area_ids_str = ", ".join(f"'{area_id}'" for area_id in area_ids)
             query = f"""
             SELECT DISTINCT c.id, c.name, c.quartile
-            FROM Categories c
+            FROM Category c
             JOIN CategoryArea ca ON c.id = ca.category_id
             WHERE ca.area_id IN ({area_ids_str})
             """
@@ -341,7 +341,7 @@ class CategoryQueryHandler(QueryHandler):
         if not category_ids:
             query = """
             SELECT DISTINCT a.id, a.name
-            FROM Areas a
+            FROM Area a
             JOIN CategoryArea ca ON a.id = ca.area_id
             """
         else:
@@ -349,7 +349,7 @@ class CategoryQueryHandler(QueryHandler):
             category_ids_str = ", ".join(f"'{cat_id}'" for cat_id in category_ids)
             query = f"""
             SELECT DISTINCT a.id, a.name
-            FROM Areas a
+            FROM Area a
             JOIN CategoryArea ca ON a.id = ca.area_id
             WHERE ca.category_id IN ({category_ids_str})
             """
