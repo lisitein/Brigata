@@ -172,3 +172,224 @@ class CategoryUploadHandler(UploadHandler):
 #cat.setDbPathOrUrl(rel_path)
 #cat.pushDataToDb("reduced_dataset.json")
 #I load on github the small database: daniele_small_database.db
+
+# DANI!!! Try like this
+
+from baseHandler import UploadHandler, QueryHandler
+import pandas as pd
+import sqlite3
+
+class CategoryUploadHandler(UploadHandler):
+    def __init__(self):
+        self.db_path = None
+
+    def setDbPathOrUrl(self, path: str) -> bool:
+        self.db_path = path
+        return True
+
+    def pushDataToDb(self, filename: str) -> bool:
+        with open(filename, "r", encoding="utf-8") as f:
+            df = pd.read_json(f)
+
+        conn = sqlite3.connect(self.db_path)
+        cur = conn.cursor()
+
+        cur.execute("DROP TABLE IF EXISTS Journal")
+        cur.execute("DROP TABLE IF EXISTS Area")
+        cur.execute("DROP TABLE IF EXISTS Category")
+        cur.execute("DROP TABLE IF EXISTS IdentifiableEntityId")
+        cur.execute("DROP TABLE IF EXISTS HasCategory")
+        cur.execute("DROP TABLE IF EXISTS HasArea")
+
+        cur.execute("""
+            CREATE TABLE Journal (
+                id TEXT PRIMARY KEY,
+                title TEXT,
+                publisher TEXT,
+                apc BOOLEAN,
+                seal BOOLEAN,
+                license TEXT,
+                languages TEXT
+            )
+        """)
+
+        cur.execute("CREATE TABLE Area (id TEXT PRIMARY KEY)")
+        cur.execute("""
+            CREATE TABLE Category (
+                id TEXT PRIMARY KEY,
+                quartile TEXT
+            )
+        """)
+
+        cur.execute("""
+            CREATE TABLE IdentifiableEntityId (
+                journal_id TEXT,
+                identifier TEXT,
+                FOREIGN KEY(journal_id) REFERENCES Journal(id)
+            )
+        """)
+
+        cur.execute("""
+            CREATE TABLE HasCategory (
+                journal_id TEXT,
+                category_id TEXT,
+                FOREIGN KEY(journal_id) REFERENCES Journal(id),
+                FOREIGN KEY(category_id) REFERENCES Category(id)
+            )
+        """)
+
+        cur.execute("""
+            CREATE TABLE HasArea (
+                journal_id TEXT,
+                area_id TEXT,
+                FOREIGN KEY(journal_id) REFERENCES Journal(id),
+                FOREIGN KEY(area_id) REFERENCES Area(id)
+            )
+        """)
+
+        for _, row in df.iterrows():
+            id_ = row["id"][0] if isinstance(row["id"], list) and row["id"] else row["id"]
+            cur.execute("INSERT INTO Journal VALUES (?, ?, ?, ?, ?, ?, ?)", (
+                id_,
+                row.get("title"),
+                row.get("publisher"),
+                row.get("apc") == True,
+                row.get("seal") == True,
+                row.get("license"),
+                ",".join(row.get("languages", []))
+            ))
+
+            for identifier in row.get("id", []):
+                cur.execute("INSERT INTO IdentifiableEntityId VALUES (?, ?)", (id_, identifier))
+
+            for category in row.get("hasCategory", []):
+                cur.execute("INSERT OR IGNORE INTO Category VALUES (?, ?)", (
+                    category,
+                    row.get("quartile", "")
+                ))
+                cur.execute("INSERT INTO HasCategory VALUES (?, ?)", (id_, category))
+
+            for area in row.get("hasArea", []):
+                cur.execute("INSERT OR IGNORE INTO Area VALUES (?)", (area,))
+                cur.execute("INSERT INTO HasArea VALUES (?, ?)", (id_, area))
+
+        conn.commit()
+        conn.close()
+        return True
+
+
+class CategoryQueryHandler(QueryHandler):
+    def __init__(self):
+        self.db_path = None
+
+    def setDbPathOrUrl(self, path: str) -> bool:
+        self.db_path = path
+        return True
+
+    def getAllCategories(self) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        query = "SELECT * FROM Category"
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df.rename(columns={"id": "category_id", "quartile": "category_quartile"})
+
+    def getCategoriesWithQuartile(self, quartiles: list) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        q_marks = ",".join("?" for _ in quartiles)
+        query = f"SELECT * FROM Category WHERE quartile IN ({q_marks})"
+        df = pd.read_sql(query, conn, params=quartiles)
+        conn.close()
+        return df.rename(columns={"id": "category_id", "quartile": "category_quartile"})
+
+    def getAllAreas(self) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        query = "SELECT * FROM Area"
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df.rename(columns={"id": "area"})
+
+    def getAllCategoryAssignments(self) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        query = """
+            SELECT h.journal_id as identifiers, c.id as category_id, c.quartile as category_quartile
+            FROM HasCategory h
+            JOIN Category c ON h.category_id = c.id
+        """
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df
+
+    def getAllAreaAssignments(self) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        query = """
+            SELECT h.journal_id as identifiers, a.id as area
+            FROM HasArea h
+            JOIN Area a ON h.area_id = a.id
+        """
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df
+
+    def getAllAssignments(self) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        query = """
+            SELECT hc.journal_id as identifiers, hc.category_id, c.quartile as category_quartile,
+                   ha.area_id as area
+            FROM HasCategory hc
+            JOIN Category c ON hc.category_id = c.id
+            JOIN HasArea ha ON hc.journal_id = ha.journal_id
+        """
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df
+
+    def getById(self, id: str) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM Category WHERE id = ?", (id,))
+        category_row = cur.fetchone()
+
+        if category_row:
+            df = pd.DataFrame([{"category_id": category_row[0], "category_quartile": category_row[1]}])
+            conn.close()
+            return df
+
+        cur.execute("SELECT * FROM Area WHERE id = ?", (id,))
+        area_row = cur.fetchone()
+
+        if area_row:
+            df = pd.DataFrame([{"area": area_row[0]}])
+            conn.close()
+            return df
+
+        conn.close()
+        return pd.DataFrame()
+
+    def getCategoriesAssignedToAreas(self, areas: list) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        q_marks = ",".join("?" for _ in areas)
+        query = f"""
+            SELECT DISTINCT c.id as category_id, c.quartile as category_quartile
+            FROM HasArea ha
+            JOIN HasCategory hc ON ha.journal_id = hc.journal_id
+            JOIN Category c ON hc.category_id = c.id
+            WHERE ha.area_id IN ({q_marks})
+        """
+        df = pd.read_sql(query, conn, params=areas)
+        conn.close()
+        return df
+
+    def getAreasAssignedToCategories(self, categories: list) -> pd.DataFrame:
+        conn = sqlite3.connect(self.db_path)
+        q_marks = ",".join("?" for _ in categories)
+        query = f"""
+            SELECT DISTINCT a.id as area
+            FROM HasCategory hc
+            JOIN HasArea ha ON hc.journal_id = ha.journal_id
+            JOIN Area a ON ha.area_id = a.id
+            WHERE hc.category_id IN ({q_marks})
+        """
+        df = pd.read_sql(query, conn, params=categories)
+        conn.close()
+        return df
