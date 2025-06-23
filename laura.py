@@ -138,7 +138,7 @@ class BasicQueryEngine:
         for handler in self.categoryHandlers:
             df = handler.getAllCategories()
             for _, row in df.iterrows():
-                categories.append(Category(row['category_id'], row['category_quartile']))
+                categories.append(Category(row['internalId'], row['quartile']))
         return categories
 
     def getCategoriesWithQuartile(self, quartiles: Set[str]) -> List[Category]:
@@ -146,7 +146,7 @@ class BasicQueryEngine:
         for handler in self.categoryHandlers:
             df = handler.getCategoriesWithQuartile(quartiles)
             for _, row in df.iterrows():
-                categories.append(Category(row['category_id'], row['category_quartile']))
+                categories.append(Category(row['internalId'], row['quartile']))
         return categories
 
     def getAllAreas(self) -> List[Area]:
@@ -186,8 +186,8 @@ class FullQueryEngine(BasicQueryEngine):
             df = handler.getById(id)
             if not df.empty:
                 row = df.iloc[0]
-                if 'category_quartile' in row:
-                    return Category(row['category_id'], row['category_quartile'])
+                if 'quartile' in row:
+                    return Category(row['internalId'], row['quartile'])
                 else:
                     return Area(row['area'])
         return None
@@ -197,7 +197,7 @@ class FullQueryEngine(BasicQueryEngine):
         for handler in self.categoryHandlers:
             df = handler.getCategoriesAssignedToAreas(areas)
             for _, row in df.iterrows():
-                result.append(Category(row['category_id'], row['category_quartile']))
+                result.append(Category(row['internalId'], row['quartile']))
         return result
 
     def getAreasAssignedToCategories(self, categories: Set[str]) -> List[Area]:
@@ -213,9 +213,9 @@ class FullQueryEngine(BasicQueryEngine):
         for handler in self.categoryHandlers:
             df = handler.getAllCategoryAssignments()
             if category_ids:
-                df = df[df['category_id'].isin(category_ids)]
+                df = df[df['internalId'].isin(category_ids)]
             if quartiles:
-                df = df[df['category_quartile'].isin(quartiles)]
+                df = df[df['quartile'].isin(quartiles)]
             df_match = pd.concat([df_match, df])
         identifiers = df_match['id'].dropna().unique().tolist()
         result = []
@@ -251,9 +251,9 @@ class FullQueryEngine(BasicQueryEngine):
             if areas:
                 df = df[df['area'].isin(areas)]
             if category_ids:
-                df = df[df['category_id'].isin(category_ids)]
+                df = df[df['internalId'].isin(category_ids)]
             if quartiles:
-                df = df[df['category_quartile'].isin(quartiles)]
+                df = df[df['quartile'].isin(quartiles)]
             df_match = pd.concat([df_match, df])
         identifiers = df_match['id'].dropna().unique().tolist()
         result = []
