@@ -1,5 +1,3 @@
-# example.py - Simple usage of your journal system
-
 from impl import *
 
 # Setup databases
