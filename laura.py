@@ -161,7 +161,7 @@ class BasicQueryEngine:
         journals = []
         for _, row in df.iterrows():
             journal = Journal(
-                id=row['identifiers'] if isinstance(row['identifiers'], list) else [row['identifiers']],
+                id=row['id'] if isinstance(row['id'], list) else [row['id']],
                 title=row.get('title', ''),
                 languages=row.get('languages', []),
                 publisher=row.get('publisher'),
@@ -217,15 +217,13 @@ class FullQueryEngine(BasicQueryEngine):
             if quartiles:
                 df = df[df['category_quartile'].isin(quartiles)]
             df_match = pd.concat([df_match, df])
-
-        identifiers = df_match['identifiers'].dropna().unique().tolist()
-
+        identifiers = df_match['id'].dropna().unique().tolist()
         result = []
         for handler in self.journalHandlers:
             df_journals = handler.getAllJournals()
-            df_journals['identifiers'] = df_journals['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
-            df_journals = df_journals.explode('identifiers')
-            df_journals = df_journals[df_journals['identifiers'].isin(identifiers)]
+            df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_journals = df_journals.explode('id')
+            df_journals = df_journals[df_journals['id'].isin(identifiers)]
             result.extend(self._createJournalObjects(df_journals))
         return result
 
@@ -236,15 +234,13 @@ class FullQueryEngine(BasicQueryEngine):
             if areas:
                 df = df[df['area'].isin(areas)]
             df_match = pd.concat([df_match, df])
-
-        identifiers = df_match['identifiers'].dropna().unique().tolist()
-
+        identifiers = df_match['id'].dropna().unique().tolist()
         result = []
         for handler in self.journalHandlers:
             df_journals = handler.getJournalsWithLicense(licenses)
-            df_journals['identifiers'] = df_journals['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
-            df_journals = df_journals.explode('identifiers')
-            df_journals = df_journals[df_journals['identifiers'].isin(identifiers)]
+            df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_journals = df_journals.explode('id')
+            df_journals = df_journals[df_journals['id'].isin(identifiers)]
             result.extend(self._createJournalObjects(df_journals))
         return result
 
@@ -259,15 +255,13 @@ class FullQueryEngine(BasicQueryEngine):
             if quartiles:
                 df = df[df['category_quartile'].isin(quartiles)]
             df_match = pd.concat([df_match, df])
-
-        identifiers = df_match['identifiers'].dropna().unique().tolist()
-
+        identifiers = df_match['id'].dropna().unique().tolist()
         result = []
         for handler in self.journalHandlers:
             df_journals = handler.getAllJournals()
             df_journals = df_journals[df_journals['apc'].isin(['No', False])]
-            df_journals['identifiers'] = df_journals['identifiers'].apply(lambda x: x if isinstance(x, list) else [x])
-            df_journals = df_journals.explode('identifiers')
-            df_journals = df_journals[df_journals['identifiers'].isin(identifiers)]
+            df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_journals = df_journals.explode('id')
+            df_journals = df_journals[df_journals['id'].isin(identifiers)]
             result.extend(self._createJournalObjects(df_journals))
         return result
