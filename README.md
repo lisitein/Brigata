@@ -25,6 +25,10 @@ Each dataset has been normalized and loaded into its respective database type th
 3. **CategoryQueryHandler** and **JournalQueryHandler** retrieve relevant data as Pandas DataFrames.
 4. **FullQueryEngine** integrates the data from both sources and transforms it into Python objects.
 
+   The structure of relational database:
+   ![daniele_relational_database_structure](https://github.com/user-attachments/assets/53e88c24-5a93-4292-8bcf-fe3dc2b81481)
+
+
 ---
 
 ## Python Data Model
