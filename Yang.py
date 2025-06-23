@@ -278,7 +278,7 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getAllAssignments(self) -> pd.DataFrame:
-        """Get all journal assignments (both categories and areas)"""
+        """Get all journal assignments (both categories and areas)"""  
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
         SELECT DISTINCT 
