@@ -51,6 +51,65 @@ Implemented in two levels:
 
 ---
 
+## How to Run the Project🚀
+
+### 1. Project Setup
+
+First, download all the project files and organize them in a folder with the following structure:
+
+```
+your_project/
+├── impl.py    
+├── baseHandler.py           
+├── daniele.py
+├── li.py 
+├── Yang.py 
+├── laura.py 
+├── data/
+│   ├── XX.csv              
+│   └── XXX.json            
+│   └── ...                 # additional .csv or .json files
+└── relational.db             # (auto-generated, no need to create manually)
+```
+
+**Important**: Create a `data/` folder and place your query files inside. Only **CSV** and **JSON** file formats are supported.
+
+### 2. Install Dependencies
+
+Install the required Python packages if they're not already in your environment:
+
+```bash
+pip install pandas pyparsing rdflib SPARQLWrapper
+```
+
+To check which packages you already have installed:
+```bash
+pip list
+```
+
+### 3. Setup Blazegraph
+
+Activate Blazegraph in a separate terminal window:
+
+**Download Blazegraph** (if you don't have it):
+```bash
+wget https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.jar
+```
+
+**Start Blazegraph**:
+```bash
+java -server -Xmx1g -jar blazegraph.jar
+```
+*Make sure the path to the JAR file is correct.*
+
+**Verify Blazegraph is running** by visiting `http://localhost:9999/blazegraph/` in your browser.
+
+### 4. Run the Project
+
+Once all dependencies are installed and Blazegraph is running, you can execute the project.
+
+---
+
 ## Team Members
 
 | Name | Role | Email |
