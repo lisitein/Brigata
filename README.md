@@ -63,6 +63,7 @@ First, download all the python files and organize them in a folder with the foll
 
 ```
 your_project/
+├── main.py    
 ├── impl.py    
 ├── baseHandler.py           
 ├── daniele.py
@@ -110,7 +111,10 @@ java -server -Xmx1g -jar blazegraph.jar
 
 ### 4. Run the Project
 
-Once all dependencies are installed and Blazegraph is running, you can execute the project.
+Once all dependencies are installed and Blazegraph is running, you can execute the project by run the main.py.
+```bash
+python main.py
+```
 
 ---
 
