@@ -55,7 +55,7 @@ Implemented in two levels:
 
 ### 1. Project Setup
 
-First, download all the project files and organize them in a folder with the following structure:
+First, download all the python files and organize them in a folder with the following structure:
 
 ```
 your_project/
