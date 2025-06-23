@@ -23,7 +23,7 @@ class Journal(IdentifiableEntity):
                  publisher: Optional[str], seal: bool, license: Optional[str],
                  apc: bool, hasCategory: List[str], hasArea: List[str]):
         super().__init__(id[0] if id else '')
-        self.identifiers = id
+        self.id = id[0] if id else ''
         self.title = title
         self.languages = languages
         self.publisher = publisher
