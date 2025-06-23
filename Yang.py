@@ -32,7 +32,7 @@ class JournalQueryHandler(QueryHandler):
                      :title ?title ;
                      :publisher ?publisher ;
                      :licence ?licence ;
-                     :hasAPC ?apc .
+                     :apc ?apc .
         }}
         """
         sparql.setQuery(query)
@@ -43,8 +43,11 @@ class JournalQueryHandler(QueryHandler):
             "title": r["title"]["value"],
             "publisher": r["publisher"]["value"],
             "license": r["licence"]["value"],
-            "hasAPC": r["apc"]["value"]
+            "apc": r["apc"]["value"]
         } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title", "publisher", "license", "apc"])
         return pd.DataFrame(data)
 
     def getAllJournals(self) -> pd.DataFrame:
@@ -61,11 +64,15 @@ class JournalQueryHandler(QueryHandler):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        return pd.DataFrame([{
+        data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
             "publisher": r["publisher"]["value"]
-        } for r in results["results"]["bindings"]])
+        } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title", "publisher"])
+        return pd.DataFrame(data)
 
     def getJournalsWithTitle(self, partial_title: str) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -81,10 +88,14 @@ class JournalQueryHandler(QueryHandler):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        return pd.DataFrame([{
+        data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"]
-        } for r in results["results"]["bindings"]])
+        } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title"])
+        return pd.DataFrame(data)
 
     def getJournalsPublishedBy(self, partial_name: str) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -101,11 +112,15 @@ class JournalQueryHandler(QueryHandler):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        return pd.DataFrame([{
+        data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
             "publisher": r["publisher"]["value"]
-        } for r in results["results"]["bindings"]])
+        } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title", "publisher"])
+        return pd.DataFrame(data)
 
     def getJournalsWithLicense(self, licenses: set[str]) -> pd.DataFrame:
         filter_clause = "FILTER BOUND(?license)" if not licenses else f"FILTER (?license IN ({', '.join(f'\"{l}\"' for l in licenses)}))"
@@ -123,11 +138,15 @@ class JournalQueryHandler(QueryHandler):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        return pd.DataFrame([{
+        data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
             "license": r["license"]["value"]
-        } for r in results["results"]["bindings"]])
+        } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title", "license"])
+        return pd.DataFrame(data)
 
     def getJournalsWithAPC(self) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -137,18 +156,22 @@ class JournalQueryHandler(QueryHandler):
         WHERE {
             ?journal a :Journal ;
                      :title ?title ;
-                     :hasAPC ?apc .
+                     :apc ?apc .
             FILTER (?apc != "None")
         }
         """
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        return pd.DataFrame([{
+        data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
-            "hasAPC": r["apc"]["value"]
-        } for r in results["results"]["bindings"]])
+            "apc": r["apc"]["value"]
+        } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title", "apc"])
+        return pd.DataFrame(data)
 
     def getJournalsWithDOAJSeal(self) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -158,18 +181,22 @@ class JournalQueryHandler(QueryHandler):
         WHERE {
             ?journal a :Journal ;
                      :title ?title ;
-                     :hasDOAJSeal ?seal .
+                     :seal ?seal .
             FILTER (?seal = true)
         }
         """
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
-        return pd.DataFrame([{
+        data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
-            "hasDOAJSeal": r["seal"]["value"]
-        } for r in results["results"]["bindings"]])
+            "seal": r["seal"]["value"]
+        } for r in results["results"]["bindings"]]
+        
+        if not data:
+            return pd.DataFrame(columns=["id", "title", "seal"])
+        return pd.DataFrame(data)
 
 class CategoryQueryHandler(QueryHandler):
     def getById(self, category_id: str) -> pd.DataFrame:
@@ -247,7 +274,8 @@ class CategoryQueryHandler(QueryHandler):
             )
             """
         return pd.read_sql(query, engine)
-    
+
+    # NEW METHODS NEEDED BY FULLQUERYENGINE
     def getAllCategoryAssignments(self) -> pd.DataFrame:
         """Get all journal-category assignments with identifiers"""
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
@@ -278,7 +306,7 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getAllAssignments(self) -> pd.DataFrame:
-        """Get all journal assignments (both categories and areas)"""  
+        """Get all journal assignments (both categories and areas)"""
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
         SELECT DISTINCT 

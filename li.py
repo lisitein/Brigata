@@ -1,40 +1,12 @@
-import pandas as pd
-import json
-import csv
-from daniele import Handler, CategoryUploadHandler
-
-#goal of UploadHandler is to recognize the format of the file  
-class UploadHandler(Handler): 
-    def __init__(self):
-        super().__init__()   
-        
-    def pushDataToDb(self, path):
-        db_path = self.getDbPathOrUrl()
-        if not db_path:
-            print("Error: No database path or URL provided. Please call setDbPathOrUrl() first.")
-            return False
-        if path.endswith('.csv'):
-            journal_handler = JournalUploadHandler()
-            journal_handler.setDbPathOrUrl(db_path)
-            result = journal_handler.pushDataToDb(path)
-            return result
-        elif path.endswith('.json'):
-            category_handler = CategoryUploadHandler()
-            category_handler.setDbPathOrUrl(db_path)  
-            result = category_handler.pushDataToDb(path)
-            return result  
-        else:
-            print("Error: Unsupported file format: {path}")  
-            return False
-        
-    
+from baseHandler import  UploadHandler 
 from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF
+import pandas as pd
 
 #implements the method of the superclass to handle the specific scenario
 #JournalUploadHandler to handle CSV files in input and to store their data in a graph database
 class JournalUploadHandler(UploadHandler):
-    def __init__(self):  
+    def __init__(self):
         super().__init__()
 
     def pushDataToDb(self, path):
@@ -46,25 +18,26 @@ class JournalUploadHandler(UploadHandler):
                               keep_default_na=False,
                               names=['title', 'issn', 'eissn', 
                                     #  'categories', 'areas',
-                                     'languages', 'publisher', 'seal', 'licence','apc'],
+                                     'languages', 'publisher', 'seal', 'license','apc'],
                               header=0,
                               dtype={
                                   "Journal title":str,
-                                  "Journal ISSN (print version)":str,  
+                                  "Journal ISSN (print version)":str,
                                   "Journal EISSN (online version)":str,
                                   "Languages in which the journal accepts manuscripts":str,
                                   "Publisher":str,
                                   "DOAJ Seal":bool,
-                                  "Journal license":str,  
+                                  "Journal license":str,
                                   "APC":bool
                                   }) #Read the CSV file into a pandas DataFrame and change the columns' name
+                            
         # print(journal)                       
         # subj wil be
         # id string [1..*]->Journal ISSN (print version),Journal EISSN (online version)
         # each will be id of the journal(if both ISSN and EISSN), and there will be two subj - one entity
         # journal_id = {} 
         id_cols = ['issn','eissn']
-        attribute_cols = ['title', 'languages', 'publisher', 'seal', 'licence', 'apc']
+        attribute_cols = ['title', 'languages', 'publisher', 'seal', 'license', 'apc']
         for idx, row in journal.iterrows():
             local_id = "journal_" + str(idx)  # local_id = journal_0, journal_1, etc.
             subject = URIRef(base_url[local_id]) # can automatically deal with the URL
@@ -74,14 +47,14 @@ class JournalUploadHandler(UploadHandler):
         # Languages in which the journal accepts manuscripts, languages : string [1..*]
         # Publisher, publisher : string [0.1] 
         # DOAJ Seal, seal: boolean [1]
-        # Journal license, licence : string [1]
+        # Journal licence, licence : string [1]
         # APC, apc : boolean [1]
             for column in attribute_cols:
                 attribute = str(row[column])
                 if attribute:
                     predicate = URIRef(base_url[column])
                     if column in ['seal', 'apc']:
-                        booleanvalue = attribute.lower() in ['true', '1', 't', 'y', 'yes']  
+                        booleanvalue = attribute.lower() in ['true', '1', 't', 'y', 'yes']
                         object = Literal(booleanvalue)
                     else:
                         object = Literal(attribute)
@@ -91,8 +64,8 @@ class JournalUploadHandler(UploadHandler):
                 id_value = str(row[column])
                 if id_value:
                     predicate = URIRef(base_url["id"])
-                    self.graph.add((subject, predicate, Literal(id_value)))  
-# do i need to add relations between Journal and Category\ Journal and Area?  
+                    self.graph.add((subject, predicate, Literal(id_value)))
+# do i need to add relations between Journal and Category\ Journal and Area?
 # Jounal - hasCategory -> Category (but Journal has Area?? what is area?)
         # return self.graph
 
@@ -106,9 +79,32 @@ class JournalUploadHandler(UploadHandler):
         endpoint = "http://127.0.0.1:9999/blazegraph/sparql"  # SPARQL endpoint URL
         store.open((endpoint, endpoint))  # Open the SPARQL store
 
-        # Add each triple to the store
+        # instead of committing one by one (so slow), use SPARQL
+        insert_query = "INSERT DATA {\n"
+
         for triple in self.graph.triples((None, None, None)):
-            store.add( triple )
+            subject = triple[0]
+            predicate = triple[1] 
+            object_value = triple[2]
+            
+
+            text_value = str(object_value)
+            
+            text_value = text_value.replace('\\', '\\\\')  # 先处理反斜杠
+            text_value = text_value.replace('"', '\\"')    # 处理双引号
+            text_value = text_value.replace('\n', '\\n')   # 处理换行符
+            text_value = text_value.replace('\r', '\\r')   # 处理回车符
+            
+            line = "<" + str(subject) + "> <" + str(predicate) + "> \"" + text_value + "\" .\n"
+            
+            insert_query = insert_query + line
+
+        # end the query
+        insert_query = insert_query + "}"
+
+        # store every triples once
+        if len(self.graph) > 0:
+            store.update(insert_query)
 
         # Close the store connection
         store.close()

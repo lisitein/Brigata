@@ -100,45 +100,40 @@ class BasicQueryEngine:
         return [j for h in self.journalHandlers for j in self._makeJournals(h.getJournalsWithDOAJSeal())]
 
     def getAllCategories(self) -> List[Category]:
-        categories = []
+        result = []
         for h in self.categoryHandlers:
             df = h.getAllCategories()
-            for _, r in df.iterrows():
-                categories.append(Category(r['internalId'], r['quartile']))
-        return categories
+            result.extend([Category(r['internalId'], r['quartile']) for _, r in df.iterrows()])
+        return result
 
     def getCategoriesWithQuartile(self, quartiles: Set[str]) -> List[Category]:
-        categories = []
+        result = []
         for h in self.categoryHandlers:
             df = h.getCategoriesWithQuartile(quartiles)
-            for _, r in df.iterrows():
-                categories.append(Category(r['internalId'], r['quartile']))
-        return categories
+            result.extend([Category(r['internalId'], r['quartile']) for _, r in df.iterrows()])
+        return result
 
     def getAllAreas(self) -> List[Area]:
-        areas = []
+        result = []
         for h in self.categoryHandlers:
             df = h.getAllAreas()
-            for _, r in df.iterrows():
-                areas.append(Area(r['internalId']))
-        return areas
+            result.extend([Area(r['internalId']) for _, r in df.iterrows()])
+        return result
 
     def _makeJournals(self, df: pd.DataFrame) -> List[Journal]:
-        journals = []
-        for _, r in df.iterrows():
-            journal = Journal(
-                id=r['id'] if isinstance(r['id'], list) else [r['id']],
-                title=r.get('title', ''),
-                languages=r.get('languages', []),
-                publisher=r.get('publisher'),
-                seal=str(r.get('seal')).lower() == 'yes',
-                license=r.get('license'),
-                apc=str(r.get('apc')).lower() == 'yes',
-                hasCategory=r.get('hasCategory', []),
-                hasArea=r.get('hasArea', [])
-            )
-            journals.append(journal)
-        return journals
+        if df.empty:
+            return []
+        return [Journal(
+            id=r['id'] if isinstance(r['id'], list) else [r['id']],
+            title=r.get('title', ''),
+            languages=r.get('languages', []),
+            publisher=r.get('publisher'),
+            seal=str(r.get('seal')).lower() == 'yes',
+            license=r.get('license'),
+            apc=str(r.get('apc')).lower() == 'yes',
+            hasCategory=r.get('hasCategory', []),
+            hasArea=r.get('hasArea', [])
+        ) for _, r in df.iterrows()]
 
 # FULL QUERY ENGINE
 
@@ -156,69 +151,70 @@ class FullQueryEngine(BasicQueryEngine):
         return None
 
     def getCategoriesAssignedToAreas(self, areas: Set[str]) -> List[Category]:
-        categories = []
+        result = []
         for h in self.categoryHandlers:
             df = h.getCategoriesAssignedToAreas(areas)
-            for _, r in df.iterrows():
-                categories.append(Category(r['id'], r['quartile']))
-        return categories
+            result.extend([Category(r['id'], r['quartile']) for _, r in df.iterrows()])
+        return result
 
     def getAreasAssignedToCategories(self, categories: Set[str]) -> List[Area]:
-        areas = []
+        result = []
         for h in self.categoryHandlers:
             df = h.getAreasAssignedToCategories(categories)
-            for _, r in df.iterrows():
-                areas.append(Area(r['area']))
-        return areas
+            result.extend([Area(r['area']) for _, r in df.iterrows()])
+        return result
 
     def getJournalsInCategoriesWithQuartile(self, category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
-        df_match = pd.DataFrame()
+        # Fast path: get all matching identifiers in one go
+        all_identifiers = set()
         for handler in self.categoryHandlers:
             df = handler.getAllCategoryAssignments()
             if category_ids:
                 df = df[df['category_id'].isin(category_ids)]
             if quartiles:
                 df = df[df['category_quartile'].isin(quartiles)]
-            df_match = pd.concat([df_match, df])
+            if not df.empty:
+                all_identifiers.update(df['identifiers'].dropna().tolist())
         
-        if df_match.empty:
+        if not all_identifiers:
             return []
-            
-        identifiers = df_match['identifiers'].dropna().unique().tolist()
+        
+        # Get journals matching these identifiers
         result = []
         for handler in self.journalHandlers:
             df_journals = handler.getAllJournals()
             if not df_journals.empty and 'id' in df_journals.columns:
-                df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
-                df_journals = df_journals.explode('id')
-                df_journals = df_journals[df_journals['id'].isin(identifiers)]
-                result.extend(self._makeJournals(df_journals))
+                # Vectorized operations
+                mask = df_journals['id'].isin(all_identifiers)
+                result.extend(self._makeJournals(df_journals[mask]))
         return result
 
     def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List[Journal]:
-        df_match = pd.DataFrame()
+        # Fast path: get all matching identifiers in one go
+        all_identifiers = set()
         for handler in self.categoryHandlers:
             df = handler.getAllAreaAssignments()
             if areas:
                 df = df[df['area'].isin(areas)]
-            df_match = pd.concat([df_match, df])
+            if not df.empty:
+                all_identifiers.update(df['identifiers'].dropna().tolist())
         
-        if df_match.empty:
+        if not all_identifiers:
             return []
-            
-        identifiers = df_match['identifiers'].dropna().unique().tolist()
+        
+        # Get journals with license filter AND identifier filter
         result = []
         for handler in self.journalHandlers:
             df_journals = handler.getJournalsWithLicense(licenses)
             if not df_journals.empty and 'id' in df_journals.columns:
-                df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
-                df_journals = df_journals.explode('id')
-                df_journals = df_journals[df_journals['id'].isin(identifiers)]
-                result.extend(self._makeJournals(df_journals))
+                # Vectorized operations
+                mask = df_journals['id'].isin(all_identifiers)
+                result.extend(self._makeJournals(df_journals[mask]))
         return result
 
     def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
-        df_match = pd.DataFrame()
+        # Fast path: get all matching identifiers in one go
+        all_identifiers = set()
         for handler in self.categoryHandlers:
             df = handler.getAllAssignments()
             if areas:
@@ -227,20 +223,20 @@ class FullQueryEngine(BasicQueryEngine):
                 df = df[df['category_id'].isin(category_ids)]
             if quartiles:
                 df = df[df['category_quartile'].isin(quartiles)]
-            df_match = pd.concat([df_match, df])
+            if not df.empty:
+                all_identifiers.update(df['identifiers'].dropna().tolist())
         
-        if df_match.empty:
+        if not all_identifiers:
             return []
-            
-        identifiers = df_match['identifiers'].dropna().unique().tolist()
+        
+        # Get all journals and filter for Diamond (no APC) and matching identifiers
         result = []
         for handler in self.journalHandlers:
             df_journals = handler.getAllJournals()
-            if not df_journals.empty:
-                df_journals = df_journals[df_journals['apc'].isin(['No', False])]
-                if 'id' in df_journals.columns:
-                    df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
-                    df_journals = df_journals.explode('id')
-                    df_journals = df_journals[df_journals['id'].isin(identifiers)]
-                    result.extend(self._makeJournals(df_journals))
+            if not df_journals.empty and 'id' in df_journals.columns:
+                # Apply both filters in one vectorized operation
+                apc_mask = df_journals['apc'].isin(['No', False])
+                id_mask = df_journals['id'].isin(all_identifiers)
+                combined_mask = apc_mask & id_mask
+                result.extend(self._makeJournals(df_journals[combined_mask]))
         return result
