@@ -93,7 +93,7 @@ class CategoryUploadHandler(UploadHandler):
         table_journal=journal[["internalId"]].drop_duplicates()
         table_area=area[["internalId"]].drop_duplicates()
         table_category=merge(category, category_quartile, left_on="id", right_on="name")[["internalId","quartile","categoryWithQuartileId"]]
-        table_identifiable_entity_id=concat([journal,area,category],axis=0)
+        table_identifiable_entity_id=concat([journal,area,category],axis=0).rename(columns={'internalId':"identifiableEntityId"})
 
         
             #now let's work to create the table HasCategory
