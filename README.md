@@ -79,7 +79,7 @@ your_project/
 Install the required Python packages if they're not already in your environment:
 
 ```bash
-pip install pandas pyparsing rdflib SPARQLWrapper
+pip install pandas pyparsing rdflib SPARQLWrapper sqlalchemy
 ```
 
 To check which packages you already have installed:
