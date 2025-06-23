@@ -23,7 +23,7 @@ class Journal(IdentifiableEntity):
                  publisher: Optional[str], seal: bool, license: Optional[str],
                  apc: bool, hasCategory: List[str], hasArea: List[str]):
         super().__init__(id[0] if id else '')
-        self.id = id[0] if id else ''
+        self.identifiers = id
         self.title = title
         self.languages = languages
         self.publisher = publisher
@@ -64,10 +64,10 @@ class BasicQueryEngine:
         return [j for h in self.journalHandlers for j in self._makeJournals(h.getJournalsWithDOAJSeal())]
 
     def getAllCategories(self) -> List[Category]:
-        return [Category(r['internalId'], r['quartile']) for h in self.categoryHandlers for _, r in h.getAllCategories().iterrows()]
+        return [Category(r['category_id'], r['category_quartile']) for h in self.categoryHandlers for _, r in h.getAllCategories().iterrows()]
 
     def getCategoriesWithQuartile(self, quartiles: Set[str]) -> List[Category]:
-        return [Category(r['internalId'], r['quartile']) for h in self.categoryHandlers for _, r in h.getCategoriesWithQuartile(quartiles).iterrows()]
+        return [Category(r['category_id'], r['category_quartile']) for h in self.categoryHandlers for _, r in h.getCategoriesWithQuartile(quartiles).iterrows()]
 
     def getAllAreas(self) -> List[Area]:
         return [Area(r['area']) for h in self.categoryHandlers for _, r in h.getAllAreas().iterrows()]
@@ -97,41 +97,72 @@ class FullQueryEngine(BasicQueryEngine):
             df = h.getById(id)
             if not df.empty:
                 r = df.iloc[0]
-                return Category(r['internalId'], r['quartile']) if 'quartile' in r else Area(r['area'])
+                return Category(r['category_id'], r['category_quartile']) if 'category_quartile' in r else Area(r['area'])
         return None
 
     def getCategoriesAssignedToAreas(self, areas: Set[str]) -> List[Category]:
-        return [Category(r['internalId'], r['quartile']) for h in self.categoryHandlers for _, r in h.getCategoriesAssignedToAreas(areas).iterrows()]
+        return [Category(r['category_id'], r['category_quartile']) for h in self.categoryHandlers for _, r in h.getCategoriesAssignedToAreas(areas).iterrows()]
 
     def getAreasAssignedToCategories(self, categories: Set[str]) -> List[Area]:
         return [Area(r['area']) for h in self.categoryHandlers for _, r in h.getAreasAssignedToCategories(categories).iterrows()]
 
     def getJournalsInCategoriesWithQuartile(self, category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
-        return self._filterJournalsFromAssignments('getAllCategoryAssignments', category_ids, quartiles, None, None)
-
-    def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List[Journal]:
-        return self._filterJournalsFromAssignments('getAllAreaAssignments', None, None, areas, licenses)
-
-    def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
-        return self._filterJournalsFromAssignments('getAllAssignments', category_ids, quartiles, areas, None, diamond=True)
-
-    def _filterJournalsFromAssignments(self, method, cat_ids, quarts, area_ids, licenses, diamond=False):
         df_match = pd.DataFrame()
         for h in self.categoryHandlers:
-            df = getattr(h, method)()
-            if cat_ids: df = df[df['internalId'].isin(cat_ids)]
-            if quarts: df = df[df['quartile'].isin(quarts)]
-            if area_ids: df = df[df['area'].isin(area_ids)]
+            df = h.getAllCategoryAssignments()
+            if category_ids:
+                df = df[df['category_id'].isin(category_ids)]
+            if quartiles:
+                df = df[df['category_quartile'].isin(quartiles)]
             df_match = pd.concat([df_match, df])
-        ids = df_match['id'].dropna().unique().tolist()
+        identifiers = df_match['identifiers'].dropna().unique().tolist()
 
-        journals = []
+        result = []
         for h in self.journalHandlers:
-            df = h.getAllJournals() if not licenses else h.getJournalsWithLicense(licenses)
-            if diamond:
-                df = df[df['apc'].isin(['No', False])]
-            df['id'] = df['id'].apply(lambda x: x if isinstance(x, list) else [x])
-            df = df.explode('id')
-            df = df[df['id'].isin(ids)]
-            journals.extend(self._makeJournals(df))
-        return journals
+            df_journals = h.getAllJournals()
+            df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_journals = df_journals.explode('id')
+            df_journals = df_journals[df_journals['id'].isin(identifiers)]
+            result.extend(self._makeJournals(df_journals))
+        return result
+
+    def getJournalsInAreasWithLicense(self, areas: Set[str], licenses: Set[str]) -> List[Journal]:
+        df_match = pd.DataFrame()
+        for h in self.categoryHandlers:
+            df = h.getAllAreaAssignments()
+            if areas:
+                df = df[df['area'].isin(areas)]
+            df_match = pd.concat([df_match, df])
+        identifiers = df_match['identifiers'].dropna().unique().tolist()
+
+        result = []
+        for h in self.journalHandlers:
+            df_journals = h.getJournalsWithLicense(licenses)
+            df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_journals = df_journals.explode('id')
+            df_journals = df_journals[df_journals['id'].isin(identifiers)]
+            result.extend(self._makeJournals(df_journals))
+        return result
+
+    def getDiamondJournalsInAreasAndCategoriesWithQuartile(self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]) -> List[Journal]:
+        df_match = pd.DataFrame()
+        for h in self.categoryHandlers:
+            df = h.getAllAssignments()
+            if areas:
+                df = df[df['area'].isin(areas)]
+            if category_ids:
+                df = df[df['category_id'].isin(category_ids)]
+            if quartiles:
+                df = df[df['category_quartile'].isin(quartiles)]
+            df_match = pd.concat([df_match, df])
+        identifiers = df_match['identifiers'].dropna().unique().tolist()
+
+        result = []
+        for h in self.journalHandlers:
+            df_journals = h.getAllJournals()
+            df_journals = df_journals[df_journals['apc'].isin(['No', False])]
+            df_journals['id'] = df_journals['id'].apply(lambda x: x if isinstance(x, list) else [x])
+            df_journals = df_journals.explode('id')
+            df_journals = df_journals[df_journals['id'].isin(identifiers)]
+            result.extend(self._makeJournals(df_journals))
+        return result
