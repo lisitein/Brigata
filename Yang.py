@@ -1,16 +1,63 @@
+"""
+Yang.py
+
+Module for handling queries against DOAJ (via SPARQL) and Scimago (via SQLite).
+
+Classes:
+    QueryHandler: Abstract base class defining interface for DB URL management and ID-based querying.
+    JournalQueryHandler: SPARQL implementation for retrieving journal metadata.
+    CategoryQueryHandler: SQLite implementation for retrieving category and area data.
+
+Dependencies:
+    pandas, SPARQLWrapper, sqlalchemy
+"""
+
 from abc import ABC, abstractmethod
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 from sqlalchemy import create_engine
 
 class QueryHandler(ABC):
+    
+    """
+    Abstract base class defining interface for database path/URL management
+    and querying entities by their external identifiers.
+
+    Attributes:
+        dbPathOrUrl (str): The database file path.
+    """
+    
     def __init__(self):
+        
+        """
+        Initialize the query handler with an empty database path or URL.
+        """
+        
         self.dbPathOrUrl = ''
 
     def getDbPathOrUrl(self) -> str:
+        
+        """
+        Retrieve the currently configured database path.
+
+        Returns:
+            str: The database path.
+        """
+        
         return self.dbPathOrUrl
 
     def setDbPathOrUrl(self, url: str):
+        
+        """
+        Validate and set a new database path.
+
+        Args:
+            url (str): The new database path.
+
+        Returns:
+            bool: True if successfully set, False otherwise.
+        """
+        
         if not isinstance(url, str):
             raise ValueError("The path/URL of the database must be a string")
         self.dbPathOrUrl = url
@@ -18,10 +65,48 @@ class QueryHandler(ABC):
 
     @abstractmethod
     def getById(self, entity_id: str) -> pd.DataFrame:
+        
+        """
+        Abstract method to query the database for an entity by its external ID.
+
+        Args:
+            entity_id (str): The identifier for the target entity.
+
+        Returns:
+            pd.DataFrame: Query results as a pandas DataFrame.
+        """
+        
         pass
 
 class JournalQueryHandler(QueryHandler):
+
+    def __init__(self):
+        
+        """
+        Initialize the SPARQL query handler by invoking the base constructor.
+        """
+        
+        super().__init__()
+    
+    """
+    SPARQL-based implementation of QueryHandler for retrieving journal data
+    from a Blazegraph SPARQL endpoint.
+    """
+    
     def getById(self, journal_id: str) -> pd.DataFrame:
+
+        """
+        Retrieve journal metadata by its external identifier (e.g., ISSN).
+
+        Args:
+            journal_id (str): The external journal identifier.
+
+        Returns:
+            pd.DataFrame: DataFrame with columns ['id', 'title', 'publisher',
+                                                  'license', 'apc'].
+                          Returns an empty DataFrame if not found.
+        """
+        
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
         PREFIX : <http://Brigata.github.org/journal/>
@@ -51,6 +136,14 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
     def getAllJournals(self) -> pd.DataFrame:
+
+        """
+        Retrieve all Journal entities available in the SPARQL endpoint.
+
+        Returns:
+            pd.DataFrame: List of journals with basic attributes.
+        """
+    
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
         PREFIX : <http://Brigata.github.org/journal/>
@@ -75,6 +168,17 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
     def getJournalsWithTitle(self, partial_title: str) -> pd.DataFrame:
+
+        """
+        Search for journals whose titles contain the given substring.
+
+        Args:
+            partial_title (str): Substring to match within journal titles.
+
+        Returns:
+            pd.DataFrame: Matching journal IDs and titles.
+        """
+        
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
         PREFIX : <http://Brigata.github.org/journal/>
@@ -98,6 +202,17 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
     def getJournalsPublishedBy(self, partial_name: str) -> pd.DataFrame:
+
+        """
+        Find journals by publisher name matching the given substring.
+
+        Args:
+            partial_name (str): Substring of publisher name.
+
+        Returns:
+            pd.DataFrame: Publisher-matched journals.
+        """
+    
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
         PREFIX : <http://Brigata.github.org/journal/>
@@ -123,6 +238,17 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
     def getJournalsWithLicense(self, licenses: set[str]) -> pd.DataFrame:
+
+        """
+        Fetch journals whose license property matches one of the given set.
+
+        Args:
+            licenses (set[str]): A set of license strings to filter.
+
+        Returns:
+            pd.DataFrame: IDs and licenses of matching journals.
+        """
+        
         filter_clause = "FILTER BOUND(?license)" if not licenses else f"FILTER (?license IN ({', '.join(f'\"{l}\"' for l in licenses)}))"
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
@@ -149,6 +275,14 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
     def getJournalsWithAPC(self) -> pd.DataFrame:
+
+        """
+        Retrieve journals that charge an Article Processing Charge (APC).
+
+        Returns:
+            pd.DataFrame: Journal IDs and APC values.
+        """
+        
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
         PREFIX : <http://Brigata.github.org/journal/>
@@ -174,6 +308,14 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
     def getJournalsWithDOAJSeal(self) -> pd.DataFrame:
+
+        """
+        List journals awarded the DOAJ Seal.
+
+        Returns:
+            pd.DataFrame: Journal IDs that have the DOAJ Seal flag.
+        """
+        
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
         PREFIX : <http://Brigata.github.org/journal/>
@@ -199,7 +341,30 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data)
 
 class CategoryQueryHandler(QueryHandler):
+
+    """
+    SQLite-based implementation for retrieving category, area, and assignment
+    data from a Scimago database.
+    """
+
+    def __init__(self):
+        """
+        Initialize the SQLite category handler.
+        """
+        super().__init__()
+    
     def getById(self, category_id: str) -> pd.DataFrame:
+
+        """
+        Retrieve a Category record by its external ID.
+
+        Args:
+            category_id (str): The external category identifier.
+
+        Returns:
+            pd.DataFrame: Matching category row.
+        """
+        
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = f"""
         SELECT c.* FROM Category c
@@ -217,6 +382,17 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql("SELECT DISTINCT * FROM Area", engine)
 
     def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
+
+        """
+        Filter Category records by quartile values.
+
+        Args:
+            quartiles (set[str]): Set of quartile strings (e.g., {'Q1','Q2'}).
+
+        Returns:
+            pd.DataFrame: Categories matching the specified quartiles.
+        """
+        
         if not quartiles:
             quartiles = {"Q1", "Q2", "Q3", "Q4"}
         quartiles_str = ", ".join(f"'{q}'" for q in quartiles)
@@ -224,6 +400,17 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(f"SELECT * FROM Category WHERE quartile IN ({quartiles_str})", engine)
 
     def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
+
+        """
+        Retrieve category IDs and quartiles for journals assigned to given areas.
+
+        Args:
+            area_ids (set[str]): Set of external area IDs; empty for all areas.
+
+        Returns:
+            pd.DataFrame: Columns ['id','quartile'] for matching categories.
+        """
+        
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         if not area_ids:
             query = """
@@ -248,6 +435,17 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getAreasAssignedToCategories(self, category_ids: set[str]) -> pd.DataFrame:
+
+        """
+        Retrieve area IDs for journals assigned to given categories.
+
+        Args:
+            category_ids (set[str]): Set of category IDs; empty for all categories.
+
+        Returns:
+            pd.DataFrame: Column ['area'] listing area IDs.
+        """
+        
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         if not category_ids:
             query = """
@@ -277,6 +475,14 @@ class CategoryQueryHandler(QueryHandler):
 
     # NEW METHODS NEEDED BY FULLQUERYENGINE
     def getAllCategoryAssignments(self) -> pd.DataFrame:
+
+        """
+        List all journal-category-quartile assignments across database.
+
+        Returns:
+            pd.DataFrame: Columns ['identifiers','category_id','category_quartile','area'].
+        """
+        
         """Get all journal-category assignments with identifiers"""
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
@@ -292,6 +498,14 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getAllAreaAssignments(self) -> pd.DataFrame:
+
+        """
+        List all journal-area assignments.
+
+        Returns:
+            pd.DataFrame: Columns ['identifiers','area'].
+        """
+        
         """Get all journal-area assignments with identifiers"""
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
@@ -306,6 +520,14 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getAllAssignments(self) -> pd.DataFrame:
+
+        """
+        Retrieve all journal-category and journal-area assignments combined.
+
+        Returns:
+            pd.DataFrame: Unified assignment table.
+        """
+        
         """Get all journal assignments (both categories and areas)"""
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
