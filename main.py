@@ -26,6 +26,7 @@ engine.addCategoryHandler(category_query)
 
 # Use the system
 all_journals = engine.getAllJournals()
+science_journals = engine.getJournalsWithTitle("Science")
 open_access = engine.getJournalsWithDOAJSeal()
 
 # Get results
