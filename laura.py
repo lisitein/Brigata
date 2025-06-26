@@ -4,27 +4,27 @@ from typing import List, Set, Optional, Union
 # DATA MODEL
 
 class IdentifiableEntity:
-    def __init__(self, id: str):
-        self.id = id
-    def getId(self) -> str:
+    def __init__(self, id: str):  # defines a generic class that represents any entity with an id (string)
+        self.id = id  # saves the id value as an attribute of the object, accessible as self.id
+    def getId(self) -> str:  # classic getter" method, used to access in a controlled way an internal attribute of the object
         return self.id
 
-class Area(IdentifiableEntity): 
-    pass
+class Area(IdentifiableEntity): # subclass with no additional attributes: it inherits everything from IdentifiableEntity
+    pass  # null operation; nothing more is being added to Area at this time
 
-class Category(IdentifiableEntity):
+class Category(IdentifiableEntity): # Category is an IdentifiableEntity with an additional attribute: quartile
     def __init__(self, id: str, quartile: str):
         super().__init__(id)
-        self.quartile = quartile
+        self.quartile = quartile  # saves the quartile
     def getQuartile(self) -> str:
-        return self.quartile
+        return self.quartile  # method to obtain the Category's quartile
 
 class Journal(IdentifiableEntity):
-    def __init__(self, id: List[str], title: str, languages: List[str],
+    def __init__(self, id: List[str], title: str, languages: List[str],   #  Journal constructor, representing an academic journal - it has many attributes
                  publisher: Optional[str], seal: bool, license: Optional[str],
                  apc: bool, hasCategory: List[str], hasArea: List[str]):
-        super().__init__(id[0] if id else '')
-        self.identifiers = id
+        super().__init__(id[0] if id else '')  # only the first identifier (id[0]) is used as the "main identifier"; if id is empty, an empty string is assigned
+        self.identifiers = id  # this saves the entire id list as a separate attribute, called identifiers, so the user can have access to both the "main" ID (self.id) and all the others (self.identifiers)
         self.title = title
         self.languages = languages
         self.publisher = publisher
@@ -34,7 +34,7 @@ class Journal(IdentifiableEntity):
         self.hasCategory = hasCategory
         self.hasArea = hasArea
 
-    def getTitle(self) -> str:
+    def getTitle(self) -> str:  # series of public methods of the Journal class that return the values ​​of the various attributes
         return self.title
 
     def getLanguages(self) -> List[str]:
@@ -52,27 +52,29 @@ class Journal(IdentifiableEntity):
     def hasAPC(self) -> bool:
         return self.apc
 
-    def getHasCategory(self) -> List[str]:
+    def getHasCategory(self) -> List[str]:  # contains a list of category IDs to which the journal belongs
         return self.hasCategory
 
-    def getHasArea(self) -> List[str]:
+    def getHasArea(self) -> List[str]:  # contains a list of subject area IDs to which the journal is linked
         return self.hasArea
 
 # BASIC QUERY ENGINE
 
-class BasicQueryEngine:
-    def __init__(self):
-        self.journalHandlers = []
-        self.categoryHandlers = []
+class BasicQueryEngine:  # we start by defining a Python class to run queries
+    def __init__(self):  #  the __init__ method initializes two empty lists
+        self.journalHandlers = []  # handler to access journal data
+        self.categoryHandlers = []  # handler to access category and area data
 
-    def addJournalHandler(self, handler) -> bool:
-        self.journalHandlers.append(handler)
-        return True
+    def addJournalHandler(self, handler) -> bool:  # public method which has as parameter "handler", that is an object that must implement methods like getAllJournals() / -> bool means that the method returns a boolean value
+        self.journalHandlers.append(handler) #  list containing all registered journalHandlers; with .append(handler) one adds the handler object to the end of the list
+        return True  # the method simply returns True to indicate that the operation was successful
         
-    def addCategoryHandler(self, handler) -> bool:
+    def addCategoryHandler(self, handler) -> bool:  # the same, but for categoryHandlers
         self.categoryHandlers.append(handler)
         return True
-        
+
+    # the cleanJournalHandlers() method is used to completely empty the list of journal handlers (self.journalHandlers) previously registered with addJournalHandler(...)
+    
     def cleanJournalHandlers(self) -> bool:
         self.journalHandlers.clear()
         return True
@@ -80,9 +82,16 @@ class BasicQueryEngine:
     def cleanCategoryHandlers(self) -> bool:
         self.categoryHandlers.clear()
         return True
+    # QUERY ON JOURNALS
+    #  All of these functions do the same thing:
+    # 1. Iterate through each handler in journalHandlers
+    # 2. Call the corresponding method (e.g. getAllJournals())
+    # 3. Pass the result to _makeJournals(), which converts a DataFrame into Journal objects
+    # 4. Get a list of Journal objects,
+    # 5. Concatenate everything into a single list to return.
 
     def getAllJournals(self) -> List[Journal]:
-        return [j for h in self.journalHandlers for j in self._makeJournals(h.getAllJournals())]
+        return [j for h in self.journalHandlers for j in self._makeJournals(h.getAllJournals())] # double list comprehension, which can be read as: "for each handler in the self.journalHandlers list, call getAllJournals() on it, convert the result to Journal objects using _makeJournals(), and add them to the final list"
 
     def getJournalsWithTitle(self, title: str) -> List[Journal]:
         return [j for h in self.journalHandlers for j in self._makeJournals(h.getJournalsWithTitle(title))]
