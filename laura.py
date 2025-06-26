@@ -82,18 +82,19 @@ class BasicQueryEngine:  # we start by defining a Python class to run queries
     def cleanCategoryHandlers(self) -> bool:
         self.categoryHandlers.clear()
         return True
+        
     # QUERY ON JOURNALS
-    #  All of these functions do the same thing:
-    # 1. Iterate through each handler in journalHandlers
-    # 2. Call the corresponding method (e.g. getAllJournals())
-    # 3. Pass the result to _makeJournals(), which converts a DataFrame into Journal objects
-    # 4. Get a list of Journal objects,
-    # 5. Concatenate everything into a single list to return.
+    #    all of these functions do the same thing:
+    # 1. iterate through each handler in journalHandlers
+    # 2. call the corresponding method (e.g. getAllJournals())
+    # 3. pass the result to _makeJournals(), which converts a DataFrame into Journal objects
+    # 4. get a list of Journal objects
+    # 5. concatenate everything into a single list to return
 
     def getAllJournals(self) -> List[Journal]:
         return [j for h in self.journalHandlers for j in self._makeJournals(h.getAllJournals())] # double list comprehension, which can be read as: "for each handler in the self.journalHandlers list, call getAllJournals() on it, convert the result to Journal objects using _makeJournals(), and add them to the final list"
 
-    def getJournalsWithTitle(self, title: str) -> List[Journal]:
+    def getJournalsWithTitle(self, title: str) -> List[Journal]:  #  return all Journals whose title matches a certain string, searching all data sources saved in the engine
         return [j for h in self.journalHandlers for j in self._makeJournals(h.getJournalsWithTitle(title))]
 
     def getJournalsPublishedBy(self, publisher: str) -> List[Journal]:
@@ -107,9 +108,11 @@ class BasicQueryEngine:  # we start by defining a Python class to run queries
 
     def getJournalsWithDOAJSeal(self) -> List[Journal]:
         return [j for h in self.journalHandlers for j in self._makeJournals(h.getJournalsWithDOAJSeal())]
+        
+    # QUERY ON CATEGORIES AND AREAS
 
-    def getAllCategories(self) -> List[Category]:
-        result = []
+    def getAllCategories(self) -> List[Category]:  #  return a list of Category objects, combining data from all handlers registered in the categoryHandlers list
+        result = []  # it creates an empty list which will collect all Category objects found
         for h in self.categoryHandlers:
             df = h.getAllCategories()
             result.extend([Category(r['internalId'], r['quartile']) for _, r in df.iterrows()])
