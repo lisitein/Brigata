@@ -56,10 +56,11 @@ class CategoryUploadHandler(UploadHandler):
             for elem in j['categories']:
                 if [elem["id"]] not in all_categories_list:            #this instruction aims to avoid duplicates
                     this_journal_categories.append([elem["id"]])
-                if "quartile" in elem:
+                if "quartile" in elem:  # Check if quartile exists in this specific category
                     if ([elem["id"]][0],elem["quartile"]) not in couples_category_quartile: #a list of tuples category-quartile
                         couples_category_quartile.append(([elem["id"]][0],elem["quartile"]))  #for every couple, as id I use only the first of the hypothetical many
-                    else:
+                else:
+                    if ([elem["id"]][0],'') not in couples_category_quartile:
                         couples_category_quartile.append(([elem["id"]][0],''))
             all_categories_list.extend(this_journal_categories)        #in the end, I got a list of lists
 
@@ -105,8 +106,9 @@ class CategoryUploadHandler(UploadHandler):
             for m in range(number_of_categories_quartiles):
                 journals_for_categories_quartiles.append(f'journal-{n}')
                 xx=[json_content[n]['categories'][m]["id"]][0]
-                yy=json_content[n]['categories'][m]["quartile"]
-                if "quartile" in json_content[n]['categories']:
+                # Fixed: Check if quartile exists in the specific category object  
+                if "quartile" in json_content[n]['categories'][m]:
+                    yy=json_content[n]['categories'][m]["quartile"]
                     categories_quartiles_for_journals.append(f'{xx} - {yy}') 
                 else:
                     categories_quartiles_for_journals.append(f'{xx} - ') 
@@ -149,15 +151,16 @@ class CategoryUploadHandler(UploadHandler):
             #table_has_area is now ready
 
         with connect(self.dbPathOrUrl) as con:
-            table_journal.to_sql("Journal", con, if_exists="replace", index=False)
+            table_journal.to_sql("Journal", con, if_exists="replace", index=False)  
             table_area.to_sql("Area", con, if_exists="replace", index=False)
             table_category.to_sql("Category", con, if_exists="replace", index=False)
             table_identifiable_entity_id.to_sql("IdentifiableEntityId", con, if_exists="replace", index=False)
-            table_has_category.to_sql("HasCategory", con, if_exists="replace", index=False)
+            table_has_category.to_sql("HasCategory", con, if_exists="replace", index=False)    
             table_has_area.to_sql("HasArea", con, if_exists="replace", index=False)
             con.commit()
 
         return True
+
 
 
 
@@ -173,4 +176,4 @@ class CategoryUploadHandler(UploadHandler):
 #cat = CategoryUploadHandler()
 #cat.setDbPathOrUrl(rel_path)
 #cat.pushDataToDb("reduced_dataset.json")
-#I load on github the small database: daniele_small_database.db
+#I load on github the small database: daniele_small_database.db  
