@@ -106,7 +106,7 @@ class CategoryUploadHandler(UploadHandler):
             for m in range(number_of_categories_quartiles):
                 journals_for_categories_quartiles.append(f'journal-{n}')
                 xx=[json_content[n]['categories'][m]["id"]][0]
-                # Fixed: Check if quartile exists in the specific category object  
+                # Fixed: Check if quartile exists in the specific category object
                 if "quartile" in json_content[n]['categories'][m]:
                     yy=json_content[n]['categories'][m]["quartile"]
                     categories_quartiles_for_journals.append(f'{xx} - {yy}') 
@@ -160,20 +160,3 @@ class CategoryUploadHandler(UploadHandler):
             con.commit()
 
         return True
-
-
-
-
-#PERPLEXITIES:
-#how do we handle possible repeated items in the dataset provided?  
-#A PROBLEM THAT STILL EXIST: APPARENTLY THE SOFTWARE CAN'T HANDLE CASES IN WHICH CATEGORIES (AND MAYBE AREAS) HAVE MULTIPLE IDs
-#OTHER PROBLEM: WHAT IF AREA OR CATEGORY ARE ABSENT? IT CAN HAPPEN  (actually that problem is already handled I think)
-#make the software more robust at classes level; think how to handle if many datasets are loaded one after the other
-
-
-#let's try to create a relational database using a small part of the json file we are provided:
-#rel_path = "small_database.db"
-#cat = CategoryUploadHandler()
-#cat.setDbPathOrUrl(rel_path)
-#cat.pushDataToDb("reduced_dataset.json")
-#I load on github the small database: daniele_small_database.db  

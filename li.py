@@ -90,10 +90,10 @@ class JournalUploadHandler(UploadHandler):
 
             text_value = str(object_value)
             
-            text_value = text_value.replace('\\', '\\\\')  # 先处理反斜杠
-            text_value = text_value.replace('"', '\\"')    # 处理双引号
-            text_value = text_value.replace('\n', '\\n')   # 处理换行符
-            text_value = text_value.replace('\r', '\\r')   # 处理回车符
+            text_value = text_value.replace('\\', '\\\\')  # \
+            text_value = text_value.replace('"', '\\"')    # ""
+            text_value = text_value.replace('\n', '\\n')   # \n
+            text_value = text_value.replace('\r', '\\r')   # \r
             
             line = "<" + str(subject) + "> <" + str(predicate) + "> \"" + text_value + "\" .\n"
             
