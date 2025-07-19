@@ -151,11 +151,11 @@ class CategoryUploadHandler(UploadHandler):
             #table_has_area is now ready
 
         with connect(self.dbPathOrUrl) as con:
-            table_journal.to_sql("Journal", con, if_exists="replace", index=False)  
+            table_journal.to_sql("Journal", con, if_exists="replace", index=False)
             table_area.to_sql("Area", con, if_exists="replace", index=False)
             table_category.to_sql("Category", con, if_exists="replace", index=False)
             table_identifiable_entity_id.to_sql("IdentifiableEntityId", con, if_exists="replace", index=False)
-            table_has_category.to_sql("HasCategory", con, if_exists="replace", index=False)    
+            table_has_category.to_sql("HasCategory", con, if_exists="replace", index=False)
             table_has_area.to_sql("HasArea", con, if_exists="replace", index=False)
             con.commit()
 
