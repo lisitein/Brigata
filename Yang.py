@@ -152,18 +152,18 @@ class JournalQueryHandler(QueryHandler):
             ?journal a :Journal ;
                      :title ?title ;
                      :publisher ?publisher .
-            OPTIONAL { ?journal :apc ?apc }  
-            OPTIONAL { ?journal :seal ?seal }  
+            OPTIONAL { ?journal :apc ?apc }
+            OPTIONAL { ?journal :seal ?seal }
             OPTIONAL { ?journal :license ?license }
         }
         """
         sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)  
+        sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
         data = [{
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
-            "publisher": r["publisher"]["value"]
+            "publisher": r["publisher"]["value"],
             "apc": r.get("apc", {}).get("value", "No"),   
             "seal": r.get("seal", {}).get("value", "No"),
             "license": r.get("license", {}).get("value", "")
