@@ -71,7 +71,7 @@ class JournalQueryHandler(QueryHandler):
             "id": r["journal"]["value"].split("/")[-1],
             "title": r["title"]["value"],
             "publisher": r["publisher"]["value"],
-            "apc": r.get("apc", {}).get("value", "No"),  # 默认值"No"
+            "apc": r.get("apc", {}).get("value", "No"),
             "seal": r.get("seal", {}).get("value", "No"),
             "license": r.get("license", {}).get("value", "")
         } for r in results["results"]["bindings"]]
