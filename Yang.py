@@ -25,13 +25,13 @@ class JournalQueryHandler(QueryHandler):
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
         PREFIX : <http://Brigata.github.org/journal/>
-        SELECT ?journal ?title ?publisher ?licence ?apc
+        SELECT ?journal ?title ?publisher ?license ?apc
         WHERE {{
             ?journal a :Journal ;
                      :id "{journal_id}" ;
                      :title ?title ;
                      :publisher ?publisher ;
-                     :licence ?licence ;
+                     :license ?license ;
                      :apc ?apc .
         }}
         """
@@ -42,7 +42,7 @@ class JournalQueryHandler(QueryHandler):
             "id": journal_id,
             "title": r["title"]["value"],
             "publisher": r["publisher"]["value"],
-            "license": r["licence"]["value"],
+            "license": r["license"]["value"],
             "apc": r["apc"]["value"]
         } for r in results["results"]["bindings"]]
         
