@@ -230,27 +230,28 @@ class FullQueryEngine(BasicQueryEngine):
         return result
 
     def getDiamondJournalsInAreasAndCategoriesWithQuartile(
-        self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]
-    ) -> List[Journal]:
-        all_ids = set()
-        for handler in self.categoryHandlers:
-            df = handler.getAllAssignments()
-            if not df.empty:
-                if areas:
-                    df = df[df['area_id'].isin(areas)]
-                if category_ids:
-                    df = df[df['category_id'].isin(category_ids)]
-                if quartiles:
-                    df = df[df['quartile'].isin(quartiles)]
-                all_ids.update(df['id'].dropna().tolist())
+    self, areas: Set[str], category_ids: Set[str], quartiles: Set[str]
+) -> List[Journal]:
+    all_ids = set()
+    for handler in self.categoryHandlers:
+        df = handler.getAllAssignments()
+        if not df.empty:
+            if areas:
+                df = df[df['area_id'].isin(areas)]
+            if category_ids:
+                df = df[df['category_id'].isin(category_ids)]
+            if quartiles:
+                df = df[df['quartile'].isin(quartiles)]
+            all_ids.update(df['id'].dropna().tolist())
 
-        if not all_ids:
-            return []
+    if not all_ids:
+        return []
 
-        result = []
-        for handler in self.journalHandlers:
-            df_journals = handler.getAllJournals()
-            if not df_journals.empty:
-                mask = (df_journals['id'].isin(all_ids)) & (df_journals['apc'] == False)
-                result.extend(self._makeJournals(df_journals[mask]))
-        return result
+    result = []
+    for handler in self.journalHandlers:
+        df_journals = handler.getAllJournals()
+        if not df_journals.empty:
+            # FIX: check APC as string, so "no" works
+            mask = (df_journals['id'].isin(all_ids)) & (df_journals['apc'].str.lower() == "no")
+            result.extend(self._makeJournals(df_journals[mask]))
+    return result
