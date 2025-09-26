@@ -150,10 +150,7 @@ class BasicQueryEngine:
             hasArea=r.get('hasArea', [])
         ) for _, r in df.iterrows()]
 
-
-# =====================
 # FULL QUERY ENGINE
-# =====================
 
 class FullQueryEngine(BasicQueryEngine):
 
