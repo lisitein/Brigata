@@ -1,0 +1,126 @@
+[
+    {
+        "identifiers": [
+            "1474-1784",
+            "1474-1776"
+        ],
+        "categories": [
+            {
+                "id": "Drug Discovery",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Pharmacology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine",
+            "Pharmacology, Toxicology and Pharmaceutics"
+        ]
+    },
+    {
+        "identifiers": [
+            "1944-7981",
+            "0002-8282"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "2058-8437"
+        ],
+        "categories": [
+            {
+                "id": "Biomaterials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electronic, Optical and Magnetic Materials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Energy (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Chemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Surfaces, Coatings and Films",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1546-170X",
+            "1078-8956"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0065-2598",
+            "2214-8019"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q3"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q4"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1755-1196",
+            "1477-1756"
+        ],
+        "categories": [
+            {
+                "id": "Philosophy"
+            }
+        ],
+        "areas": [
+            "Arts and Humanities"
+        ]
+    }
+]
