@@ -26,7 +26,7 @@ Each dataset has been normalized and loaded into its respective database type th
 4. **FullQueryEngine** integrates the data from both sources and transforms it into Python objects.
 
    The structure of relational database:
-   [daniele_relational_database_structure](https://github.com/lisitein/Brigata/blob/d9acf3ae581000e87c7c6de25154ea8920c245ac/yangish_database.png)
+  <img width="1136" alt="daniele_relational_database_structure" src="https://github.com/lisitein/Brigata/blob/d9acf3ae581000e87c7c6de25154ea8920c245ac/yangish_database.png" />
 
 
 ---
