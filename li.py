@@ -76,7 +76,8 @@ class JournalUploadHandler(UploadHandler):
         from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
         store = SPARQLUpdateStore()
-        endpoint = "http://127.0.0.1:9999/blazegraph/sparql"  # SPARQL endpoint URL
+        endpoint = self.getDbPathOrUrl()
+        # endpoint = "http://127.0.0.1:9999/blazegraph/sparql"  # SPARQL endpoint URL
         store.open((endpoint, endpoint))  # Open the SPARQL store
 
         # instead of committing one by one (so slow), use SPARQL
