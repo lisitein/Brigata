@@ -254,12 +254,15 @@ class CategoryQueryHandler(QueryHandler):
     def getAllCategories(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
-        SELECT DISTINCT i.id AS id, i.quartile AS quartile
+        SELECT DISTINCT i.id AS category_id, i.quartile AS quartile
         FROM IdentifiableEntity i
         WHERE i.internalId LIKE 'category-%'
-        ORDER BY id
+        ORDER BY category_id
         """
-        return pd.read_sql(query, engine)
+        df = pd.read_sql(query, engine)
+        if "category_id" not in df.columns and "id" in df.columns:
+            df = df.rename(columns={"id": "category_id"})
+        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"])
 
     def getAllAreas(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
@@ -273,21 +276,22 @@ class CategoryQueryHandler(QueryHandler):
 
     def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        qs = [ (q or "").strip().upper() for q in (quartiles or set()) if (q or "").strip() ]
+        qs = [(q or "").strip().upper() for q in (quartiles or set()) if (q or "").strip()]
         if not qs:
-            return pd.DataFrame(columns=["id", "quartile"])
-
+            return pd.DataFrame(columns=["category_id", "quartile"])
         placeholders = ",".join(f":q{i}" for i in range(len(qs)))
-        params = { f"q{i}": qs[i] for i in range(len(qs)) }
-
+        params = {f"q{i}": qs[i] for i in range(len(qs))}
         query = f"""
-        SELECT DISTINCT i.id AS id, i.quartile AS quartile
+        SELECT DISTINCT i.id AS category_id, i.quartile AS quartile
         FROM IdentifiableEntity i
         WHERE i.internalId LIKE 'category-%'
-          AND UPPER(i.quartile) IN ({placeholders})
-        ORDER BY id
+        AND UPPER(i.quartile) IN ({placeholders})
+        ORDER BY category_id
         """
-        return pd.read_sql(query, engine, params=params)
+        df = pd.read_sql(query, engine, params=params)
+        if "category_id" not in df.columns and "id" in df.columns:
+            df = df.rename(columns={"id": "category_id"})
+        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"])
 
     def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
