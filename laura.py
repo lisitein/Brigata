@@ -357,46 +357,51 @@ class FullQueryEngine(BasicQueryEngine):
             result.extend(self._makeJournals(df_j[mask]))
 
         return result
-
+        
     def getDiamondJournalsInAreasAndCategoriesWithQuartile(
-        self,
-        areas: Set[str],
-        category_ids: Set[str],
-        quartiles: Set[str],
-    ) -> List[Journal]:
+    self,
+    areas: Set[str],
+    category_ids: Set[str],
+    quartiles: Set[str],
+) -> List[Journal]:
+    """
+    Diamond journals (no APC) that are:
+    - in one of the given areas
+    - in one of the given categories
+    - whose categories have one of the given quartiles.
+    """
+    all_ids: Set[str] = set()
 
-        all_ids = set()
+    # Filter SQL assignments by areas, categories and quartiles
+    for h in self.categoryHandlers:
+        df = h.getAllAssignments()
+        if df.empty:
+            continue
 
-        # Full assignment filtering
-        for h in self.categoryHandlers:
-            df = h.getAllAssignments()
-            if df.empty:
-                continue
+        if areas:
+            df = df[df["area_id"].isin(areas)]
+        if category_ids:
+            df = df[df["category_id"].isin(category_ids)]
+        if quartiles:
+            df = df[df["quartile"].isin(quartiles)]
 
-            if areas:
-                df = df[df["area_id"].isin(areas)]
-            if category_ids:
-                df = df[df["category_id"].isin(category_ids)]
-            if quartiles:
-                df = df[df["quartile"].isin(quartiles)]
+        all_ids.update(df["id"].dropna().tolist())
 
-            all_ids.update(df["id"].dropna().tolist())
+    if not all_ids:
+        return []
 
-        if not all_ids:
-            return []
+    # Then filter RDF journals by id and APC = no/false
+    result: List[Journal] = []
+    for h in self.journalHandlers:
+        df_journals = h.getAllJournals()
+        if df_journals.empty:
+            continue
 
-        # Select only journals with APC = false
-        result = []
-        for h in self.journalHandlers:
-            df_j = h.getAllJournals()
-            if df_j.empty:
-                continue
+        mask_ids = df_journals["id"].isin(all_ids)
+        apc_str = df_journals["apc"].astype(str).str.lower()
+        mask_diamond = apc_str.isin(["no", "false", "0", "n"])
 
-            mask_ids = df_j["id"].isin(all_ids)
-            apc_values = df_j["apc"].astype(str).str.lower()
-            mask_diamond = apc_values.isin(["no", "false", "0", "n"])
+        mask = mask_ids & mask_diamond
+        result.extend(self._makeJournals(df_journals[mask]))
 
-            mask = mask_ids & mask_diamond
-            result.extend(self._makeJournals(df_j[mask]))
-
-        return result
+    return result
