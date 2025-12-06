@@ -13,6 +13,38 @@ j=[
     Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True)
     ]
 
+
+a=[
+    Area(id="Medicine");
+    Area(id="Pharmacology, Toxicology and Pharmaceutics");
+    Area(id="Economics, Econometrics and Finance");
+    Area(id="Energy");
+    Area(id="Materials Science");
+    Area(id="Biochemistry, Genetics and Molecular Biology");
+    Area(id="Arts and Humanities");
+]
+
+
+c=[
+    Category(id="Drug Discovery", quartile="Q1"),
+    Category(id="Medicine (miscellaneous)", quartile="Q1"),
+    Category(id="Pharmacology", quartile="Q1"),
+    Category(id="Economics and Econometrics", quartile="Q1"),
+    Category(id="Biomaterials", quartile="Q1"),
+    Category(id="Electronic, Optical and Magnetic Materials", quartile="Q1"),
+    Category(id="Energy (miscellaneous)", quartile="Q1"),
+    Category(id="Materials Chemistry", quartile="Q1"),
+    Category(id="Surfaces, Coatings and Films", quartile="Q1"),
+    Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)", quartile="Q1"),
+    Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)", quartile="Q3"),
+    Category(id="Medicine (miscellaneous)", quartile="Q4"),
+    Category(id="Philosophy")
+]
+
+
+
+
+
 #TEST 1
 
 correct_inputs_and_outputs=[
@@ -221,6 +253,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
