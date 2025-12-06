@@ -9,7 +9,8 @@ from baseHandler import *
 #TEST 1
 
 correct_inputs_and_outputs=[
-    ("1474-1784", Journal(id=["1474-1784","1474-1776"]))
+    {"input":"1474-1784",
+     "output":Journal(id=["1474-1784","1474-1776"])}
     ("santa-claus", None)
     ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
     ("happy-yang", None)
@@ -17,34 +18,43 @@ correct_inputs_and_outputs=[
     ]
 
 def test_getEntityById(correct_inputs_and_outputs):
-    result=getEntityById(id)
-    if result == expected:
-        return True
-    else:
-        return False
+    for pair in correct_inputs_and_outputs:
+        if getEntityById(pair["input"])==pair["output"]:
+            print(True)
     
 
 
 
 
+#TEST 2
 
+correct_inputs_and_outputs=[
+    {"input":     ,
+     "output":       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    ]
 
 def test_getAllJournals():
-    pass
+    for pair in correct_inputs_and_outputs:
+        if getAllJournals(pair["input"])==pair["output"]:
+            print(True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def test_getJournalsWithTitle():
     pass
