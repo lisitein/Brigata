@@ -11,10 +11,14 @@ from baseHandler import *
 correct_inputs_and_outputs=[
     {"input":"1474-1784",
      "output":Journal(id=["1474-1784","1474-1776"])}
-    ("santa-claus", None)
-    ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
-    ("happy-yang", None)
-    ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
+    {"input":"santa-claus", 
+     "output":None}
+    {"input":"2224-9281", 
+     "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)}
+    {"input":"happy-yang", 
+     "output":None}
+    {"input":"2224-9281", 
+     "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)}
     ]
 
 def test_getEntityById(correct_inputs_and_outputs):
@@ -44,20 +48,15 @@ def test_getAllJournals():
         print("Eha... The result of getAllJournals (TEST2) is uncorrect.")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# TEST3
+correct_inputs_and_outputs=[
+    {"input":"Prolíngua",
+     "output":Journal(id=["1474-1784","1474-1776"])}
+    ("santa-claus", None)
+    ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
+    ("happy-yang", None)
+    ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
+    ]
 
 
 def test_getJournalsWithTitle():
@@ -99,3 +98,4 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
