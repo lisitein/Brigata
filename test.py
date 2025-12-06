@@ -92,8 +92,8 @@ def test_getEntityById(correct_inputs_and_outputs):
 
 
 #TEST 2
-def test_getAllJournals(all_journals):
-    if getAllJournals()== correct_inputs_and_outputs:
+def test_getAllJournals(j):
+    if getAllJournals()== j:
         print(True, "Yoho!^^ getAllJournals(TEST2) is True")
     else:
         print(False, "Eha... The result of getAllJournals (TEST2) is uncorrect.")
@@ -222,24 +222,43 @@ def test_getJournalsWithDOAJSeal(j):
 
 
 #TEST 8
-
-def test_getAllCategories():
-    pass
-
-
-
-
+def test_getAllCategories(c):
+    if getAllCategories()== c:
+        print(True, "Yoho!^^ getAllCategories (TEST8) is correct")
+    else:
+        print(False, "Eha... getAllCategories (TEST8) is uncorrect.")
 
 
 #TEST 9
-def test_getAllAreas():
-    pass
+def test_getAllAreas(a):
+    if getAllAreas()== a:
+        print(True, "Yoho!^^ getAllAreas (TEST9) is correct")
+    else:
+        print(False, "Eha... getAllAreas (TEST9) is uncorrect.")
+
+
+
+
+#TEST 10
 
 def test_getCategoriesWithQuartile():
     pass
 
+
+
+
+
+
+#TEST 11
 def test_getCategoriesAssignedToAreas():
     pass
+
+
+
+
+
+
+
 
 def test_getAreasAssignedToCategories():
     pass
@@ -253,6 +272,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
