@@ -258,10 +258,22 @@ def test_getCategoriesAssignedToAreas():
 
 
 
+# Test 12
+inputs = [{c[1]},{c[1],c[12]},{}]
+outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a]
+def test_getAreasAssignedToCategories(inputs):
+    i = 0
+    while i < 3:
+        if getAreasAssignedToCategories(inputs[i]) == outputs[i]:
+            i = i+1
+            print(True,"YOHO^^ for Test12 [i].")
+        else:
+            i = i+1
+            print(False, "Eha... problem occurs in getAreasAssignedToCategories (TEST12), pair[i].")
+    
 
 
-def test_getAreasAssignedToCategories():
-    pass
+
 
 def test_getJournalsInCategoriesWithQuartile():
     pass
@@ -272,6 +284,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
