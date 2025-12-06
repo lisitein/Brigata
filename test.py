@@ -118,7 +118,7 @@ def test_getJournalsWithTitle(correct_inputs_and_outputs):
 #TEST 4
 inputs = ["Universi","University","Universidade","MUS"]
 outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],[j[3]]]
-def test_getJournalsPublishedBy():
+def test_getJournalsPublishedBy(inputs):
     i = 0
     for i < 4:
         if getJournalsPublishedBy(inputs[i]) == outputs[i]:
@@ -127,12 +127,6 @@ def test_getJournalsPublishedBy():
         else:
             i = i+1
             print(False, "Eha... problem occurs in getJournalsPublishedBy (TEST4), pair[i].")
-
-
-
-
-
-
 
 
 
@@ -206,6 +200,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
