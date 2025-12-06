@@ -259,11 +259,11 @@ def test_getCategoriesAssignedToAreas():
 
 
 # Test 12
-inputs = [{c[1]},{c[1],c[12]},{}]
-outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a]
+inputs = [{"Drug Discovery"},{"Drug Discovery","Philosophy"},{"Medicine (miscellaneous)"},]
+outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a,[a[0],a[1],a[5]]]
 def test_getAreasAssignedToCategories(inputs):
     i = 0
-    while i < 3:
+    while i < 4:
         if getAreasAssignedToCategories(inputs[i]) == outputs[i]:
             i = i+1
             print(True,"YOHO^^ for Test12 [i].")
@@ -284,6 +284,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
