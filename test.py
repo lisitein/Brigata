@@ -238,11 +238,28 @@ def test_getAllAreas(a):
 
 
 
-
 #TEST 10
 
-def test_getCategoriesWithQuartile():
-    pass
+correct_inputs_and_outputs=[
+    
+    {"input":{'Q1'},
+     "output": c[0:10]},
+
+    {"input":{},
+     "output":c},
+
+    {"input":{'Q3','Q4'},
+     "output": [c[10], c[11]]},
+
+]
+
+
+def test_getCategoriesWithQuartile(correct_inputs_and_outputs):
+    for pair in correct_inputs_and_outputs:
+    if getCategoriesWithQuartile(pair["input"])==pair["output"]:
+        print(True, "Yoho^^ getCategoriesWithQuartile (TEST10) is correct")
+    else:
+        print(False, "Eha... getCategoriesWithQuartile (TEST10) is uncorrect.")
 
 
 
@@ -250,10 +267,26 @@ def test_getCategoriesWithQuartile():
 
 
 #TEST 11
-def test_getCategoriesAssignedToAreas():
-    pass
 
+correct_inputs_and_outputs=[
+    
+    {"input":{'Medicine'},
+     "output": [c[0], c[1], c[2], c[9], c[10], c[11]]},
 
+    {"input":{},
+     "output":c},
+
+    {"input":{'Medicine','Arts and Humanities'},
+     "output": [c[0], c[1], c[2], c[9], c[10], c[11], c[12]]},
+
+]
+
+def test_getCategoriesAssignedToAreas(correct_inputs_and_outputs):
+    for pair in correct_inputs_and_outputs:
+    if getCategoriesAssignedToAreas(pair["input"])==pair["output"]:
+        print(True, "Yoho^^ getCategoriesAssignedToAreas (TEST11) is correct")
+    else:
+        print(False, "Eha... getCategoriesAssignedToAreas (TEST11) is uncorrect.")
 
 
 
@@ -284,6 +317,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
