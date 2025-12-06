@@ -42,23 +42,25 @@ correct_inputs_and_outputs=[
 
 
 def test_getEntityById(correct_inputs_and_outputs):
+    i = 0
     for pair in correct_inputs_and_outputs:
+        i = i+1
         if getEntityById(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ getEntityById is True")
+            print(True, "Yoho^^ for getEntityById[i]")
         else:
-            print(False, "Eha... The result of test_getEntityById (TEST1) is uncorrect.")
+            print(False, "Eha... The problem occur in test_getEntityById (TEST1), pair[i]")
 
 
 
 #TEST 2
 
 correct_inputs_and_outputs=[
-    Journal(title = "Prolíngua", id = "1983-9979", language = "Portuguese", publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY", apc=True),
+    Journal(title = "Prolíngua", id = "1983-9979", language = "Portuguese", publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False),
     Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"] language = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True),
-    Journal(title = "Enlightening Tourism", id = "2174-548X", language = "English", publisher = "University of Huelva", seal=False, license="CC BY", apc=True),
+    Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", language = "English", publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False),
     Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], language = "English", publisher = "MUS", seal=False, license="CC BY", apc=True),
-    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", language = "Portuguese", publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY", apc=True),
-    Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="CC BY", apc=True)
+    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", language = "Portuguese", publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False),
+    Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True)
     ]
 
 def test_getAllJournals(correct_inputs_and_outputs):
@@ -70,12 +72,27 @@ def test_getAllJournals(correct_inputs_and_outputs):
 
 # TEST3
 correct_inputs_and_outputs=[
+    
     {"input":"Prolíngua",
-     "output":Journal(id=["1474-1784","1474-1776"])}
-    ("santa-claus", None)
-    ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
-    ("happy-yang", None)
-    ("2224-9281", Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True))
+     "output":Journal(title = "Prolíngua", id = "1983-9979", language = "Portuguese", publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False)},
+
+    {"input":"Законності",
+     "output":Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"] language = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)},
+
+    {"input":"happy-Yang",
+     "output":None},
+
+    {"input":"Enlightening Tourism",
+     "output":Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", language = "English", publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False)},
+
+    {"input":"University of Szczecin",
+     "output":Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], language = "English", publisher = "MUS", seal=False, license="CC BY", apc=True)},
+
+    {"input":"Fronteiras",
+     "output":Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", language = "Portuguese", publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False)},
+    
+    {"input":"Semina",
+     "output":Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True)},
     ]
 
 
@@ -118,6 +135,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
