@@ -9,24 +9,44 @@ from baseHandler import *
 #TEST 1
 
 correct_inputs_and_outputs=[
+
     {"input":"1474-1784",
-     "output":Journal(id=["1474-1784","1474-1776"])}
-    {"input":"santa-claus", 
-     "output":None}
-    {"input":"2224-9281", 
+     "output":Journal(id=["1474-1784","1474-1776"])},
+
+    {"input":"santa-claus",
+     "output":None},
+
+    {"input":"2224-9281",
      "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)}
-    {"input":"happy-yang", 
-     "output":None}
-    {"input":"2224-9281", 
-     "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)}
+    
+    {"input":"happy-yang",
+     "output":None},
+    
+    {"input":"2238-8869",
+     "output":Journal(id="2238-8869", title="Fronteiras: Journal of Social, Technological and Environmental Science", languages="Portuguese", publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False)},
+
+    {"input":"Medicine",
+     "output":Area(id="Medicine")},
+
+    {"input":"Biochemistry, Genetics and Molecular Biology",
+     "output":Area(id="Biochemistry, Genetics and Molecular Biology")},
+
+    {"input":"Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+     "output":Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)")},
+    #what about quartile? in the UML it is an attribute of Category class...
+
+    {"input":"Philosophy",
+     "output":Category(id="Philosophy")}
+        
     ]
+
 
 def test_getEntityById(correct_inputs_and_outputs):
     for pair in correct_inputs_and_outputs:
         if getEntityById(pair["input"])==pair["output"]:
-            print("Yoho^^ getEntityById is True")
+            print(True, "Yoho^^ getEntityById is True")
         else:
-            print("Eha... The result of test_getEntityById (TEST1) is uncorrect.")
+            print(False, "Eha... The result of test_getEntityById (TEST1) is uncorrect.")
 
 
 
@@ -41,11 +61,11 @@ correct_inputs_and_outputs=[
     Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="CC BY", apc=True),
     ]
 
-def test_getAllJournals():
+def test_getAllJournals(correct_inputs_and_outputs):
     if getAllJournals()== correct_inputs_and_outputs:
-        print("Yoho!^^ getAllJournals is True")
+        print(True, "Yoho!^^ getAllJournals is True")
     else:
-        print("Eha... The result of getAllJournals (TEST2) is uncorrect.")
+        print(False, "Eha... The result of getAllJournals (TEST2) is uncorrect.")
 
 
 # TEST3
@@ -98,4 +118,5 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
