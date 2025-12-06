@@ -140,11 +140,44 @@ def test_getJournalsPublishedBy():
 
 #TEST 5
 
-def test_getJournalsWithLicense():
-    pass
+correct_inputs_and_outputs=[
+    
+    {"input":"CC BY-NC-SA",
+     "output": [j[0]]},
+
+    {"input":"CC BY",
+     "output": [j[1],j[3]]},
+
+    {"input":"Publisher's own license",
+     "output": [j[5]]},
+
+    {"input":"CHI CHI",
+     "output": None},
+
+]
+
+def test_getJournalsWithLicense(correct_inputs_and_outputs):
+    for pair in correct_inputs_and_outputs:
+    if getJournalsWithLicense(pair["input"])==pair["output"]:
+        print(True, "Yoho^^ getJournalsWithLicense (TEST5) is correct")
+    else:
+        print(False, "Eha... getJournalsWithLicense (TEST5) is uncorrect.")
+
+
+
+#TEST 6
 
 def test_getJournalsWithAPC():
     pass
+
+
+
+
+
+
+
+
+#TEST 7
 
 def test_getJournalsWithDOAJSeal():
     pass
@@ -173,6 +206,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
