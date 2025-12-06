@@ -161,24 +161,45 @@ def test_getJournalsWithLicense(correct_inputs_and_outputs):
 
 #TEST 6
 
-def test_getJournalsWithAPC():
-    pass
-
-
-
-
-
+def test_getJournalsWithAPC(j):
+    result=[]
+    for elem in j:
+        if elem.apc==True:
+            result.append(elem)
+    if getJournalsWithAPC()==result:
+        print(True, "Yoho^^ getJournalsWithAPC (TEST6) is correct")
+    else:
+        print(False, "Eha... getJournalsWithAPC (TEST6) is uncorrect.")
+    
 
 
 
 #TEST 7
 
-def test_getJournalsWithDOAJSeal():
-    pass
+def test_getJournalsWithDOAJSeal(j):
+    result=[]
+    for elem in j:
+        if elem.seal==True:
+            result.append(elem)
+    if getJournalsWithDOAJSeal()==result:
+        print(True, "Yoho^^ getJournalsWithDOAJSeal (TEST7) is correct")
+    else:
+        print(False, "Eha... getJournalsWithDOAJSeal (TEST7) is uncorrect.")
+
+
+
+
+#TEST 8
 
 def test_getAllCategories():
     pass
 
+
+
+
+
+
+#TEST 9
 def test_getAllAreas():
     pass
 
@@ -200,6 +221,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
