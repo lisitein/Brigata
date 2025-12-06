@@ -116,11 +116,11 @@ def test_getJournalsWithTitle(correct_inputs_and_outputs):
 
 
 #TEST 4
-inputs = ["Universi","University","Universidade","MUS"]
-outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],[j[3]]]
+inputs = ["Universi","University","Universidade","happy Yang","MUS","de Anápolis"]
+outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],None, [j[3]],[j[4]]]
 def test_getJournalsPublishedBy(inputs):
     i = 0
-    for i < 4:
+    for i <6:
         if getJournalsPublishedBy(inputs[i]) == outputs[i]:
             i = i+1
             print(True, "Yoho^^ for TEST4, [i]") 
@@ -221,6 +221,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
