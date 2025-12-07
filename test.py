@@ -13,7 +13,6 @@ j=[
     Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True)
     ]
 
-
 a=[
     Area(id="Medicine");
     Area(id="Pharmacology, Toxicology and Pharmaceutics");
@@ -23,7 +22,6 @@ a=[
     Area(id="Biochemistry, Genetics and Molecular Biology");
     Area(id="Arts and Humanities");
 ]
-
 
 c=[
     Category(id="Drug Discovery", quartile="Q1"),
@@ -41,14 +39,9 @@ c=[
     Category(id="Philosophy")
 ]
 
-
-
-
-
 #TEST 1
-
-correct_inputs_and_outputs=[
-
+def test_getEntityById():
+    correct_inputs_and_outputs=[
     {"input":"1474-1784",
      "output":Journal(id=["1474-1784","1474-1776"])},
 
@@ -76,11 +69,7 @@ correct_inputs_and_outputs=[
 
     {"input":"Philosophy",
      "output":Category(id="Philosophy")}
-        
     ]
-
-
-def test_getEntityById(correct_inputs_and_outputs):
     i = 0
     for pair in correct_inputs_and_outputs:
         i = i+1
@@ -89,8 +78,6 @@ def test_getEntityById(correct_inputs_and_outputs):
         else:
             print(False, "Eha... The problem occurs in test_getEntityById (TEST1), pair[i]")
 
-
-
 #TEST 2
 def test_getAllJournals(j):
     if getAllJournals()== j:
@@ -98,11 +85,9 @@ def test_getAllJournals(j):
     else:
         print(False, "Eha... The result of getAllJournals (TEST2) is uncorrect.")
 
-
 # TEST3
-
-correct_inputs_and_outputs=[
-    
+def test_getJournalsWithTitle():
+    correct_inputs_and_outputs=[
     {"input":"Prolíngua",
      "output":[Journal(title = "Prolíngua", id = "1983-9979", language = "Portuguese", publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False)]},
 
@@ -133,11 +118,7 @@ correct_inputs_and_outputs=[
 
     {"input":"Semina: Ciências Agrárias",
      "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], language = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="CC BY", apc=True)]}
-
-]
-
-
-def test_getJournalsWithTitle(correct_inputs_and_outputs):
+    ]
     i = 0
     for pair in correct_inputs_and_outputs:
         i = i+1
@@ -146,11 +127,10 @@ def test_getJournalsWithTitle(correct_inputs_and_outputs):
         else:
             print(False, "Eha... problem occurs in getJournalsWithTitle (TEST3), pair[i].")
 
-
 #TEST 4
-inputs = ["Universi","University","Universidade","happy Yang","MUS","de Anápolis"]
-outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],None, [j[3]],[j[4]]]
-def test_getJournalsPublishedBy(inputs):
+def test_getJournalsPublishedBy():
+    inputs = ["Universi","University","Universidade","happy Yang","MUS","de Anápolis"]
+    outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],None, [j[3]],[j[4]]]
     i = 0
     for i <6:
         if getJournalsPublishedBy(inputs[i]) == outputs[i]:
@@ -160,14 +140,9 @@ def test_getJournalsPublishedBy(inputs):
             i = i+1
             print(False, "Eha... problem occurs in getJournalsPublishedBy (TEST4), pair[i].")
 
-
-
-
-
 #TEST 5
-
-correct_inputs_and_outputs=[
-    
+def test_getJournalsWithLicense():
+    correct_inputs_and_outputs=[
     {"input":"CC BY-NC-SA",
      "output": [j[0]]},
 
@@ -179,20 +154,14 @@ correct_inputs_and_outputs=[
 
     {"input":"CHI CHI",
      "output": None},
-
-]
-
-def test_getJournalsWithLicense(correct_inputs_and_outputs):
+    ]
     for pair in correct_inputs_and_outputs:
     if getJournalsWithLicense(pair["input"])==pair["output"]:
         print(True, "Yoho^^ getJournalsWithLicense (TEST5) is correct")
     else:
         print(False, "Eha... getJournalsWithLicense (TEST5) is uncorrect.")
 
-
-
 #TEST 6
-
 def test_getJournalsWithAPC(j):
     result=[]
     for elem in j:
@@ -203,11 +172,7 @@ def test_getJournalsWithAPC(j):
     else:
         print(False, "Eha... getJournalsWithAPC (TEST6) is uncorrect.")
     
-
-
-
 #TEST 7
-
 def test_getJournalsWithDOAJSeal(j):
     result=[]
     for elem in j:
@@ -218,16 +183,12 @@ def test_getJournalsWithDOAJSeal(j):
     else:
         print(False, "Eha... getJournalsWithDOAJSeal (TEST7) is uncorrect.")
 
-
-
-
 #TEST 8
 def test_getAllCategories(c):
     if getAllCategories()== c:
         print(True, "Yoho!^^ getAllCategories (TEST8) is correct")
     else:
         print(False, "Eha... getAllCategories (TEST8) is uncorrect.")
-
 
 #TEST 9
 def test_getAllAreas(a):
@@ -236,12 +197,9 @@ def test_getAllAreas(a):
     else:
         print(False, "Eha... getAllAreas (TEST9) is uncorrect.")
 
-
-
 #TEST 10
-
-correct_inputs_and_outputs=[
-    
+def test_getCategoriesWithQuartile():
+    correct_inputs_and_outputs=[
     {"input":{'Q1'},
      "output": c[0:10]},
 
@@ -250,26 +208,16 @@ correct_inputs_and_outputs=[
 
     {"input":{'Q3','Q4'},
      "output": [c[10], c[11]]},
-
-]
-
-
-def test_getCategoriesWithQuartile(correct_inputs_and_outputs):
+    ]
     for pair in correct_inputs_and_outputs:
     if getCategoriesWithQuartile(pair["input"])==pair["output"]:
         print(True, "Yoho^^ getCategoriesWithQuartile (TEST10) is correct")
     else:
         print(False, "Eha... getCategoriesWithQuartile (TEST10) is uncorrect.")
 
-
-
-
-
-
 #TEST 11
-
-correct_inputs_and_outputs=[
-    
+def test_getCategoriesAssignedToAreas():
+    correct_inputs_and_outputs=[
     {"input":{'Medicine'},
      "output": [c[0], c[1], c[2], c[9], c[10], c[11]]},
 
@@ -278,23 +226,17 @@ correct_inputs_and_outputs=[
 
     {"input":{'Medicine','Arts and Humanities'},
      "output": [c[0], c[1], c[2], c[9], c[10], c[11], c[12]]},
-
-]
-
-def test_getCategoriesAssignedToAreas(correct_inputs_and_outputs):
+    ]
     for pair in correct_inputs_and_outputs:
     if getCategoriesAssignedToAreas(pair["input"])==pair["output"]:
         print(True, "Yoho^^ getCategoriesAssignedToAreas (TEST11) is correct")
     else:
         print(False, "Eha... getCategoriesAssignedToAreas (TEST11) is uncorrect.")
 
-
-
-
 # Test 12
-inputs = [{"Drug Discovery"},{"Drug Discovery","Philosophy"},{"Medicine (miscellaneous)"},]
-outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a,[a[0],a[1],a[5]]]
-def test_getAreasAssignedToCategories(inputs):
+def test_getAreasAssignedToCategories():
+    inputs = [{"Drug Discovery"},{"Drug Discovery","Philosophy"},{"Medicine (miscellaneous)"},]
+    outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a,[a[0],a[1],a[5]]]
     i = 0
     while i < 4:
         if getAreasAssignedToCategories(inputs[i]) == outputs[i]:
@@ -303,11 +245,8 @@ def test_getAreasAssignedToCategories(inputs):
         else:
             i = i+1
             print(False, "Eha... problem occurs in getAreasAssignedToCategories (TEST12), pair[i].")
-    
 
-
-
-
+#Test 13
 def test_getJournalsInCategoriesWithQuartile():
     pass
 
@@ -317,6 +256,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
