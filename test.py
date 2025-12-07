@@ -20,7 +20,7 @@ a=[
     Area(id="Energy");
     Area(id="Materials Science");
     Area(id="Biochemistry, Genetics and Molecular Biology");
-    Area(id="Arts and Humanities");
+    Area(id="Arts and Humanities")
 ]
 
 c=[
@@ -256,6 +256,7 @@ def test_getJournalsInAreasWithLicense():
 def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
     pass
+
 
 
 
