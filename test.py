@@ -259,17 +259,17 @@ def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# We call the functions:
+test_getEntityById()
+test_getAllJournals(j)
+test_getJournalsWithTitle()
+test_getJournalsPublishedBy()
+test_getJournalsWithLicense()
+test_getJournalsWithAPC(j)
+test_getJournalsWithDOAJSeal(j)
+test_getAllCategories(c)
+test_getAllAreas(a)
+test_getCategoriesWithQuartile()
+test_getCategoriesAssignedToAreas()
+test_getAreasAssignedToCategories()
 
