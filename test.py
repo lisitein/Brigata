@@ -88,9 +88,9 @@ def test_getEntityById():
     for pair in correct_inputs_and_outputs:
         i = i+1
         if engine.getEntityById(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ for Test1, [i]")
+            print(True, "Yoho^^ for Test1",[i])
         else:
-            print(False, "Eha... The problem occurs in test_getEntityById (TEST1), pair[i]")
+            print(False, "Eha... The problem occurs in test_getEntityById (TEST1), pair",[i])
 
 #TEST 2
 def test_getAllJournals(j):
@@ -137,9 +137,9 @@ def test_getJournalsWithTitle():
     for pair in correct_inputs_and_outputs:
         i = i+1
         if engine.getJournalsWithTitle(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ for TEST3, [i]")
+            print(True, "Yoho^^ for TEST3",[i])
         else:
-            print(False, "Eha... problem occurs in getJournalsWithTitle (TEST3), pair[i].")
+            print(False, "Eha... problem occurs in getJournalsWithTitle (TEST3), pair",[i])
 
 #TEST 4
 def test_getJournalsPublishedBy():
@@ -149,10 +149,10 @@ def test_getJournalsPublishedBy():
     while i < 6 :
         if engine.getJournalsPublishedBy(inputs[i]) == outputs[i]:
             i = i+1
-            print(True, "Yoho^^ for TEST4, [i]") 
+            print(True, "Yoho^^ for TEST4", [i]) 
         else:
             i = i+1
-            print(False, "Eha... problem occurs in getJournalsPublishedBy (TEST4), pair[i].")
+            print(False, "Eha... problem occurs in getJournalsPublishedBy (TEST4), pair",[i])
 
 #TEST 5
 def test_getJournalsWithLicense():
@@ -255,10 +255,10 @@ def test_getAreasAssignedToCategories():
     while i < 4:
         if engine.getAreasAssignedToCategories(inputs[i]) == outputs[i]:
             i = i+1
-            print(True,"YOHO^^ for Test12 [i].")
+            print(True,"YOHO^^ for Test12",[i])
         else:
             i = i+1
-            print(False, "Eha... problem occurs in getAreasAssignedToCategories (TEST12), pair[i].")
+            print(False, "Eha... problem occurs in getAreasAssignedToCategories (TEST12), pair"[i])
 
 #Test 13
 def test_getJournalsInCategoriesWithQuartile():
@@ -286,4 +286,3 @@ test_getAllAreas(a)
 test_getCategoriesWithQuartile()
 test_getCategoriesAssignedToAreas()
 test_getAreasAssignedToCategories()
-
