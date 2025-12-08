@@ -4,6 +4,9 @@ from li import *
 from Yang import *
 from baseHandler import *
 
+#We initialize a FullQueryEngine instance:
+engine = FullQueryEngine()
+
 
 
 a= [
@@ -84,14 +87,14 @@ def test_getEntityById():
     i = 0
     for pair in correct_inputs_and_outputs:
         i = i+1
-        if getEntityById(pair["input"])==pair["output"]:
+        if engine.getEntityById(pair["input"])==pair["output"]:
             print(True, "Yoho^^ for Test1, [i]")
         else:
             print(False, "Eha... The problem occurs in test_getEntityById (TEST1), pair[i]")
 
 #TEST 2
 def test_getAllJournals(j):
-    if getAllJournals()== j:
+    if engine.getAllJournals()== j:
         print(True, "Yoho!^^ getAllJournals(TEST2) is True")
     else:
         print(False, "Eha... The result of getAllJournals (TEST2) is uncorrect.")
@@ -133,7 +136,7 @@ def test_getJournalsWithTitle():
     i = 0
     for pair in correct_inputs_and_outputs:
         i = i+1
-        if getJournalsWithTitle(pair["input"])==pair["output"]:
+        if engine.getJournalsWithTitle(pair["input"])==pair["output"]:
             print(True, "Yoho^^ for TEST3, [i]")
         else:
             print(False, "Eha... problem occurs in getJournalsWithTitle (TEST3), pair[i].")
@@ -144,7 +147,7 @@ def test_getJournalsPublishedBy():
     outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],None, [j[3]],[j[4]]]
     i = 0
     while i < 6 :
-        if getJournalsPublishedBy(inputs[i]) == outputs[i]:
+        if engine.getJournalsPublishedBy(inputs[i]) == outputs[i]:
             i = i+1
             print(True, "Yoho^^ for TEST4, [i]") 
         else:
@@ -167,7 +170,7 @@ def test_getJournalsWithLicense():
      "output": None},
     ]
     for pair in correct_inputs_and_outputs:
-        if getJournalsWithLicense(pair["input"])==pair["output"]:
+        if engine.getJournalsWithLicense(pair["input"])==pair["output"]:
             print(True, "Yoho^^ getJournalsWithLicense (TEST5) is correct")
         else:
             print(False, "Eha... getJournalsWithLicense (TEST5) is uncorrect.")
@@ -178,7 +181,7 @@ def test_getJournalsWithAPC(j):
     for elem in j:
         if elem.apc==True:
             result.append(elem)
-    if getJournalsWithAPC()==result:
+    if engine.getJournalsWithAPC()==result:
         print(True, "Yoho^^ getJournalsWithAPC (TEST6) is correct")
     else:
         print(False, "Eha... getJournalsWithAPC (TEST6) is uncorrect.")
@@ -189,21 +192,21 @@ def test_getJournalsWithDOAJSeal(j):
     for elem in j:
         if elem.seal==True:
             result.append(elem)
-    if getJournalsWithDOAJSeal()==result:
+    if engine.getJournalsWithDOAJSeal()==result:
         print(True, "Yoho^^ getJournalsWithDOAJSeal (TEST7) is correct")
     else:
         print(False, "Eha... getJournalsWithDOAJSeal (TEST7) is uncorrect.")
 
 #TEST 8
 def test_getAllCategories(c):
-    if getAllCategories()== c:
+    if engine.getAllCategories()== c:
         print(True, "Yoho!^^ getAllCategories (TEST8) is correct")
     else:
         print(False, "Eha... getAllCategories (TEST8) is uncorrect.")
 
 #TEST 9
 def test_getAllAreas(a):
-    if getAllAreas()== a:
+    if engine.getAllAreas()== a:
         print(True, "Yoho!^^ getAllAreas (TEST9) is correct")
     else:
         print(False, "Eha... getAllAreas (TEST9) is uncorrect.")
@@ -221,7 +224,7 @@ def test_getCategoriesWithQuartile():
      "output": [c[10], c[11]]},
     ]
     for pair in correct_inputs_and_outputs:
-        if getCategoriesWithQuartile(pair["input"])==pair["output"]:
+        if engine.getCategoriesWithQuartile(pair["input"])==pair["output"]:
             print(True, "Yoho^^ getCategoriesWithQuartile (TEST10) is correct")
         else:
             print(False, "Eha... getCategoriesWithQuartile (TEST10) is uncorrect.")
@@ -239,7 +242,7 @@ def test_getCategoriesAssignedToAreas():
      "output": [c[0], c[1], c[2], c[9], c[10], c[11], c[12]]},
     ]
     for pair in correct_inputs_and_outputs:
-        if getCategoriesAssignedToAreas(pair["input"])==pair["output"]:
+        if engine.getCategoriesAssignedToAreas(pair["input"])==pair["output"]:
             print(True, "Yoho^^ getCategoriesAssignedToAreas (TEST11) is correct")
         else:
             print(False, "Eha... getCategoriesAssignedToAreas (TEST11) is uncorrect.")
@@ -250,7 +253,7 @@ def test_getAreasAssignedToCategories():
     outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a,[a[0],a[1],a[5]]]
     i = 0
     while i < 4:
-        if getAreasAssignedToCategories(inputs[i]) == outputs[i]:
+        if engine.getAreasAssignedToCategories(inputs[i]) == outputs[i]:
             i = i+1
             print(True,"YOHO^^ for Test12 [i].")
         else:
@@ -283,5 +286,4 @@ test_getAllAreas(a)
 test_getCategoriesWithQuartile()
 test_getCategoriesAssignedToAreas()
 test_getAreasAssignedToCategories()
-
 
