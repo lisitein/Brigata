@@ -5,12 +5,12 @@ from Yang import *
 from baseHandler import *
 
 j= [
-    Journal(title = "Prolíngua", id = "1983-9979", languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False),
-    Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], languages = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True),
-    Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False),
-    Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True),
-    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", language = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False),
-    Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True)
+    Journal(title = "Prolíngua", id = "1983-9979", languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], languages = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
+    Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
+    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", language = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[])
     ]
 
 a= [
@@ -49,13 +49,13 @@ def test_getEntityById():
      "output":None},
 
     {"input":"2224-9281",
-     "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)},
+     "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])},
     
     {"input":"happy-yang",
      "output":None},
     
     {"input":"2238-8869",
-     "output":Journal(id="2238-8869", title="Fronteiras: Journal of Social, Technological and Environmental Science", languages=["Portuguese"], publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False)},
+     "output":Journal(id="2238-8869", title="Fronteiras: Journal of Social, Technological and Environmental Science", languages=["Portuguese"], publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[])},
 
     {"input":"Medicine",
      "output":Area(id="Medicine")},
@@ -89,35 +89,35 @@ def test_getAllJournals(j):
 def test_getJournalsWithTitle():
     correct_inputs_and_outputs=[
     {"input":"Prolíngua",
-     "output":[Journal(title = "Prolíngua", id = "1983-9979", languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False)]},
+     "output":[Journal(title = "Prolíngua", id = "1983-9979", languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[])]},
 
     {"input":"Законності",
-     "output":[Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], language = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True)]},
+     "output":[Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], language = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
 
     {"input":"happy-Yang",
      "output":None},
 
     {"input":"Enlightening Tourism",
-     "output":[Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False)]},
+     "output":[Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[])]},
 
     {"input":"University of Szczecin",
-     "output":[Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True)]},
+     "output":[Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
 
     {"input":"Fronteiras",
-     "output":[Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False)]},
+     "output":[Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[])]},
     
     {"input":"Semina",
-     "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True)]},
+     "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[])]},
 
     {"input":"Enlightening",
-     "output":[Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY", apc=True)]},
+     "output":[Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
 
     {"input":"Scien",
-     "output":[Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True),
-               Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY", apc=True)]},
+     "output":[Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
+               Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
 
     {"input":"Semina: Ciências Agrárias",
-     "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="CC BY", apc=True)]}
+     "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]}
     ]
     i = 0
     for pair in correct_inputs_and_outputs:
@@ -272,4 +272,5 @@ test_getAllAreas(a)
 test_getCategoriesWithQuartile()
 test_getCategoriesAssignedToAreas()
 test_getAreasAssignedToCategories()
+
 
