@@ -38,14 +38,14 @@ j= [
     Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], languages = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[c[12]], hasArea=[a[6]]),
     Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = ["2174-548X"], languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
     Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
-    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = ["2238-8869"], language = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = ["2238-8869"], languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
     Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[]),
 
-    Journal(title = "", id = ["1474-1784","1474-1776"], languages = [], seal=False, license="", apc=False, hasCategory=[c[0],c[1],c[2]], hasArea=[a[0],a[1]]),
-    Journal(title = "", id = ["1944-7981","0002-8282"], languages = [], seal=False, license="", apc=False, hasCategory=[c[3]], hasArea=[a[2]]),
-    Journal(title = "", id = ["2058-8437"], languages = [], seal=False, license="", apc=False, hasCategory=c[4:9], hasArea=[a[3],a[4]]),
-    Journal(title = "", id = ["1546-170X","1078-8956"], languages = [], seal=False, license="", apc=False, hasCategory=[c[9],c[1]], hasArea=[a[5],a[0]]),
-    Journal(title = "", id = ["0065-2598","2214-8019"], languages = [], seal=False, license="", apc=False, hasCategory=[c[10],c[11]], hasArea=[a[5],a[0]])
+    Journal(title = "", id = ["1474-1784","1474-1776"], languages = [],publisher = [], seal=False, license="", apc=False, hasCategory=[c[0],c[1],c[2]], hasArea=[a[0],a[1]]),
+    Journal(title = "", id = ["1944-7981","0002-8282"], languages = [], publisher = [], seal=False, license="", apc=False, hasCategory=[c[3]], hasArea=[a[2]]),
+    Journal(title = "", id = ["2058-8437"], languages = [], seal=False, publisher = [], license="", apc=False, hasCategory=c[4:9], hasArea=[a[3],a[4]]),
+    Journal(title = "", id = ["1546-170X","1078-8956"], languages = [], publisher = [], seal=False, license="", apc=False, hasCategory=[c[9],c[1]], hasArea=[a[5],a[0]]),
+    Journal(title = "", id = ["0065-2598","2214-8019"], languages = [], publisher = [], seal=False, license="", apc=False, hasCategory=[c[10],c[11]], hasArea=[a[5],a[0]])
     ]
 
 
@@ -54,7 +54,7 @@ j= [
 def test_getEntityById():
     correct_inputs_and_outputs=[
     {"input":"1474-1784",
-     "output":Journal(id=["1474-1784","1474-1776"])},
+     "output":j[6]},
 
     {"input":"santa-claus",
      "output":None},
