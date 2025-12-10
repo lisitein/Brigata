@@ -305,13 +305,11 @@ class FullQueryEngine(BasicQueryEngine):
             df = h.getAllAssignments()
             if df.empty:
                 continue
-
-            if category_ids:
-                df = df[df["category_id"].isins(category_ids)]
-            if quartiles:
-                df = df[df["quartile"].isin(quartiles)]
-
-            all_ids.update(df["id"].dropna().tolist())
+                
+                if category_ids:
+                    df = df[df["category_id"].isin(category_ids)]
+                    if quartiles:
+                        df = df[df["quartile"].isin(quartiles)]
 
         if not all_ids:
             return []
@@ -353,9 +351,10 @@ class FullQueryEngine(BasicQueryEngine):
             df_j = h.getJournalsWithLicense(licenses)
             if df_j.empty:
                 continue
-            mask = df_j["id"].isins(all_ids)
+                
+            mask = df_j["id"].isin(all_ids)
             result.extend(self._makeJournals(df_j[mask]))
-
+            
         return result
         
     def getDiamondJournalsInAreasAndCategoriesWithQuartile(
