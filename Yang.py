@@ -22,6 +22,7 @@ class QueryHandler(ABC):
 
 class JournalQueryHandler(QueryHandler):
     def getById(self, journal_id: str) -> pd.DataFrame:
+        print("function getById by Yang started")
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = f"""
         PREFIX : <http://Brigata.github.org/journal/>
@@ -38,6 +39,7 @@ class JournalQueryHandler(QueryHandler):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
+        print("These are the results produced by Yang:\n", results)
         data = [{
             "id": journal_id,
             "title": r["title"]["value"],
@@ -46,8 +48,13 @@ class JournalQueryHandler(QueryHandler):
             "apc": r["apc"]["value"]
         } for r in results["results"]["bindings"]]
         
+        print ("query done!")
+
         if not data:
+            print("I did not find any data!!!")
             return pd.DataFrame(columns=["id", "title", "publisher", "license", "apc"])
+        
+        print('\nThis is the dataframe Yang returns:\n', pd.DataFrame(data))
         return pd.DataFrame(data)
 
     def getAllJournals(self) -> pd.DataFrame:
@@ -240,8 +247,11 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data) if data else pd.DataFrame(columns=["id","title","publisher","seal"])
 
 class CategoryQueryHandler(QueryHandler):
+    # Yang you should search not just category but also those areas id toooooooo-------
     def getById(self, category_id: str) -> pd.DataFrame:
+        print("function getById by Yang started")
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        print("engine created")
         query = """
         SELECT i.id AS id, i.quartile AS quartile
         FROM IdentifiableEntity i
@@ -361,3 +371,30 @@ class CategoryQueryHandler(QueryHandler):
         """
         df = pd.read_sql(query, engine)
         return df if not df.empty else pd.DataFrame(columns=["area","identifiers"])
+
+# li 6.12
+    def getAllAssignments(self) -> pd.DataFrame:
+        """
+        Return a DataFrame where each row is a (journal, category, area) assignment.
+        Required columns (for laura.py):
+          - id           : external journal identifier (ISSN/EISSN)
+          - category_id  : category name
+          - quartile     : quartile of that category for that journal
+          - area_id      : area name
+        """
+        db_path = self.getDbPathOrUrl()
+        engine = create_engine(f"sqlite:///{db_path}")
+
+        query = """
+        SELECT
+            j.id AS id,             -- journal external id
+            c.id AS category_id,    -- category name
+            c.quartile AS quartile, -- category quartile
+            a.id AS area_id         -- area name
+        FROM HasCategory hc
+        JOIN IdentifiableEntity c ON c.internalId = hc.categoryId
+        JOIN IdentifiableEntity j ON j.internalId = hc.journalId
+        JOIN HasArea ha           ON ha.journalId  = hc.journalId
+        JOIN IdentifiableEntity a ON a.internalId  = ha.areaId
+        """
+        return pd.read_sql(query, engine)

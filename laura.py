@@ -1,5 +1,8 @@
 from typing import List, Set, Optional, Union
-
+from daniele import *
+from li import *
+from Yang import *
+from baseHandler import *
 import pandas as pd
 
 
@@ -18,9 +21,13 @@ class IdentifiableEntity:
     def getIds(self) -> Set[str]:
         """Default: a single identifier."""
         return {self.id}
+
+
 class Area(IdentifiableEntity):
     """Simple identifiable Area."""
     pass
+
+
 class Category(IdentifiableEntity):
     def __init__(self, id: str, quartile: Optional[str] = None):
         super().__init__(id)
@@ -28,6 +35,8 @@ class Category(IdentifiableEntity):
 
     def getQuartile(self) -> Optional[str]:
         return self.quartile
+
+
 class Journal(IdentifiableEntity):
     def __init__(
         self,
@@ -205,16 +214,23 @@ class BasicQueryEngine:
         Look up an entity by id across all handlers.
         Returns a Journal, Category, Area, or None.
         """
+        print("\n\nGetEntityById function STARTED!!!")
+        print("journalhandlers:", self.journalHandlers)
         # Search among Journals
-        for h in self.journalHandlers:
-            df = h.getById(id)
-            if not df.empty:
-                # assume unique id → one row
-                return self._makeJournals(df)[0]
+        # for h in self.journalHandlers:
+        #     print("I am searching in the graph database...")
+        #     df = h.getById(id)
+        #     print("This is the dataframe I get:", df)
+        #     if not df.empty:
+        #         # assume unique id → one row
+        #         return self._makeJournals(df)[0]
 
-        # Search among Categories and Areas
+        # Search among ategories and Areas
         for h in self.categoryHandlers:
+            print("I am searching in the relational database...") 
+            print("I am using this category query handler:", h)
             df = h.getById(id)
+            print("\nThis is the dataframe Laura gets:\n", df)
             if df.empty:
                 continue
 
@@ -225,7 +241,8 @@ class BasicQueryEngine:
             if "area_id" in df.columns:
                 row = df.iloc[0]
                 return Area(row["area_id"])
-
+            
+        print("I didn't get inside any for loop, so I will obviously return None")
         return None
 
     def getCategoriesAssignedToAreas(self, areas: Set[str]) -> List[Category]:
@@ -371,10 +388,12 @@ class FullQueryEngine(BasicQueryEngine):
 
     def getDiamondJournalsInAreasAndCategoriesWithQuartile(
         self,
-        areas: Set[str],
+        area_ids: Set[str],
         category_ids: Set[str],
         quartiles: Set[str],
     ) -> List[Journal]:
+        areas = area_ids
+        categories = category_ids
         """
         Diamond journals (no APC) that are:
         - in one of the given areas

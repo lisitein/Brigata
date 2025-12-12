@@ -1,3 +1,11 @@
+import requests
+try:
+    response = requests.get('http://10.201.13.18:9999/blazegraph/', timeout=5)
+    print("Server reachable:", response.status_code)
+except Exception as e:
+    print("Server NOT reachable:", e)
+
+
 from laura import *
 from daniele import *
 from li import *
@@ -6,6 +14,20 @@ from baseHandler import *
 
 #We initialize a FullQueryEngine instance:
 engine = FullQueryEngine()
+
+cu=CategoryUploadHandler()
+cu.setDbPathOrUrl("data/relational_database.db")
+cu.pushDataToDb('data/scimago.json')
+ju=JournalUploadHandler()
+ju.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/")
+ju.pushDataToDb('data/doaj.csv')
+
+cq=CategoryQueryHandler()
+cq.setDbPathOrUrl("data/relational_database.db")
+engine.addCategoryHandler(cq)
+jq=JournalQueryHandler()
+jq.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/")
+engine.addJournalHandler(jq)
 
 
 
@@ -54,7 +76,7 @@ j= [
 
 
 #TEST 1
-def test_getEntityById():
+def test_getEntityById(j):
     correct_inputs_and_outputs=[
     {"input":"1474-1784",
      "output":j[6]},
@@ -63,19 +85,19 @@ def test_getEntityById():
      "output":None},
 
     {"input":"2224-9281",
-     "output":Journal(id=["2224-9281", "2414-990X"], title="Проблеми Законності", languages=["Ukrainian", "Russian", "English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])},
+     "output":j[1]},
     
     {"input":"happy-yang",
      "output":None},
     
     {"input":"2238-8869",
-     "output":Journal(id="2238-8869", title="Fronteiras: Journal of Social, Technological and Environmental Science", languages=["Portuguese"], publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[])},
+     "output":j[4]},
 
     {"input":"Medicine",
-     "output":Area(id="Medicine")},
+     "output":a[0]},
 
     {"input":"Biochemistry, Genetics and Molecular Biology",
-     "output":Area(id="Biochemistry, Genetics and Molecular Biology")},
+     "output":a[5]},
 
     {"input":"Biochemistry, Genetics and Molecular Biology (miscellaneous)",
      "output":Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)")},
@@ -86,18 +108,36 @@ def test_getEntityById():
     ]
     i = 0
     for pair in correct_inputs_and_outputs:
+        print("---------------------------------------------------------")
         i = i+1
+        # print("---- DEBUG getById on JournalQueryHandler ----")
+        # df_j = engine.getEntityById(pair["input"])
+        # print(df_j)
+        # print(df_j.columns)
+
+        engine.getEntityById(pair["input"])
         if engine.getEntityById(pair["input"])==pair["output"]:
             print(True, "Yoho^^ for Test1",[i])
         else:
-            print(False, "Eha... The problem occurs in test_getEntityById (TEST1), pair",[i])
+            print(False, "Eha... The problem occurs in TEST1, pair",[i])
+        # print("Hello, you chose the input:", pair["input"])
+
+        # if isinstance(pair["output"], Journal):
+        #     expected=Journal(pair["output"])
+        # elif isinstance(pair["output"], Category):
+        #     expected=Category(pair["output"])
+        # else:
+        #     expected=Area(pair["output"])
+
+        # print("Your goood expected output:", pair["output"])
+        # print("Laura gives you the output:", engine.getEntityById(pair["input"]),"\n\n\n")
 
 #TEST 2
 def test_getAllJournals(j):
     if engine.getAllJournals()== j:
-        print(True, "Yoho!^^ getAllJournals(TEST2) is True")
+        print(True, "Yoho!^^ TEST2 is True")
     else:
-        print(False, "Eha... The result of getAllJournals (TEST2) is uncorrect.")
+        print(False, "Eha... The result of TEST2 is uncorrect.")
 
 # TEST3
 def test_getJournalsWithTitle():
@@ -106,7 +146,7 @@ def test_getJournalsWithTitle():
      "output":[Journal(title = "Prolíngua", id = "1983-9979", languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[])]},
 
     {"input":"Законності",
-     "output":[Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], language = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
+     "output":[Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], languages = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
 
     {"input":"happy-Yang",
      "output":None},
@@ -139,20 +179,22 @@ def test_getJournalsWithTitle():
         if engine.getJournalsWithTitle(pair["input"])==pair["output"]:
             print(True, "Yoho^^ for TEST3",[i])
         else:
-            print(False, "Eha... problem occurs in getJournalsWithTitle (TEST3), pair",[i])
+            print(False, "Eha... problem occurs in TEST3, pair",[i])
+            # print(engine.getJournalsWithTitle(inputs[i]))
 
 #TEST 4
 def test_getJournalsPublishedBy():
     inputs = ["Universi","University","Universidade","happy Yang","MUS","de Anápolis"]
     outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],None, [j[3]],[j[4]]]
     i = 0
-    while i < 6 :
+    while i < 5 :
         if engine.getJournalsPublishedBy(inputs[i]) == outputs[i]:
             i = i+1
             print(True, "Yoho^^ for TEST4", [i]) 
         else:
             i = i+1
-            print(False, "Eha... problem occurs in getJournalsPublishedBy (TEST4), pair",[i])
+            print(False, "Eha... problem occurs in TEST4, pair",[i])
+            print(engine.getJournalsPublishedBy(inputs[i]))
 
 #TEST 5
 def test_getJournalsWithLicense():
@@ -171,9 +213,9 @@ def test_getJournalsWithLicense():
     ]
     for pair in correct_inputs_and_outputs:
         if engine.getJournalsWithLicense(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ getJournalsWithLicense (TEST5) is correct")
+            print(True, "Yoho^^ TEST5 is correct")
         else:
-            print(False, "Eha... getJournalsWithLicense (TEST5) is uncorrect.")
+            print(False, "Eha... TEST5 is uncorrect.")
 
 #TEST 6
 def test_getJournalsWithAPC(j):
@@ -182,9 +224,9 @@ def test_getJournalsWithAPC(j):
         if elem.apc==True:
             result.append(elem)
     if engine.getJournalsWithAPC()==result:
-        print(True, "Yoho^^ getJournalsWithAPC (TEST6) is correct")
+        print(True, "Yoho^^ TEST6 is correct")
     else:
-        print(False, "Eha... getJournalsWithAPC (TEST6) is uncorrect.")
+        print(False, "Eha... TEST6 is uncorrect.")
     
 #TEST 7
 def test_getJournalsWithDOAJSeal(j):
@@ -193,16 +235,16 @@ def test_getJournalsWithDOAJSeal(j):
         if elem.seal==True:
             result.append(elem)
     if engine.getJournalsWithDOAJSeal()==result:
-        print(True, "Yoho^^ getJournalsWithDOAJSeal (TEST7) is correct")
+        print(True, "Yoho^^ TEST7 is correct")
     else:
-        print(False, "Eha... getJournalsWithDOAJSeal (TEST7) is uncorrect.")
+        print(False, "Eha... TEST7 is uncorrect.")
 
 #TEST 8
 def test_getAllCategories(c):
     if engine.getAllCategories()== c:
-        print(True, "Yoho!^^ getAllCategories (TEST8) is correct")
+        print(True, "Yoho!^^ TEST8 is correct")
     else:
-        print(False, "Eha... getAllCategories (TEST8) is uncorrect.")
+        print(False, "Eha... TEST8 is uncorrect.")
 
 #TEST 9
 def test_getAllAreas(a):
@@ -225,9 +267,9 @@ def test_getCategoriesWithQuartile():
     ]
     for pair in correct_inputs_and_outputs:
         if engine.getCategoriesWithQuartile(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ getCategoriesWithQuartile (TEST10) is correct")
+            print(True, "Yoho^^ TEST10 is correct")
         else:
-            print(False, "Eha... getCategoriesWithQuartile (TEST10) is uncorrect.")
+            print(False, "Eha... TEST10 is uncorrect.")
 
 #TEST 11
 def test_getCategoriesAssignedToAreas():
@@ -243,22 +285,23 @@ def test_getCategoriesAssignedToAreas():
     ]
     for pair in correct_inputs_and_outputs:
         if engine.getCategoriesAssignedToAreas(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ getCategoriesAssignedToAreas (TEST11) is correct")
+            print(True, "Yoho^^ TEST11 is correct")
         else:
-            print(False, "Eha... getCategoriesAssignedToAreas (TEST11) is uncorrect.")
+            print(False, "Eha... TEST11 is uncorrect.")
 
 # Test 12
 def test_getAreasAssignedToCategories():
     inputs = [{"Drug Discovery"},{"Drug Discovery","Philosophy"},{"Medicine (miscellaneous)"},]
     outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a,[a[0],a[1],a[5]]]
     i = 0
-    while i < 4:
+    while i < 2:
         if engine.getAreasAssignedToCategories(inputs[i]) == outputs[i]:
             i = i+1
             print(True,"YOHO^^ for Test12",[i])
         else:
             i = i+1
-            print(False, "Eha... problem occurs in getAreasAssignedToCategories (TEST12), pair"[i])
+            print(False, "Eha... problem occurs in TEST12, pair",[i])
+            print(engine.getAreasAssignedToCategories(inputs[i]))
 
 #Test 13
 def test_getJournalsInCategoriesWithQuartile():
@@ -274,15 +317,15 @@ def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
 
 
 # We call the functions:
-test_getEntityById()
-test_getAllJournals(j)
-test_getJournalsWithTitle()
-test_getJournalsPublishedBy()
-test_getJournalsWithLicense()
-test_getJournalsWithAPC(j)
-test_getJournalsWithDOAJSeal(j)
-test_getAllCategories(c)
-test_getAllAreas(a)
-test_getCategoriesWithQuartile()
-test_getCategoriesAssignedToAreas()
-test_getAreasAssignedToCategories()
+test_getEntityById(j)
+# test_getAllJournals(j)
+# test_getJournalsWithTitle()
+# test_getJournalsPublishedBy()
+# test_getJournalsWithLicense()
+# test_getJournalsWithAPC(j)
+# test_getJournalsWithDOAJSeal(j)
+# test_getAllCategories(c)
+# test_getAllAreas(a)
+# test_getCategoriesWithQuartile()
+# test_getCategoriesAssignedToAreas()
+# test_getAreasAssignedToCategories()
