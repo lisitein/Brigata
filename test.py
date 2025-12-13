@@ -1,6 +1,6 @@
 import requests
 try:
-    response = requests.get('http://10.201.13.18:9999/blazegraph/', timeout=5)
+    response = requests.get('http://127.0.0.1:9999/blazegraph/sparql', timeout=5)
     print("Server reachable:", response.status_code)
 except Exception as e:
     print("Server NOT reachable:", e)
@@ -19,14 +19,14 @@ cu=CategoryUploadHandler()
 cu.setDbPathOrUrl("data/relational_database.db")
 cu.pushDataToDb('data/scimago.json')
 ju=JournalUploadHandler()
-ju.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/")
+ju.setDbPathOrUrl("http://127.0.0.1:9999/blazegraph/sparql")
 ju.pushDataToDb('data/doaj.csv')
 
 cq=CategoryQueryHandler()
 cq.setDbPathOrUrl("data/relational_database.db")
 engine.addCategoryHandler(cq)
 jq=JournalQueryHandler()
-jq.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/")
+jq.setDbPathOrUrl("http://127.0.0.1:9999/blazegraph/sparql")
 engine.addJournalHandler(jq)
 
 
