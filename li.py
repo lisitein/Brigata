@@ -10,7 +10,7 @@ class JournalUploadHandler(UploadHandler):
         super().__init__()
 
     def pushDataToDb(self, path):
-        base_url = Namespace("http://Brigata.github.org/journal/")  
+        base_url = Namespace("https://brigata.github.org/")  
         self.graph = Graph()  # Create a new RDF graph
         self.graph.bind("base_url", base_url)  # Bind the base URL to the graph
 
@@ -39,7 +39,7 @@ class JournalUploadHandler(UploadHandler):
         id_cols = ['issn','eissn']
         attribute_cols = ['title', 'languages', 'publisher', 'seal', 'license', 'apc']
         for idx, row in journal.iterrows():
-            local_id = "journal_" + str(idx)  # local_id = journal_0, journal_1, etc.
+            local_id = "journal_" + str(idx)  # internalId??
             subject = URIRef(base_url[local_id]) # can automatically deal with the URL
             self.graph.add((subject, RDF.type, URIRef(base_url["Journal"]))) # add type
         # attributes will be:
@@ -54,11 +54,16 @@ class JournalUploadHandler(UploadHandler):
                 if attribute:
                     predicate = URIRef(base_url[column])
                     if column in ['seal', 'apc']:
-                        booleanvalue = attribute.lower() in ['true', '1', 't', 'y', 'yes']
-                        object = Literal(booleanvalue)
+                        booleanvalue = attribute.lower() in ['true','yes']
+                        self.graph.add((subject, predicate, booleanvalue ))
+                    elif column == 'languages':
+                        languages = attribute.split(',')
+                        for language in languages:
+                            object = Literal(language.strip())
+                            self.graph.add((subject, predicate, object))
                     else:
                         object = Literal(attribute)
-                    self.graph.add((subject, predicate, object))
+                        self.graph.add((subject, predicate, object))
                     
             for column in id_cols:
                 id_value = str(row[column])
@@ -76,8 +81,12 @@ class JournalUploadHandler(UploadHandler):
         from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
         store = SPARQLUpdateStore()
-        endpoint = self.getDbPathOrUrl()
+        endpoint =self.getDbPathOrUrl()
         # endpoint = "http://127.0.0.1:9999/blazegraph/sparql"  # SPARQL endpoint URL
+        if not endpoint:
+            print("Error: No database URL set. Call setDbPathOrUrl() first.")
+            return False
+        
         store.open((endpoint, endpoint))  # Open the SPARQL store
 
         # instead of committing one by one (so slow), use SPARQL
@@ -111,3 +120,10 @@ class JournalUploadHandler(UploadHandler):
         store.close()
 
         return True
+
+
+#11111test
+
+# sofia=JournalUploadHandler()
+# sofia.setDbPathOrUrl("http://10.201.8.209:9999/blazegraph/")
+# sofia.pushDataToDb("data/doaj.csv")
