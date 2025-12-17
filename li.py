@@ -1,6 +1,6 @@
 from baseHandler import  UploadHandler 
 from rdflib import Graph, URIRef, Literal, Namespace
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, XSD
 import pandas as pd
 
 #implements the method of the superclass to handle the specific scenario
@@ -55,15 +55,16 @@ class JournalUploadHandler(UploadHandler):
                     predicate = URIRef(base_url[column])
                     if column in ['seal', 'apc']:
                         booleanvalue = attribute.lower() in ['true','yes']
-                        self.graph.add((subject, predicate, booleanvalue ))
+                        obj = Literal(booleanvalue, datatype=XSD.boolean)
+                        self.graph.add((subject, predicate, obj ))
                     elif column == 'languages':
                         languages = attribute.split(',')
                         for language in languages:
-                            object = Literal(language.strip())
-                            self.graph.add((subject, predicate, object))
+                            obje = Literal(language.strip())
+                            self.graph.add((subject, predicate, obje))
                     else:
-                        object = Literal(attribute)
-                        self.graph.add((subject, predicate, object))
+                        objec = Literal(attribute)
+                        self.graph.add((subject, predicate, objec))
                     
             for column in id_cols:
                 id_value = str(row[column])
@@ -125,5 +126,5 @@ class JournalUploadHandler(UploadHandler):
 #11111test
 
 # sofia=JournalUploadHandler()
-# sofia.setDbPathOrUrl("http://10.201.8.209:9999/blazegraph/")
+# sofia.setDbPathOrUrl("http://10.201.25.19:9999/blazegraph/")
 # sofia.pushDataToDb("data/doaj.csv")
