@@ -42,6 +42,7 @@ class JournalUploadHandler(UploadHandler):
             local_id = "journal_" + str(idx)  # internalId??
             subject = URIRef(base_url[local_id]) # can automatically deal with the URL
             self.graph.add((subject, RDF.type, URIRef(base_url["Journal"]))) # add type
+        
         # attributes will be:
         # Journal title, title: string (1)  -title = URIRef("https://schema.org/name")
         # Languages in which the journal accepts manuscripts, languages : string [1..*]
@@ -91,7 +92,8 @@ class JournalUploadHandler(UploadHandler):
         store.open((endpoint, endpoint))  # Open the SPARQL store
 
         # instead of committing one by one (so slow), use SPARQL
-        insert_query = "INSERT DATA {\n"
+        insert_query = "INSERT DATA {\n" 
+        # Graph <urn:sofia:import:22-02-v2> {\n"
 
         for triple in self.graph.triples((None, None, None)):
             subject = triple[0]
@@ -106,8 +108,10 @@ class JournalUploadHandler(UploadHandler):
             text_value = text_value.replace('\n', '\\n')   # \n
             text_value = text_value.replace('\r', '\\r')   # \r
             
-            line = "<" + str(subject) + "> <" + str(predicate) + "> \"" + text_value + "\" .\n"
-            
+            line = f"{subject.n3()} {predicate.n3()} {object_value.n3()} .\n"
+            # line = "<" + str(subject) + "> <" + str(predicate) + "> \"" + text_value + "\" .\n"
+           
+
             insert_query = insert_query + line
 
         # end the query
@@ -126,5 +130,5 @@ class JournalUploadHandler(UploadHandler):
 #11111test
 
 # sofia=JournalUploadHandler()
-# sofia.setDbPathOrUrl("http://10.201.25.19:9999/blazegraph/")
+# sofia.setDbPathOrUrl("http://192.168.1.82:9999/blazegraph/")
 # sofia.pushDataToDb("data/doaj.csv")
