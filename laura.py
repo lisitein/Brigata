@@ -104,8 +104,8 @@ class BasicQueryEngine:
     """
 
     def __init__(self):
-        self.journalHandlers = []
-        self.categoryHandlers = []
+        self.journalHandlers: List[JournalQueryHandler] = []
+        self.categoryHandlers: List[CategoryQueryHandler] = []
 
     # ---- Handler registration ----
 
@@ -192,7 +192,6 @@ class BasicQueryEngine:
         for h in self.categoryHandlers:
             df = h.getCategoriesWithQuartile(quartiles)
             if not df.empty:
-                # il DF può avere solo category_id oppure anche quartile:
                 for _, r in df.iterrows():
                     result.append(Category(r["category_id"], r.get("quartile")))
         return result
@@ -202,47 +201,48 @@ class BasicQueryEngine:
         for h in self.categoryHandlers:
             df = h.getAllAreas()
             if not df.empty:
-                df = df.drop_duplicates(subset=["area_id"])
+                df = df.drop_duplicates(subset=["area_id"]) if "area_id" in df.columns else df.drop_duplicates(subset=["id"])
+                col = "area_id" if "area_id" in df.columns else "id"
                 for _, r in df.iterrows():
-                    result.append(Area(r["area_id"]))
+                    result.append(Area(r[col]))
         return result
 
-    # ---- “Base but richer” queries (come da UML) ----
+    # ---- “Base but richer” queries (as in UML) ----
 
     def getEntityById(self, id: str) -> Optional[Union[Journal, Category, Area]]:
         """
         Look up an entity by id across all handlers.
         Returns a Journal, Category, Area, or None.
         """
-        print("\n\nGetEntityById function STARTED!!!")
-        print("journalhandlers:", self.journalHandlers)
-        # Search among Journals
-        # for h in self.journalHandlers:
-        #     print("I am searching in the graph database...")
-        #     df = h.getById(id)
-        #     print("This is the dataframe I get:", df)
-        #     if not df.empty:
-        #         # assume unique id → one row
-        #         return self._makeJournals(df)[0]
 
-        # Search among ategories and Areas
-        for h in self.categoryHandlers:
-            print("I am searching in the relational database...") 
-            print("I am using this category query handler:", h)
+        # 1) Try journals in the graph database (Yang)
+        for h in self.journalHandlers:
             df = h.getById(id)
-            print("\nThis is the dataframe Laura gets:\n", df)
+            if not df.empty:
+                journals = self._makeJournals(df)
+                # ensure we really match the requested id among all identifiers
+                for j in journals:
+                    if id in j.getIds():
+                        return j
+
+        # 2) Try categories / areas in the relational database (Yang + Daniele)
+        for h in self.categoryHandlers:
+            df = h.getById(id)
             if df.empty:
                 continue
 
-            if "category_id" in df.columns:
+            # Category
+            if "category_id" in df.columns or "id" in df.columns:
+                col = "category_id" if "category_id" in df.columns else "id"
                 row = df.iloc[0]
-                return Category(row["category_id"], row.get("quartile"))
+                return Category(row[col], row.get("quartile"))
 
-            if "area_id" in df.columns:
+            # Area
+            if "area_id" in df.columns or "id" in df.columns:
+                col = "area_id" if "area_id" in df.columns else "id"
                 row = df.iloc[0]
-                return Area(row["area_id"])
-            
-        print("I didn't get inside any for loop, so I will obviously return None")
+                return Area(row[col])
+
         return None
 
     def getCategoriesAssignedToAreas(self, areas: Set[str]) -> List[Category]:
@@ -255,7 +255,9 @@ class BasicQueryEngine:
             df = h.getCategoriesAssignedToAreas(areas)
             if not df.empty:
                 for _, r in df.iterrows():
-                    result.append(Category(r["category_id"], r.get("quartile")))
+                    # Yang returns columns: id, quartile
+                    cid = r.get("category_id", r.get("id"))
+                    result.append(Category(cid, r.get("quartile")))
         return result
 
     def getAreasAssignedToCategories(self, categories: Set[str]) -> List[Area]:
@@ -268,39 +270,84 @@ class BasicQueryEngine:
             df = h.getAreasAssignedToCategories(categories)
             if not df.empty:
                 for _, r in df.iterrows():
-                    result.append(Area(r["area_id"]))
+                    aid = r.get("area_id", r.get("area", r.get("id")))
+                    result.append(Area(aid))
         return result
 
     # ---- Helper ----
 
     def _makeJournals(self, df: pd.DataFrame) -> List[Journal]:
-        """Convert DataFrame rows into Journal objects."""
+        """
+        Convert DataFrame rows into Journal objects.
+
+        This function is designed to be robust against:
+        - graph DB results (Yang) with columns: id, title, publisher, license, apc, seal
+        - relational DB results (if ever used) with only id and maybe a few extra fields
+        """
+
         if df.empty:
             return []
 
         journals: List[Journal] = []
+
         for _, r in df.iterrows():
-            identifiers = r["id"] if isinstance(r["id"], list) else [r["id"]]
+            # identifiers: always treat "id" as a single external identifier here
+            raw_id = r.get("id", "")
+            identifiers = raw_id if isinstance(raw_id, list) else [raw_id] if raw_id else []
 
-            seal_str = str(r.get("seal", "")).lower()
-            apc_str = str(r.get("apc", "")).lower()
+            # title
+            title = r.get("title", "") or ""
 
+            # languages: graph DB may not always provide them; default to empty list
+            langs = r.get("languages", [])
+            if isinstance(langs, str):
+                # if stored as comma-separated string
+                langs = [s.strip() for s in langs.split(",") if s.strip()]
+            elif not isinstance(langs, list):
+                langs = []
+
+            # publisher
+            publisher = r.get("publisher")
+
+            # seal
+            seal_raw = r.get("seal", "")
+            seal_str = str(seal_raw).lower()
             seal = seal_str in ["true", "yes", "1", "y", "t"]
+
+            # apc
+            apc_raw = r.get("apc", "")
+            apc_str = str(apc_raw).lower()
             apc = apc_str in ["true", "yes", "1", "y", "t"]
+
+            # license
+            license_val = r.get("license")
+
+            has_category = r.get("hasCategory", [])
+            if isinstance(has_category, str):
+                has_category = [c.strip() for c in has_category.split(",") if c.strip()]
+            elif not isinstance(has_category, list):
+                has_category = []
+
+            has_area = r.get("hasArea", [])
+            if isinstance(has_area, str):
+                has_area = [a.strip() for a in has_area.split(",") if a.strip()]
+            elif not isinstance(has_area, list):
+                has_area = []
 
             journals.append(
                 Journal(
                     id=identifiers,
-                    title=r.get("title", ""),
-                    languages=r.get("languages", []),
-                    publisher=r.get("publisher"),
+                    title=title,
+                    languages=langs,
+                    publisher=publisher,
                     seal=seal,
-                    license=r.get("license"),
+                    license=license_val,
                     apc=apc,
-                    hasCategory=r.get("hasCategory", []),
-                    hasArea=r.get("hasArea", []),
+                    hasCategory=has_category,
+                    hasArea=has_area,
                 )
             )
+
         return journals
 
 
@@ -327,7 +374,7 @@ class FullQueryEngine(BasicQueryEngine):
         all_ids: Set[str] = set()
 
         for h in self.categoryHandlers:
-            # This method must exist on CategoryDataQueryHandler
+            # This method must exist on CategoryDataQueryHandler (Yang + Li)
             df = h.getAllAssignments()
             if df.empty:
                 continue
@@ -392,8 +439,6 @@ class FullQueryEngine(BasicQueryEngine):
         category_ids: Set[str],
         quartiles: Set[str],
     ) -> List[Journal]:
-        areas = area_ids
-        categories = category_ids
         """
         Diamond journals (no APC) that are:
         - in one of the given areas
@@ -407,8 +452,8 @@ class FullQueryEngine(BasicQueryEngine):
             if df.empty:
                 continue
 
-            if areas:
-                df = df[df["area_id"].isin(areas)]
+            if area_ids:
+                df = df[df["area_id"].isin(area_ids)]
             if category_ids:
                 df = df[df["category_id"].isin(category_ids)]
             if quartiles:
@@ -427,7 +472,7 @@ class FullQueryEngine(BasicQueryEngine):
 
             mask_ids = df_journals["id"].isin(all_ids)
             apc_str = df_journals["apc"].astype(str).str.lower()
-            mask_diamond = apc_str.isin(["no", "false", "0", "n"])
+            mask_diamond = apc_str.isin(["no", "false", "0", "n", "none", ""])
 
             mask = mask_ids & mask_diamond
             result.extend(self._makeJournals(df_journals[mask]))
