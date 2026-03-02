@@ -71,7 +71,7 @@ class JournalQueryHandler(QueryHandler):
             "apc": v("apc"),
             "languages": v("languages"),
             "seal": v("seal"),
-        }])                                         # updated 10/02/26
+        }])
 
     def getAllJournals(self) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -113,7 +113,7 @@ class JournalQueryHandler(QueryHandler):
                 "languages": v(b, "languages"),
             })
 
-        return pd.DataFrame(data)           # updated 10/02/26
+        return pd.DataFrame(data)
 
     def getJournalsWithTitle(self, partial_title: str) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -161,7 +161,7 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
     def getJournalsPublishedBy(self, partial_name: str) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -209,7 +209,7 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
     def getJournalsWithLicense(self, license_str: str) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -258,7 +258,7 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])     # updated 22/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])
 
     def getJournalsWithAPC(self, apc_str: str = "true") -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -314,7 +314,7 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
     def getJournalsWithDOAJSeal(self, seal_str: str = "true") -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
@@ -370,7 +370,7 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
 
 class CategoryQueryHandler(QueryHandler):
@@ -382,7 +382,6 @@ class CategoryQueryHandler(QueryHandler):
         if not eid:
             return pd.DataFrame()
 
-        # 1) identify journal / category / area
         kind_row = pd.read_sql(
             """
             SELECT internalId
@@ -411,7 +410,6 @@ class CategoryQueryHandler(QueryHandler):
 
         internal_id = str(kind_row.loc[0, "internalId"])
 
-        # 2) journal_id (ISSN) -> categories + areas + quartile
         if internal_id.startswith("journal-"):
             df = pd.read_sql(
                 """
@@ -440,7 +438,6 @@ class CategoryQueryHandler(QueryHandler):
                 columns=["journal_id", "category_id", "category_quartile", "area_id"]
             )
 
-        # 3) category name -> quartile + all journals
         if internal_id.startswith("category-"):
             df = pd.read_sql(
                 """
@@ -464,7 +461,6 @@ class CategoryQueryHandler(QueryHandler):
                 columns=["category_id", "category_quartile", "journal_id"]
             )
 
-        # 4) area name -> all journals
         if internal_id.startswith("area-"):
             df = pd.read_sql(
                 """
@@ -485,7 +481,7 @@ class CategoryQueryHandler(QueryHandler):
             )
             return df if not df.empty else pd.DataFrame(columns=["area_id", "journal_id"])
 
-        return pd.DataFrame() # updated 09/02/26
+        return pd.DataFrame()
 
     def getAllCategories(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
@@ -498,7 +494,7 @@ class CategoryQueryHandler(QueryHandler):
         df = pd.read_sql(query, engine)
         if "category_id" not in df.columns and "id" in df.columns:
             df = df.rename(columns={"id": "category_id"})
-        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"]) # updated 09/02/26
+        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"])
 
     def getAllAreas(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
@@ -524,7 +520,7 @@ class CategoryQueryHandler(QueryHandler):
         """
         return pd.read_sql(query, engine, params={"quartile": quartile})
 
-    def getCategoriesAssignedToAreas(self, area_id: str) -> pd.DataFrame:
+    def getCategoriesAssignedToArea(self, area_id: str) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
 
         query = """
@@ -543,7 +539,7 @@ class CategoryQueryHandler(QueryHandler):
 
         return pd.read_sql(query, engine, params={"area_id": area_id})
 
-    def getAreasAssignedToCategories(self, category_id: str) -> pd.DataFrame:
+    def getAreasAssignedToCategory(self, category_id: str) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
 
         query = """
