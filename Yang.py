@@ -524,7 +524,7 @@ class CategoryQueryHandler(QueryHandler):
         """
         return pd.read_sql(query, engine, params={"quartile": quartile})
 
-    def getCategoriesAssignedToArea(self, area_id: str) -> pd.DataFrame:
+    def getCategoriesAssignedToAreas(self, area_id: str) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
 
         query = """
@@ -543,7 +543,7 @@ class CategoryQueryHandler(QueryHandler):
 
         return pd.read_sql(query, engine, params={"area_id": area_id})
 
-    def getAreasAssignedToCategory(self, category_id: str) -> pd.DataFrame:
+    def getAreasAssignedToCategories(self, category_id: str) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
 
         query = """
