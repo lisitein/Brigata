@@ -3,6 +3,8 @@ from json import load
 from sqlite3 import connect
 from baseHandler import UploadHandler
 
+#I created an image of the relational database and I uploaded on GitHub: yangish_database.png
+
 class CategoryUploadHandler(UploadHandler):
     def pushDataToDb(self, path):
         with open(path, mode="r", encoding="UTF-8") as f:
