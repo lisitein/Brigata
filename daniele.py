@@ -1,98 +1,145 @@
+from pandas import *
+from json import load
+from sqlite3 import connect
 from baseHandler import UploadHandler
-from rdflib import Graph, URIRef, Literal, Namespace
-from rdflib.namespace import RDF, XSD
-import pandas as pd
 
 #I created an image of the relational database and I uploaded on GitHub: yangish_database.png
 
-class JournalUploadHandler(UploadHandler):
-    def __init__(self):
-        super().__init__()
-
+class CategoryUploadHandler(UploadHandler):
     def pushDataToDb(self, path):
-        base_url = Namespace("https://brigata.github.org/")
-        self.graph = Graph()
-        self.graph.bind("base_url", base_url)
+        with open(path, mode="r", encoding="UTF-8") as f:
+            json_content = load(f)
 
-        journal = pd.read_csv(
-            path,
-            sep=',',
-            encoding='utf-8',
-            keep_default_na=False,
-            names=['title', 'issn', 'eissn', 'languages', 'publisher', 'seal', 'license', 'apc'],
-            header=0,
-            dtype=str
-        )
+        with connect(self.dbPathOrUrl) as con:
+            try:
+                existing = read_sql("SELECT internalId FROM IdentifiableEntity", con)
+                last_journal = max([int(id.split('-')[1]) for id in existing['internalId'] if id.startswith('journal-')], default=0) + 1
+                last_area = max([int(id.split('-')[1]) for id in existing['internalId'] if id.startswith('area-')], default=0) + 1
+                last_category = max([int(id.split('-')[1]) for id in existing['internalId'] if id.startswith('category-')], default=0) + 1
+            except:
+                last_journal = 0
+                last_area = 0
+                last_category = 0
 
-        id_cols = ['issn', 'eissn']
-        attribute_cols = ['title', 'languages', 'publisher', 'seal', 'license', 'apc']
+        journal_internal_id = []
+        journal_id = []
+        placeholder = []
+        languages_col = []
+        publisher_col = []
+        license_col = []
+        apc_col = []
+        seal_col = []
 
-        for idx, row in journal.iterrows():
-            local_id = f"journal-{idx}"
-            subject = URIRef(base_url[local_id])
-            self.graph.add((subject, RDF.type, URIRef(base_url["Journal"])))
+        for n in range(len(json_content)):
+            number_of_identifiers = len(json_content[n].get('identifiers', []))
+            langs = ",".join(json_content[n].get('languages', [])) if json_content[n].get('languages') else ""
+            pub = json_content[n].get('publisher', "") or ""
+            lic = json_content[n].get('license', "") or ""
+            apc_val = str(json_content[n].get('apc', "") or "")
+            seal_val = str(json_content[n].get('seal', "") or "")
 
-            for column in attribute_cols:
-                attribute = (row.get(column) or "")
-                if attribute is None:
-                    attribute = ""
-                attribute = str(attribute).strip()
-                if not attribute:
-                    continue
+            for m in range(number_of_identifiers):
+                journal_internal_id.append(f'journal-{n+last_journal}')
+                journal_id.append(json_content[n]['identifiers'][m])
+                placeholder.append('')
+                languages_col.append(langs)
+                publisher_col.append(pub)
+                license_col.append(lic)
+                apc_col.append(apc_val)
+                seal_col.append(seal_val)
 
-                predicate = URIRef(base_url[column])
+        journal = DataFrame()
+        journal.insert(0, 'internalId', Series(journal_internal_id, dtype="string"))
+        journal.insert(1, 'id', Series(journal_id, dtype="string"))
+        journal.insert(2, 'quartile', Series(placeholder, dtype="string"))
+        journal.insert(3, 'languages', Series(languages_col, dtype="string"))
+        journal.insert(4, 'publisher', Series(publisher_col, dtype="string"))
+        journal.insert(5, 'license', Series(license_col, dtype="string"))
+        journal.insert(6, 'apc', Series(apc_col, dtype="string"))
+        journal.insert(7, 'seal', Series(seal_col, dtype="string"))
 
-                if column in ['seal', 'apc']:
-                    booleanvalue = attribute.lower() in ['true', 'yes', '1', 'y', 't']
-                    obj = Literal(booleanvalue, datatype=XSD.boolean)
-                    self.graph.add((subject, predicate, obj))
-                elif column == 'languages':
-                    languages = [lang.strip() for lang in attribute.split(',') if lang.strip()]
-                    for language in languages:
-                        obje = Literal(language)
-                        self.graph.add((subject, predicate, obje))
-                else:
-                    objec = Literal(attribute)
-                    self.graph.add((subject, predicate, objec))
+        all_areas_set = set()
+        for j in json_content:
+            for elem in j.get('areas', []):
+                all_areas_set.add(elem)
+        all_areas_list = list(all_areas_set)
 
-            for column in id_cols:
-                id_value = (row.get(column) or "").strip()
-                if id_value:
-                    predicate = URIRef(base_url["id"])
-                    self.graph.add((subject, predicate, Literal(id_value)))
+        area_internal_id = []
+        area_id = []
+        placeholder = []
+        for n in range(len(all_areas_list)):
+            area_internal_id.append(f'area-{n+last_area}')
+            area_id.append(all_areas_list[n])
+            placeholder.append('')
 
-            if 'categories' in journal.columns:
-                cats = (row.get('categories') or "").strip()
-                if cats:
-                    for cat in [c.strip() for c in cats.split(',') if c.strip()]:
-                        self.graph.add((subject, URIRef(base_url["hasCategory"]), Literal(cat)))
+        area = DataFrame()
+        area.insert(0, 'internalId', Series(area_internal_id, dtype="string"))
+        area.insert(1, 'id', Series(area_id, dtype="string"))
+        area.insert(2, 'quartile', Series(placeholder, dtype="string"))
 
-            if 'areas' in journal.columns:
-                ars = (row.get('areas') or "").strip()
-                if ars:
-                    for ar in [a.strip() for a in ars.split(',') if a.strip()]:
-                        self.graph.add((subject, URIRef(base_url["hasArea"]), Literal(ar)))
+        all_categories_set = set()
+        for j in json_content:
+            for elem in j.get('categories', []):
+                if "quartile" not in elem:
+                    elem["quartile"] = ''
+                all_categories_set.add((elem['id'], elem['quartile']))
+        all_categories_list = list(all_categories_set)
 
-        from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+        category_internal_id = []
+        category_id = []
+        quartile = []
+        for n in range(len(all_categories_list)):
+            category_internal_id.append(f'category-{n+last_category}')
+            category_id.append(all_categories_list[n][0])
+            quartile.append(all_categories_list[n][1])
 
-        store = SPARQLUpdateStore()
-        endpoint = self.getDbPathOrUrl()
-        if not endpoint:
-            print("Error: No database URL set. Call setDbPathOrUrl() first.")
-            return False
+        category = DataFrame()
+        category.insert(0, 'internalId', Series(category_internal_id, dtype="string"))
+        category.insert(1, 'id', Series(category_id, dtype="string"))
+        category.insert(2, 'quartile', Series(quartile, dtype="string"))
 
-        store.open((endpoint, endpoint))
+        identifiable_entity = concat([journal, area, category], axis=0)
 
-        insert_query = "INSERT DATA {\n"
-        for triple in self.graph.triples((None, None, None)):
-            s = triple[0].n3()
-            p = triple[1].n3()
-            o = triple[2].n3()
-            insert_query += f"{s} {p} {o} .\n"
-        insert_query += "}"
+        starting_journal = []
+        matching_category = []
+        matching_quartile = []
+        for n in range(len(json_content)):
+            for categ in json_content[n].get('categories', []):
+                starting_journal.append(f'journal-{n+last_journal}')
+                matching_category.append(categ['id'])
+                matching_quartile.append(categ.get('quartile', ''))
 
-        if len(self.graph) > 0:
-            store.update(insert_query)
+        has_category = DataFrame()
+        has_category.insert(0, 'journalId', Series(starting_journal, dtype="string"))
+        has_category.insert(1, 'categoryName', Series(matching_category, dtype="string"))
+        has_category.insert(2, 'quartile', Series(matching_quartile, dtype="string"))
 
-        store.close()
+        has_category = merge(
+            identifiable_entity,
+            has_category,
+            left_on=["id", 'quartile'],
+            right_on=['categoryName', 'quartile']
+        )[['journalId', 'internalId']]
+        has_category = has_category.rename(columns={"internalId": "categoryId"})
+
+        starting_journal = []
+        matching_area = []
+        for n in range(len(json_content)):
+            for ar in json_content[n].get('areas', []):
+                starting_journal.append(f'journal-{n+last_journal}')
+                matching_area.append(ar)
+
+        has_area = DataFrame()
+        has_area.insert(0, 'journalId', Series(starting_journal, dtype="string"))
+        has_area.insert(1, 'areaName', Series(matching_area, dtype="string"))
+
+        has_area = merge(identifiable_entity, has_area, left_on="id", right_on="areaName")[['journalId', "internalId"]]
+        has_area = has_area.rename(columns={"internalId": "areaId"})
+
+        with connect(self.dbPathOrUrl) as con:
+            identifiable_entity.to_sql("IdentifiableEntity", con, if_exists="append", index=False)
+            has_category.to_sql("HasCategory", con, if_exists="append", index=False)
+            has_area.to_sql("HasArea", con, if_exists="append", index=False)
+            con.commit()
+
         return True
