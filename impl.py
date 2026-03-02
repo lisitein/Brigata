@@ -21,7 +21,7 @@ def _missing_placeholder(name: str, module: str):
     return _Missing
 
 
-# --- Import core handler base classes (required) ---
+# --- Import core handler base classes ---
 try:
     from baseHandler import Handler, UploadHandler  # type: ignore
 except Exception as e:
@@ -30,7 +30,7 @@ except Exception as e:
     UploadHandler = _missing_placeholder("UploadHandler", "baseHandler")
 
 
-# --- Import upload handlers (optional but expected) ---
+# --- Import upload handlers ---
 try:
     from daniele import CategoryUploadHandler  # type: ignore
 except Exception:
@@ -42,7 +42,7 @@ except Exception:
     JournalUploadHandler = _missing_placeholder("JournalUploadHandler", "li")
 
 
-# --- Import query handlers (optional but expected) ---
+# --- Import query handlers ---
 try:
     from Yang import QueryHandler as QueryHandlerBase, JournalQueryHandler, CategoryQueryHandler  # type: ignore
     QueryHandler = QueryHandlerBase
@@ -52,7 +52,7 @@ except Exception:
     CategoryQueryHandler = _missing_placeholder("CategoryQueryHandler", "Yang")
 
 
-# --- Import engine and data model (optional but expected) ---
+# --- Import engine and data model ---
 try:
     from laura import (
         IdentifiableEntity,
