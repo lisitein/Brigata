@@ -30,7 +30,6 @@ class JournalUploadHandler(UploadHandler):
             subject = URIRef(base_url[local_id])
             self.graph.add((subject, RDF.type, URIRef(base_url["Journal"])))
 
-            # attributes
             for column in attribute_cols:
                 attribute = (row.get(column) or "")
                 if attribute is None:
@@ -54,15 +53,12 @@ class JournalUploadHandler(UploadHandler):
                     objec = Literal(attribute)
                     self.graph.add((subject, predicate, objec))
 
-            # identifiers
             for column in id_cols:
                 id_value = (row.get(column) or "").strip()
                 if id_value:
                     predicate = URIRef(base_url["id"])
                     self.graph.add((subject, predicate, Literal(id_value)))
 
-            # optional: categories and areas if present in CSV
-            # expected CSV columns: 'categories' and/or 'areas' with comma-separated values
             if 'categories' in journal.columns:
                 cats = (row.get('categories') or "").strip()
                 if cats:
@@ -75,7 +71,6 @@ class JournalUploadHandler(UploadHandler):
                     for ar in [a.strip() for a in ars.split(',') if a.strip()]:
                         self.graph.add((subject, URIRef(base_url["hasArea"]), Literal(ar)))
 
-        # push to SPARQL endpoint
         from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
         store = SPARQLUpdateStore()
@@ -99,7 +94,7 @@ class JournalUploadHandler(UploadHandler):
 
         store.close()
         return True
-
+        
 
 #11111test
 
