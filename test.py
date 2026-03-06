@@ -1,37 +1,78 @@
+import os
 import requests
+
+# ------------------------------------------------------------
+# 0. CHECK SERVER REACHABILITY
+# ------------------------------------------------------------
 try:
     response = requests.get('http://10.201.13.18:9999/blazegraph/', timeout=5)
-    print("Server reachable:", response.status_code)
+    print("Blazegraph reachable:", response.status_code)
 except Exception as e:
-    print("Server NOT reachable:", e)
+    print("Blazegraph NOT reachable:", e)
 
 
+# ------------------------------------------------------------
+# 1. IMPORT ENGINE + HANDLERS
+# ------------------------------------------------------------
 from laura import *
-from daniele import *
-from li import *
-from Yang import *
-from baseHandler import *
+from daniele import CategoryUploadHandler, CategoryQueryHandler
+from li import JournalUploadHandler
+from Yang import JournalQueryHandler
+from baseHandler import UploadHandler
 
-#We initialize a FullQueryEngine instance:
+
+# ------------------------------------------------------------
+# 2. RESET RELATIONAL DB (OPTIONAL BUT RECOMMENDED)
+# ------------------------------------------------------------
+if os.path.exists("data/relational_database.db"):
+    os.remove("data/relational_database.db")
+
+
+# ------------------------------------------------------------
+# 3. INITIALIZE ENGINE
+# ------------------------------------------------------------
 engine = FullQueryEngine()
 
-cu=CategoryUploadHandler()
+# Upload relational DB
+cu = CategoryUploadHandler()
 cu.setDbPathOrUrl("data/relational_database.db")
 cu.pushDataToDb('data/scimago.json')
-ju=JournalUploadHandler()
-ju.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/")
+
+# Upload graph DB
+ju = JournalUploadHandler()
+ju.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/namespace/kb/sparql")
 ju.pushDataToDb('data/doaj.csv')
 
-cq=CategoryQueryHandler()
+# Add handlers to engine
+cq = CategoryQueryHandler()
 cq.setDbPathOrUrl("data/relational_database.db")
 engine.addCategoryHandler(cq)
-jq=JournalQueryHandler()
-jq.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/")
+
+jq = JournalQueryHandler()
+jq.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/namespace/kb/sparql")
 engine.addJournalHandler(jq)
 
 
+# ------------------------------------------------------------
+# 4. NORMALIZATION HELPERS
+# ------------------------------------------------------------
+def normalize_list(x):
+    """Convert None → [] and ensure list."""
+    if x is None:
+        return []
+    return list(x)
 
-a= [
+def same_list(a, b):
+    """Compare lists ignoring order."""
+    return set(normalize_list(a)) == set(normalize_list(b))
+
+
+# ------------------------------------------------------------
+# 5. STATIC TEST DATA (AREAS, CATEGORIES, JOURNALS)
+# ------------------------------------------------------------
+# (Identical to Li’s definitions)
+# ------------------------------------------------------------
+a = [
     Area(id="Medicine"),
     Area(id="Pharmacology, Toxicology and Pharmaceutics"),
     Area(id="Economics, Econometrics and Finance"),
@@ -41,7 +82,7 @@ a= [
     Area(id="Arts and Humanities")
 ]
 
-c=[
+c = [
     Category(id="Drug Discovery", quartile="Q1"),
     Category(id="Medicine (miscellaneous)", quartile="Q1"),
     Category(id="Pharmacology", quartile="Q1"),
@@ -57,275 +98,197 @@ c=[
     Category(id="Philosophy")
 ]
 
+j = [
+    Journal(title="Prolíngua", id=["1983-9979"], languages=["Portuguese"], publisher="Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title="Проблеми Законності", id=["2224-9281","2414-990X"], languages=["Ukrainian","Russian","English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[c[12]], hasArea=[a[6]]),
+    Journal(title="Enlightening Tourism: A Pathmaking Journal", id=["2174-548X"], languages=["English"], publisher="University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title="Scientific Journals of the Maritime University of Szczecin", id=["1733-8670","2392-0378"], languages=["English"], publisher="MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
+    Journal(title="Fronteiras: Journal of Social, Technological and Environmental Science", id=["2238-8869"], languages=["Portuguese"], publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
+    Journal(title="Semina: Ciências Agrárias", id=["1676-546X","1679-0359"], languages=["Portuguese","English"], publisher="Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[]),
 
-j= [
-    Journal(title = "Prolíngua", id = ["1983-9979"], languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[]),
-    Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], languages = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[c[12]], hasArea=[a[6]]),
-    Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = ["2174-548X"], languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
-    Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
-    Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = ["2238-8869"], languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
-    Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[]),
+    Journal(title="", id=["1474-1784","1474-1776"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[0],c[1],c[2]], hasArea=[a[0],a[1]]),
+    Journal(title="", id=["1944-7981","0002-8282"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[3]], hasArea=[a[2]]),
+    Journal(title="", id=["2058-8437"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=c[4:9], hasArea=[a[3],a[4]]),
+    Journal(title="", id=["1546-170X","1078-8956"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[9],c[1]], hasArea=[a[5],a[0]]),
+    Journal(title="", id=["0065-2598","2214-8019"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[10],c[11]], hasArea=[a[5],a[0]])
+]
 
-    Journal(title = "", id = ["1474-1784","1474-1776"], languages = [],publisher = [], seal=False, license="", apc=False, hasCategory=[c[0],c[1],c[2]], hasArea=[a[0],a[1]]),
-    Journal(title = "", id = ["1944-7981","0002-8282"], languages = [], publisher = [], seal=False, license="", apc=False, hasCategory=[c[3]], hasArea=[a[2]]),
-    Journal(title = "", id = ["2058-8437"], languages = [], seal=False, publisher = [], license="", apc=False, hasCategory=c[4:9], hasArea=[a[3],a[4]]),
-    Journal(title = "", id = ["1546-170X","1078-8956"], languages = [], publisher = [], seal=False, license="", apc=False, hasCategory=[c[9],c[1]], hasArea=[a[5],a[0]]),
-    Journal(title = "", id = ["0065-2598","2214-8019"], languages = [], publisher = [], seal=False, license="", apc=False, hasCategory=[c[10],c[11]], hasArea=[a[5],a[0]])
+
+# ------------------------------------------------------------
+# 6. TEST DEFINITIONS
+# ------------------------------------------------------------
+
+def test_getEntityById():
+    tests = [
+        ("1474-1784", j[6]),
+        ("santa-claus", None),
+        ("2224-9281", j[1]),
+        ("happy-yang", None),
+        ("2238-8869", j[4]),
+        ("Medicine", a[0]),
+        ("Biochemistry, Genetics and Molecular Biology", a[5]),
+        ("Biochemistry, Genetics and Molecular Biology (miscellaneous)", Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)")),
+        ("Philosophy", Category(id="Philosophy"))
     ]
 
-
-
-#TEST 1
-def test_getEntityById(j):
-    correct_inputs_and_outputs=[
-    {"input":"1474-1784",
-     "output":j[6]},
-
-    {"input":"santa-claus",
-     "output":None},
-
-    {"input":"2224-9281",
-     "output":j[1]},
-    
-    {"input":"happy-yang",
-     "output":None},
-    
-    {"input":"2238-8869",
-     "output":j[4]},
-
-    {"input":"Medicine",
-     "output":a[0]},
-
-    {"input":"Biochemistry, Genetics and Molecular Biology",
-     "output":a[5]},
-
-    {"input":"Biochemistry, Genetics and Molecular Biology (miscellaneous)",
-     "output":Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)")},
-    #what about quartile? in the UML it is an attribute of Category class...
-
-    {"input":"Philosophy",
-     "output":Category(id="Philosophy")}
-    ]
-    i = 0
-    for pair in correct_inputs_and_outputs:
-        print("---------------------------------------------------------")
-        i = i+1
-        # print("---- DEBUG getById on JournalQueryHandler ----")
-        # df_j = engine.getEntityById(pair["input"])
-        # print(df_j)
-        # print(df_j.columns)
-
-        engine.getEntityById(pair["input"])
-        if engine.getEntityById(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ for Test1",[i])
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getEntityById(inp)
+        if out == expected:
+            print(f"TEST1 [{i}] OK")
         else:
-            print(False, "Eha... The problem occurs in TEST1, pair",[i])
-        # print("Hello, you chose the input:", pair["input"])
+            print(f"TEST1 [{i}] FAIL — got {out}, expected {expected}")
 
-        # if isinstance(pair["output"], Journal):
-        #     expected=Journal(pair["output"])
-        # elif isinstance(pair["output"], Category):
-        #     expected=Category(pair["output"])
-        # else:
-        #     expected=Area(pair["output"])
 
-        # print("Your goood expected output:", pair["output"])
-        # print("Laura gives you the output:", engine.getEntityById(pair["input"]),"\n\n\n")
-
-#TEST 2
-def test_getAllJournals(j):
-    if engine.getAllJournals()== j:
-        print(True, "Yoho!^^ TEST2 is True")
+def test_getAllJournals():
+    if same_list(engine.getAllJournals(), j):
+        print("TEST2 OK")
     else:
-        print(False, "Eha... The result of TEST2 is uncorrect.")
+        print("TEST2 FAIL")
 
-# TEST3
+
 def test_getJournalsWithTitle():
-    correct_inputs_and_outputs=[
-    {"input":"Prolíngua",
-     "output":[Journal(title = "Prolíngua", id = "1983-9979", languages = ["Portuguese"], publisher = "Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[])]},
-
-    {"input":"Законності",
-     "output":[Journal(title = "Проблеми Законності", id = ["2224-9281","2414-990X"], languages = ["Ukrainian", "Russian", "English"], publisher = "Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
-
-    {"input":"happy-Yang",
-     "output":None},
-
-    {"input":"Enlightening Tourism",
-     "output":[Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[])]},
-
-    {"input":"University of Szczecin",
-     "output":[Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
-
-    {"input":"Fronteiras",
-     "output":[Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[])]},
-    
-    {"input":"Semina",
-     "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[])]},
-
-    {"input":"Enlightening",
-     "output":[Journal(title = "Enlightening Tourism: A Pathmaking Journal", id = "2174-548X", languages = ["English"], publisher = "University of Huelva", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
-
-    {"input":"Scien",
-     "output":[Journal(title = "Scientific Journals of the Maritime University of Szczecin", id = ["1733-8670","2392-0378"], languages = ["English"], publisher = "MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
-               Journal(title = "Fronteiras: Journal of Social, Technological and Environmental Science", id = "2238-8869", languages = ["Portuguese"], publisher = "Centro Universitário de Anápolis", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]},
-
-    {"input":"Semina: Ciências Agrárias",
-     "output":[Journal(title = "Semina: Ciências Agrárias", id = ["1676-546X","1679-0359"], languages = ["Portuguese", "English"], publisher = "Universidade Estadual de Londrina", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[])]}
+    tests = [
+        ("Prolíngua", [j[0]]),
+        ("Законності", [j[1]]),
+        ("happy-Yang", []),
+        ("Enlightening Tourism", [j[2]]),
+        ("University of Szczecin", [j[3]]),
+        ("Fronteiras", [j[4]]),
+        ("Semina", [j[5]]),
+        ("Enlightening", [j[2]]),
+        ("Scien", [j[3], j[4]]),
+        ("Semina: Ciências Agrárias", [j[5]])
     ]
-    i = 0
-    for pair in correct_inputs_and_outputs:
-        i = i+1
-        if engine.getJournalsWithTitle(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ for TEST3",[i])
-        else:
-            print(False, "Eha... problem occurs in TEST3, pair",[i])
-            # print(engine.getJournalsWithTitle(inputs[i]))
 
-#TEST 4
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getJournalsWithTitle(inp)
+        if same_list(out, expected):
+            print(f"TEST3 [{i}] OK")
+        else:
+            print(f"TEST3 [{i}] FAIL — got {out}, expected {expected}")
+
+
 def test_getJournalsPublishedBy():
-    inputs = ["Universi","University","Universidade","happy Yang","MUS","de Anápolis"]
-    outputs = [[j[0],j[1], j[2],j[4],j[5]],[j[1],j[2]],[j[0],j[5]],None, [j[3]],[j[4]]]
-    i = 0
-    while i < 5 :
-        if engine.getJournalsPublishedBy(inputs[i]) == outputs[i]:
-            i = i+1
-            print(True, "Yoho^^ for TEST4", [i]) 
-        else:
-            i = i+1
-            print(False, "Eha... problem occurs in TEST4, pair",[i])
-            print(engine.getJournalsPublishedBy(inputs[i]))
+    tests = [
+        ("Universi", [j[0], j[1], j[2], j[4], j[5]]),
+        ("University", [j[1], j[2]]),
+        ("Universidade", [j[0], j[5]]),
+        ("happy Yang", []),
+        ("MUS", [j[3]]),
+        ("de Anápolis", [j[4]])
+    ]
 
-#TEST 5
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getJournalsPublishedBy(inp)
+        if same_list(out, expected):
+            print(f"TEST4 [{i}] OK")
+        else:
+            print(f"TEST4 [{i}] FAIL — got {out}, expected {expected}")
+
+
 def test_getJournalsWithLicense():
-    correct_inputs_and_outputs=[
-    {"input":"CC BY-NC-SA",
-     "output": [j[0]]},
-
-    {"input":"CC BY",
-     "output": [j[1],j[3]]},
-
-    {"input":"Publisher's own license",
-     "output": [j[5]]},
-
-    {"input":"CHI CHI",
-     "output": None},
+    tests = [
+        ("CC BY-NC-SA", [j[0]]),
+        ("CC BY", [j[1], j[3]]),
+        ("Publisher's own license", [j[5]]),
+        ("CHI CHI", [])
     ]
-    for pair in correct_inputs_and_outputs:
-        if engine.getJournalsWithLicense(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ TEST5 is correct")
+
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getJournalsWithLicense(inp)
+        if same_list(out, expected):
+            print(f"TEST5 [{i}] OK")
         else:
-            print(False, "Eha... TEST5 is uncorrect.")
+            print(f"TEST5 [{i}] FAIL — got {out}, expected {expected}")
 
-#TEST 6
-def test_getJournalsWithAPC(j):
-    result=[]
-    for elem in j:
-        if elem.apc==True:
-            result.append(elem)
-    if engine.getJournalsWithAPC()==result:
-        print(True, "Yoho^^ TEST6 is correct")
-    else:
-        print(False, "Eha... TEST6 is uncorrect.")
-    
-#TEST 7
-def test_getJournalsWithDOAJSeal(j):
-    result=[]
-    for elem in j:
-        if elem.seal==True:
-            result.append(elem)
-    if engine.getJournalsWithDOAJSeal()==result:
-        print(True, "Yoho^^ TEST7 is correct")
-    else:
-        print(False, "Eha... TEST7 is uncorrect.")
 
-#TEST 8
-def test_getAllCategories(c):
-    if engine.getAllCategories()== c:
-        print(True, "Yoho!^^ TEST8 is correct")
+def test_getJournalsWithAPC():
+    expected = [x for x in j if x.apc]
+    if same_list(engine.getJournalsWithAPC(), expected):
+        print("TEST6 OK")
     else:
-        print(False, "Eha... TEST8 is uncorrect.")
+        print("TEST6 FAIL")
 
-#TEST 9
-def test_getAllAreas(a):
-    if engine.getAllAreas()== a:
-        print(True, "Yoho!^^ getAllAreas (TEST9) is correct")
+
+def test_getJournalsWithDOAJSeal():
+    expected = [x for x in j if x.seal]
+    if same_list(engine.getJournalsWithDOAJSeal(), expected):
+        print("TEST7 OK")
     else:
-        print(False, "Eha... getAllAreas (TEST9) is uncorrect.")
+        print("TEST7 FAIL")
 
-#TEST 10
+
+def test_getAllCategories():
+    if same_list(engine.getAllCategories(), c):
+        print("TEST8 OK")
+    else:
+        print("TEST8 FAIL")
+
+
+def test_getAllAreas():
+    if same_list(engine.getAllAreas(), a):
+        print("TEST9 OK")
+    else:
+        print("TEST9 FAIL")
+
+
 def test_getCategoriesWithQuartile():
-    correct_inputs_and_outputs=[
-    {"input":{'Q1'},
-     "output": c[0:10]},
-
-    {"input":{},
-     "output":c},
-
-    {"input":{'Q3','Q4'},
-     "output": [c[10], c[11]]},
+    tests = [
+        ({"Q1"}, c[0:10]),
+        (set(), c),
+        ({"Q3", "Q4"}, [c[10], c[11]])
     ]
-    for pair in correct_inputs_and_outputs:
-        if engine.getCategoriesWithQuartile(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ TEST10 is correct")
-        else:
-            print(False, "Eha... TEST10 is uncorrect.")
 
-#TEST 11
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getCategoriesWithQuartile(inp)
+        if same_list(out, expected):
+            print(f"TEST10 [{i}] OK")
+        else:
+            print(f"TEST10 [{i}] FAIL — got {out}, expected {expected}")
+
+
 def test_getCategoriesAssignedToAreas():
-    correct_inputs_and_outputs=[
-    {"input":{'Medicine'},
-     "output": [c[0], c[1], c[2], c[9], c[10], c[11]]},
-
-    {"input":{},
-     "output":c},
-
-    {"input":{'Medicine','Arts and Humanities'},
-     "output": [c[0], c[1], c[2], c[9], c[10], c[11], c[12]]},
+    tests = [
+        ({"Medicine"}, [c[0], c[1], c[2], c[9], c[10], c[11]]),
+        (set(), c),
+        ({"Medicine", "Arts and Humanities"}, [c[0], c[1], c[2], c[9], c[10], c[11], c[12]])
     ]
-    for pair in correct_inputs_and_outputs:
-        if engine.getCategoriesAssignedToAreas(pair["input"])==pair["output"]:
-            print(True, "Yoho^^ TEST11 is correct")
-        else:
-            print(False, "Eha... TEST11 is uncorrect.")
 
-# Test 12
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getCategoriesAssignedToAreas(inp)
+        if same_list(out, expected):
+            print(f"TEST11 [{i}] OK")
+        else:
+            print(f"TEST11 [{i}] FAIL — got {out}, expected {expected}")
+
+
 def test_getAreasAssignedToCategories():
-    inputs = [{"Drug Discovery"},{"Drug Discovery","Philosophy"},{"Medicine (miscellaneous)"},]
-    outputs = [[a[0],a[1]],[a[0],a[1],a[6]],a,[a[0],a[1],a[5]]]
-    i = 0
-    while i < 2:
-        if engine.getAreasAssignedToCategories(inputs[i]) == outputs[i]:
-            i = i+1
-            print(True,"YOHO^^ for Test12",[i])
+    tests = [
+        ({"Drug Discovery"}, [a[0], a[1]]),
+        ({"Drug Discovery", "Philosophy"}, [a[0], a[1], a[6]]),
+        ({"Medicine (miscellaneous)"}, [a[0], a[1], a[5]])
+    ]
+
+    for i, (inp, expected) in enumerate(tests, start=1):
+        out = engine.getAreasAssignedToCategories(inp)
+        if same_list(out, expected):
+            print(f"TEST12 [{i}] OK")
         else:
-            i = i+1
-            print(False, "Eha... problem occurs in TEST12, pair",[i])
-            print(engine.getAreasAssignedToCategories(inputs[i]))
-
-#Test 13
-def test_getJournalsInCategoriesWithQuartile():
-    pass
-
-def test_getJournalsInAreasWithLicense():
-    pass
-
-def test_getDiamondJournalsInAreasAndCategoriesWithQuartile():
-
-    pass
+            print(f"TEST12 [{i}] FAIL — got {out}, expected {expected}")
 
 
-
-# We call the functions:
-test_getEntityById(j)
-# test_getAllJournals(j)
-# test_getJournalsWithTitle()
-# test_getJournalsPublishedBy()
-# test_getJournalsWithLicense()
-# test_getJournalsWithAPC(j)
-# test_getJournalsWithDOAJSeal(j)
-# test_getAllCategories(c)
-# test_getAllAreas(a)
-# test_getCategoriesWithQuartile()
-# test_getCategoriesAssignedToAreas()
-# test_getAreasAssignedToCategories()
+# ------------------------------------------------------------
+# 7. RUN TESTS
+# ------------------------------------------------------------
+test_getEntityById()
+test_getAllJournals()
+test_getJournalsWithTitle()
+test_getJournalsPublishedBy()
+test_getJournalsWithLicense()
+test_getJournalsWithAPC()
+test_getJournalsWithDOAJSeal()
+test_getAllCategories()
+test_getAllAreas()
+test_getCategoriesWithQuartile()
+test_getCategoriesAssignedToAreas()
+test_getAreasAssignedToCategories()
