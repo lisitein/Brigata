@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
-from sqlalchemy import create_engine
 
 
 # ============================================================
@@ -9,6 +8,11 @@ from sqlalchemy import create_engine
 # ============================================================
 
 class QueryHandler(ABC):
+    """
+    Abstract base class for all query handlers.
+    Each handler must implement getById() and expose a database path/URL.
+    """
+
     def __init__(self):
         self.dbPathOrUrl = ""
 
@@ -31,6 +35,10 @@ class QueryHandler(ABC):
 # ============================================================
 
 class JournalQueryHandler(QueryHandler):
+    """
+    Handles all SPARQL queries to the graph database (Blazegraph).
+    Returns pandas DataFrames in a format compatible with BasicQueryEngine.
+    """
 
     # ---- Internal helper: safe SPARQL execution ----
     def _run_sparql(self, query: str) -> list[dict]:
@@ -80,7 +88,6 @@ class JournalQueryHandler(QueryHandler):
             return pd.DataFrame()
 
         b = bindings[0]
-
         def v(var): return b.get(var, {}).get("value")
 
         return pd.DataFrame([{
@@ -334,227 +341,3 @@ class JournalQueryHandler(QueryHandler):
         } for b in bindings]
 
         return pd.DataFrame(data).drop_duplicates(subset=["id"])
-
-# ============================================================
-# CATEGORY QUERY HANDLER (RELATIONAL DB)
-# ============================================================
-    
-    def getById(self, entity_id: str) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        eid = (entity_id or "").strip()
-
-        if not eid:
-            return pd.DataFrame()
-
-        # 1) identify journal / category / area
-        kind_row = pd.read_sql(
-            """
-            SELECT internalId
-            FROM IdentifiableEntity
-            WHERE id = :eid COLLATE NOCASE
-            AND (
-                internalId LIKE 'journal-%'
-                OR internalId LIKE 'category-%'
-                OR internalId LIKE 'area-%'
-            )
-            ORDER BY
-            CASE
-                WHEN internalId LIKE 'journal-%' THEN 1
-                WHEN internalId LIKE 'category-%' THEN 2
-                WHEN internalId LIKE 'area-%' THEN 3
-                ELSE 99
-            END
-            LIMIT 1
-            """,
-            engine,
-            params={"eid": eid},
-        )
-
-        if kind_row.empty:
-            return pd.DataFrame()
-
-        internal_id = str(kind_row.loc[0, "internalId"])
-
-        # 2) journal_id (ISSN) -> categories + areas + quartile
-        if internal_id.startswith("journal-"):
-            query = """
-                SELECT 
-                    j.id AS journal_id,
-                    GROUP_CONCAT(DISTINCT c.id || ' (' || c.quartile || ')') AS categories_with_quartiles,
-                    GROUP_CONCAT(DISTINCT a.id) AS areas
-                FROM IdentifiableEntity j
-                LEFT JOIN HasCategory hc ON hc.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity c ON c.internalId = hc.categoryId
-                LEFT JOIN HasArea ha ON ha.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity a ON a.internalId = ha.areaId
-                WHERE j.id = :eid COLLATE NOCASE
-                GROUP BY j.id
-            """
-            df = pd.read_sql(query, engine, params={"eid": eid})
-            return df
-
-        # 3) category name -> quartile + all journals
-        if internal_id.startswith("category-"):
-            query = """
-                SELECT 
-                    c.id AS category_id,
-                    c.quartile AS category_quartile,
-                    j.id AS journal_id,
-                    GROUP_CONCAT(DISTINCT a.id) AS areas
-                FROM IdentifiableEntity c
-                JOIN HasCategory hc ON hc.categoryId = c.internalId
-                JOIN IdentifiableEntity j ON j.internalId = hc.journalId
-                LEFT JOIN HasArea ha ON ha.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity a ON a.internalId = ha.areaId
-                WHERE c.id = :eid COLLATE NOCASE
-                GROUP BY c.id, j.id
-                ORDER BY j.id
-            """
-            df = pd.read_sql(query, engine, params={"eid": eid})
-            return df
-
-        # 4) area name -> all journals
-        if internal_id.startswith("area-"):
-            query = """
-                SELECT 
-                    a.id AS area_id,
-                    j.id AS journal_id,
-                    GROUP_CONCAT(DISTINCT c.id) AS specific_categories
-                FROM IdentifiableEntity a
-                JOIN HasArea ha ON ha.areaId = a.internalId
-                JOIN IdentifiableEntity j ON j.internalId = ha.journalId
-                LEFT JOIN HasCategory hc ON hc.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity c ON c.internalId = hc.categoryId
-                WHERE a.id = :eid COLLATE NOCASE
-                GROUP BY j.id
-                ORDER BY j.id
-            """
-            df = pd.read_sql(query, engine, params={"eid": eid})
-            return df
-
-        return pd.DataFrame() # updated 09/02/26
-
-    def getAllCategories(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        query = """
-        SELECT DISTINCT i.id AS category_id
-        FROM IdentifiableEntity i
-        WHERE i.internalId LIKE 'category-%'
-        ORDER BY category_id
-        """
-        df = pd.read_sql(query, engine)
-        if "category_id" not in df.columns and "id" in df.columns:
-            df = df.rename(columns={"id": "category_id"})
-        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"]) # updated 09/02/26
-
-    def getAllAreas(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        query = """
-        SELECT DISTINCT i.id AS id
-        FROM IdentifiableEntity i
-        WHERE i.internalId LIKE 'area-%'
-        ORDER BY id
-        """
-        return pd.read_sql(query, engine)
-
-    def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
-        if not quartiles:
-            return pd.DataFrame(columns=["category_id", "quartile"])
-
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        keys = [f"q{i}" for i in range(len(quartiles))]
-        placeholders = ", ".join([f":{k}" for k in keys])
-        params_dict = dict(zip(keys, list(quartiles)))
-
-        query = f"""
-            SELECT DISTINCT
-                id       AS category_id,
-                quartile AS quartile
-            FROM IdentifiableEntity
-            WHERE internalId LIKE 'category-%'
-            AND quartile IN ({placeholders})
-            ORDER BY category_id
-        """
-        return pd.read_sql(query, engine, params=params_dict)
-
-    def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
-        if not area_ids:
-            return pd.DataFrame(columns=["category_id"])
-
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-
-        keys = [f"a{i}" for i in range(len(area_ids))]
-        placeholders = ", ".join([f":{k}" for k in keys])
-        
-        params_dict = dict(zip(keys, list(area_ids)))
-
-        query = f"""
-        SELECT DISTINCT
-            c.id AS category_id
-        FROM HasArea ha
-        JOIN HasCategory hc
-            ON hc.journalId = ha.journalId
-        JOIN IdentifiableEntity a
-            ON a.internalId = ha.areaId
-        JOIN IdentifiableEntity c
-            ON c.internalId = hc.categoryId
-        WHERE a.id IN ({placeholders})
-        ORDER BY category_id
-        """
-
-        return pd.read_sql(query, engine, params=params_dict)
-
-    def getAreasAssignedToCategories(self, category_ids: set[str]) -> pd.DataFrame:
-        if not category_ids:
-            return pd.DataFrame(columns=["area_id"])
-
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        keys = [f"c{i}" for i in range(len(category_ids))]
-        placeholders = ", ".join([f":{k}" for k in keys])
-        
-        params_dict = dict(zip(keys, list(category_ids)))
-
-        query = f"""
-        SELECT DISTINCT
-            a.id AS area_id
-        FROM HasCategory hc
-        JOIN HasArea ha
-            ON ha.journalId = hc.journalId
-        JOIN IdentifiableEntity c
-            ON c.internalId = hc.categoryId
-        JOIN IdentifiableEntity a
-            ON a.internalId = ha.areaId
-        WHERE c.id IN ({placeholders})
-        ORDER BY area_id
-        """
-
-        return pd.read_sql(query, engine, params=params_dict)
-
-    def getAllCategoryAssignments(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        query = """
-        SELECT
-        c.id AS category,
-        c.quartile AS category_quartile,
-        GROUP_CONCAT(DISTINCT j.id) AS identifiers
-        FROM HasCategory hc
-        JOIN IdentifiableEntity c ON c.internalId = hc.categoryId
-        JOIN IdentifiableEntity j ON j.internalId = hc.journalId
-        GROUP BY c.id, c.quartile
-        """
-        df = pd.read_sql(query, engine)
-        return df if not df.empty else pd.DataFrame(columns=["category","category_quartile","identifiers"])
-
-    def getAllAreaAssignments(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        query = """
-        SELECT
-        a.id AS area,
-        GROUP_CONCAT(DISTINCT j.id) AS identifiers
-        FROM HasArea ha
-        JOIN IdentifiableEntity a ON a.internalId = ha.areaId
-        JOIN IdentifiableEntity j ON j.internalId = ha.journalId
-        GROUP BY a.id
-        """
-        df = pd.read_sql(query, engine)
-        return df if not df.empty else pd.DataFrame(columns=["area","identifiers"])
