@@ -3,37 +3,63 @@ import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 from sqlalchemy import create_engine
 
+
+# ============================================================
+# BASE CLASS
+# ============================================================
+
 class QueryHandler(ABC):
     def __init__(self):
-        self.dbPathOrUrl = ''
+        self.dbPathOrUrl = ""
 
     def getDbPathOrUrl(self) -> str:
         return self.dbPathOrUrl
 
     def setDbPathOrUrl(self, url: str):
         if not isinstance(url, str):
-            raise ValueError("The path/URL of the database must be a string")
-        self.dbPathOrUrl = url
+            raise ValueError("Database path/URL must be a string.")
+        self.dbPathOrUrl = url.strip()
         return True
 
     @abstractmethod
     def getById(self, entity_id: str) -> pd.DataFrame:
         pass
 
+
+# ============================================================
+# JOURNAL QUERY HANDLER (GRAPH DB)
+# ============================================================
+
 class JournalQueryHandler(QueryHandler):
 
-    def getById(self, journal_id: str) -> pd.DataFrame | None:
+    # ---- Internal helper: safe SPARQL execution ----
+    def _run_sparql(self, query: str) -> list[dict]:
+        """
+        Executes a SPARQL query safely.
+        Returns a list of bindings or an empty list on error.
+        """
+        try:
+            sparql = SPARQLWrapper(self.getDbPathOrUrl())
+            sparql.setMethod("GET")                     # REQUIRED for Blazegraph
+            sparql.setReturnFormat(JSON)
+            sparql.setQuery(query)
+            results = sparql.query().convert()
+            return results.get("results", {}).get("bindings", [])
+        except Exception as e:
+            print("SPARQL ERROR:", e)
+            return []
+
+    # ---- Get by ID ----
+    def getById(self, journal_id: str) -> pd.DataFrame:
         jid = (journal_id or "").strip()
         if not jid:
-            return None
-
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
+            return pd.DataFrame()
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?title ?publisher ?license ?apc
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
-            ?seal
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               ?seal
         WHERE {{
             ?journal :id ?jid .
             FILTER(LCASE(STR(?jid)) = LCASE("{jid}"))
@@ -49,19 +75,13 @@ class JournalQueryHandler(QueryHandler):
         LIMIT 1
         """
 
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
-
+        bindings = self._run_sparql(query)
         if not bindings:
-            return None
+            return pd.DataFrame()
 
         b = bindings[0]
 
-        def v(var: str):
-            return b.get(var, {}).get("value")
+        def v(var): return b.get(var, {}).get("value")
 
         return pd.DataFrame([{
             "id": jid,
@@ -71,14 +91,14 @@ class JournalQueryHandler(QueryHandler):
             "apc": v("apc"),
             "languages": v("languages"),
             "seal": v("seal"),
-        }])                                         # updated 10/02/26
+        }])
 
+    # ---- Get all journals ----
     def getAllJournals(self) -> pd.DataFrame:
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
         query = """
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
         WHERE {
             ?journal :id ?id .
             OPTIONAL { ?journal :title ?title }
@@ -90,39 +110,33 @@ class JournalQueryHandler(QueryHandler):
         }
         GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
         """
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
 
+        bindings = self._run_sparql(query)
         if not bindings:
             return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-        def v(b, var):
-            return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
-        data = []
-        for b in bindings:
-            data.append({
-                "id": v(b, "id"),
-                "title": v(b, "title"),
-                "publisher": v(b, "publisher"),
-                "apc": v(b, "apc"),
-                "seal": v(b, "seal"),
-                "license": v(b, "license"),
-                "languages": v(b, "languages"),
-            })
+        data = [{
+            "id": v(b, "id"),
+            "title": v(b, "title"),
+            "publisher": v(b, "publisher"),
+            "apc": v(b, "apc"),
+            "seal": v(b, "seal"),
+            "license": v(b, "license"),
+            "languages": v(b, "languages"),
+        } for b in bindings]
 
-        return pd.DataFrame(data)           # updated 10/02/26
+        return pd.DataFrame(data)
 
+    # ---- Journals with title ----
     def getJournalsWithTitle(self, partial_title: str) -> pd.DataFrame:
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
         pt = (partial_title or "").strip().replace('"', '\\"')
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
         WHERE {{
             ?journal :id ?id .
             ?journal :title ?title .
@@ -137,21 +151,13 @@ class JournalQueryHandler(QueryHandler):
         GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
         """
 
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
-
+        bindings = self._run_sparql(query)
         if not bindings:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher", "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-        def v(b, var):
-            return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
         data = [{
-            "journal": v(b, "journal"),
             "id": v(b, "id"),
             "title": v(b, "title"),
             "publisher": v(b, "publisher"),
@@ -161,45 +167,37 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
+    # ---- Journals by publisher ----
     def getJournalsPublishedBy(self, partial_name: str) -> pd.DataFrame:
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
         pn = (partial_name or "").strip().replace('"', '\\"')
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
         WHERE {{
-        ?journal :id ?id .
-        ?journal :title ?title .
-        ?journal :publisher ?publisher .
-        FILTER(CONTAINS(LCASE(STR(?publisher)), LCASE("{pn}")))
+            ?journal :id ?id .
+            ?journal :publisher ?publisher .
+            FILTER(CONTAINS(LCASE(STR(?publisher)), LCASE("{pn}")))
 
-        OPTIONAL {{ ?journal :apc ?apc }}
-        OPTIONAL {{ ?journal :seal ?seal }}
-        OPTIONAL {{ ?journal :license ?license }}
-        OPTIONAL {{ ?journal :languages ?lang }}
+            OPTIONAL {{ ?journal :title ?title }}
+            OPTIONAL {{ ?journal :apc ?apc }}
+            OPTIONAL {{ ?journal :seal ?seal }}
+            OPTIONAL {{ ?journal :license ?license }}
+            OPTIONAL {{ ?journal :languages ?lang }}
         }}
         GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
         """
 
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
-
+        bindings = self._run_sparql(query)
         if not bindings:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher", "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-        def v(b, var):
-            return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
         data = [{
-            "journal": v(b, "journal"),
             "id": v(b, "id"),
             "title": v(b, "title"),
             "publisher": v(b, "publisher"),
@@ -209,46 +207,37 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
+    # ---- Journals by license ----
     def getJournalsWithLicense(self, license_str: str) -> pd.DataFrame:
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
         lic = (license_str or "").strip().replace('"', '\\"')
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
         WHERE {{
-        ?journal :id ?id .
-        ?journal :title ?title .
-        ?journal :license ?license .
+            ?journal :id ?id .
+            ?journal :license ?license .
+            FILTER(CONTAINS(LCASE(STR(?license)), LCASE("{lic}")))
 
-        FILTER(CONTAINS(LCASE(STR(?license)), LCASE("{lic}")))
-
-        OPTIONAL {{ ?journal :publisher ?publisher }}
-        OPTIONAL {{ ?journal :apc ?apc }}
-        OPTIONAL {{ ?journal :seal ?seal }}
-        OPTIONAL {{ ?journal :languages ?lang }}
+            OPTIONAL {{ ?journal :title ?title }}
+            OPTIONAL {{ ?journal :publisher ?publisher }}
+            OPTIONAL {{ ?journal :apc ?apc }}
+            OPTIONAL {{ ?journal :seal ?seal }}
+            OPTIONAL {{ ?journal :languages ?lang }}
         }}
         GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
         """
 
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
-
+        bindings = self._run_sparql(query)
         if not bindings:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher", "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-        def v(b, var):
-            return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
         data = [{
-            "journal": v(b, "journal"),
             "id": v(b, "id"),
             "title": v(b, "title"),
             "publisher": v(b, "publisher"),
@@ -258,53 +247,40 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])     # updated 22/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])
 
+    # ---- Journals with APC ----
     def getJournalsWithAPC(self, apc_str: str = "true") -> pd.DataFrame:
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
-        apc_norm = (apc_str or "").strip().lower().replace('"', '\\"')
+        apc_norm = (apc_str or "").strip().lower()
 
         if apc_norm not in {"true", "false"}:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher",
-                "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
         WHERE {{
-        ?journal :id ?id .
-        ?journal :title ?title .
+            ?journal :id ?id .
+            OPTIONAL {{ ?journal :title ?title }}
+            OPTIONAL {{ ?journal :publisher ?publisher }}
+            OPTIONAL {{ ?journal :license ?license }}
+            OPTIONAL {{ ?journal :seal ?seal }}
+            OPTIONAL {{ ?journal :languages ?lang }}
+            OPTIONAL {{ ?journal :apc ?apc }}
 
-        OPTIONAL {{ ?journal :publisher ?publisher }}
-        OPTIONAL {{ ?journal :license ?license }}
-        OPTIONAL {{ ?journal :seal ?seal }}
-        OPTIONAL {{ ?journal :languages ?lang }}
-        OPTIONAL {{ ?journal :apc ?apc }}
-
-        FILTER(BOUND(?apc) && LCASE(STR(?apc)) = "{apc_norm}")
+            FILTER(BOUND(?apc) && LCASE(STR(?apc)) = "{apc_norm}")
         }}
         GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
         """
 
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
-
+        bindings = self._run_sparql(query)
         if not bindings:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher",
-                "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-        def v(b, var):
-            return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
         data = [{
-            "journal": v(b, "journal"),
             "id": v(b, "id"),
             "title": v(b, "title"),
             "publisher": v(b, "publisher"),
@@ -314,53 +290,40 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
+    # ---- Journals with DOAJ seal ----
     def getJournalsWithDOAJSeal(self, seal_str: str = "true") -> pd.DataFrame:
-        sparql = SPARQLWrapper(self.getDbPathOrUrl())
-        seal_norm = (seal_str or "").strip().lower().replace('"', '\\"')
+        seal_norm = (seal_str or "").strip().lower()
 
         if seal_norm not in {"true", "false"}:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher",
-                "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
         SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-            (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
         WHERE {{
-        ?journal :id ?id .
-        ?journal :title ?title .
+            ?journal :id ?id .
+            OPTIONAL {{ ?journal :title ?title }}
+            OPTIONAL {{ ?journal :publisher ?publisher }}
+            OPTIONAL {{ ?journal :apc ?apc }}
+            OPTIONAL {{ ?journal :license ?license }}
+            OPTIONAL {{ ?journal :languages ?lang }}
+            OPTIONAL {{ ?journal :seal ?seal }}
 
-        OPTIONAL {{ ?journal :publisher ?publisher }}
-        OPTIONAL {{ ?journal :apc ?apc }}
-        OPTIONAL {{ ?journal :license ?license }}
-        OPTIONAL {{ ?journal :languages ?lang }}
-        OPTIONAL {{ ?journal :seal ?seal }}
-
-        FILTER(BOUND(?seal) && LCASE(STR(?seal)) = "{seal_norm}")
+            FILTER(BOUND(?seal) && LCASE(STR(?seal)) = "{seal_norm}")
         }}
         GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
         """
 
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        bindings = results.get("results", {}).get("bindings", [])
-
+        bindings = self._run_sparql(query)
         if not bindings:
-            return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher",
-                "apc", "seal", "license", "languages"
-            ])
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-        def v(b, var):
-            return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
         data = [{
-            "journal": v(b, "journal"),
             "id": v(b, "id"),
             "title": v(b, "title"),
             "publisher": v(b, "publisher"),
@@ -370,10 +333,11 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
-
-class CategoryQueryHandler(QueryHandler):
+# ============================================================
+# CATEGORY QUERY HANDLER (RELATIONAL DB)
+# ============================================================
     
     def getById(self, entity_id: str) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
