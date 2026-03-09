@@ -216,55 +216,53 @@ class JournalQueryHandler(QueryHandler):
 
         return pd.DataFrame(data).drop_duplicates(subset=["id"])
 
-    # ---- Journals by license ----
+    # ---- Journals by license (FIXED & ROBUST) ----
     def getJournalsWithLicense(self, license_str):
-    # Accept string, list, or set
-    if isinstance(license_str, (set, list)):
-        # Convert to OR conditions in SPARQL
-        filters = " || ".join(
-            [f'CONTAINS(LCASE(STR(?license)), LCASE("{lic.strip().replace(\'"\', \'\\\\"\')}"))'
-             for lic in license_str]
-        )
-    else:
-        # Single string
-        lic = (license_str or "").strip().replace('"', '\\"')
-        filters = f'CONTAINS(LCASE(STR(?license)), LCASE("{lic}"))'
+        # Accept string, list, set, tuple
+        if isinstance(license_str, (set, list, tuple)):
+            filters = " || ".join(
+                [f'CONTAINS(LCASE(STR(?license)), LCASE("{lic.strip().replace(\'"\', \'\\\\"\')}"))'
+                 for lic in license_str]
+            )
+        else:
+            lic = (license_str or "").strip().replace('"', '\\"')
+            filters = f'CONTAINS(LCASE(STR(?license)), LCASE("{lic}"))'
 
-    query = f"""
-    PREFIX : <https://brigata.github.org/>
-    SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
-           (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
-    WHERE {{
-        ?journal :id ?id .
-        ?journal :license ?license .
-        FILTER({filters})
+        query = f"""
+        PREFIX : <https://brigata.github.org/>
+        SELECT ?journal ?id ?title ?publisher ?apc ?seal ?license
+               (GROUP_CONCAT(DISTINCT STR(?lang); separator=", ") AS ?languages)
+        WHERE {{
+            ?journal :id ?id .
+            ?journal :license ?license .
+            FILTER({filters})
 
-        OPTIONAL {{ ?journal :title ?title }}
-        OPTIONAL {{ ?journal :publisher ?publisher }}
-        OPTIONAL {{ ?journal :apc ?apc }}
-        OPTIONAL {{ ?journal :seal ?seal }}
-        OPTIONAL {{ ?journal :languages ?lang }}
-    }}
-    GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
-    """
+            OPTIONAL {{ ?journal :title ?title }}
+            OPTIONAL {{ ?journal :publisher ?publisher }}
+            OPTIONAL {{ ?journal :apc ?apc }}
+            OPTIONAL {{ ?journal :seal ?seal }}
+            OPTIONAL {{ ?journal :languages ?lang }}
+        }}
+        GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
+        """
 
-    bindings = self._run_sparql(query)
-    if not bindings:
-        return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
+        bindings = self._run_sparql(query)
+        if not bindings:
+            return pd.DataFrame(columns=["id", "title", "publisher", "apc", "seal", "license", "languages"])
 
-    def v(b, var): return b.get(var, {}).get("value")
+        def v(b, var): return b.get(var, {}).get("value")
 
-    data = [{
-        "id": v(b, "id"),
-        "title": v(b, "title"),
-        "publisher": v(b, "publisher"),
-        "apc": v(b, "apc"),
-        "seal": v(b, "seal"),
-        "license": v(b, "license"),
-        "languages": v(b, "languages"),
-    } for b in bindings]
+        data = [{
+            "id": v(b, "id"),
+            "title": v(b, "title"),
+            "publisher": v(b, "publisher"),
+            "apc": v(b, "apc"),
+            "seal": v(b, "seal"),
+            "license": v(b, "license"),
+            "languages": v(b, "languages"),
+        } for b in bindings]
 
-    return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])
+        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])
 
     # ---- Journals with APC ----
     def getJournalsWithAPC(self, apc_str: str = "true") -> pd.DataFrame:
