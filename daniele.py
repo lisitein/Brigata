@@ -1,9 +1,13 @@
 from pandas import *
 from json import load
 from sqlite3 import connect
-from baseHandler import UploadHandler
+from baseHandler import UploadHandler, QueryHandler
 
 #I created an image of the relational database and I uploaded on GitHub: yangish_database.png
+
+# ============================================================
+# CATEGORY UPLOAD HANDLER
+# ============================================================
 
 class CategoryUploadHandler(UploadHandler):
     """
@@ -137,8 +141,9 @@ class CategoryUploadHandler(UploadHandler):
             "quartile": Series(hc_quartile, dtype="string"),
         })
 
-        # Merge robusto: match solo su id, ignorando quartile se vuoto
-        category_lookup = identifiable_entity[identifiable_entity["internalId"].str.startswith("category-")][["id", "internalId"]]
+        category_lookup = identifiable_entity[
+            identifiable_entity["internalId"].str.startswith("category-")
+        ][["id", "internalId"]]
 
         has_category = merge(
             has_category,
@@ -165,7 +170,9 @@ class CategoryUploadHandler(UploadHandler):
             "areaName": Series(ha_area, dtype="string"),
         })
 
-        area_lookup = identifiable_entity[identifiable_entity["internalId"].str.startswith("area-")][["id", "internalId"]]
+        area_lookup = identifiable_entity[
+            identifiable_entity["internalId"].str.startswith("area-")
+        ][["id", "internalId"]]
 
         has_area = merge(
             has_area,
@@ -186,3 +193,85 @@ class CategoryUploadHandler(UploadHandler):
             con.commit()
 
         return True
+
+
+# ============================================================
+# CATEGORY QUERY HANDLER
+# ============================================================
+
+class CategoryQueryHandler(QueryHandler):
+    """
+    Handles all queries to the relational SQLite database.
+    Returns pandas DataFrames in a format compatible with BasicQueryEngine.
+    """
+
+    def getById(self, category_id: str) -> DataFrame:
+        cid = (category_id or "").strip()
+        if not cid:
+            return DataFrame()
+
+        with connect(self.dbPathOrUrl) as con:
+            query = """
+                SELECT id, quartile
+                FROM IdentifiableEntity
+                WHERE id = ?
+                AND internalId LIKE 'category-%'
+                LIMIT 1
+            """
+            df = read_sql(query, con, params=[cid])
+
+        return df
+
+    def getAllCategories(self) -> DataFrame:
+        with connect(self.dbPathOrUrl) as con:
+            query = """
+                SELECT id, quartile
+                FROM IdentifiableEntity
+                WHERE internalId LIKE 'category-%'
+            """
+            df = read_sql(query, con)
+
+        return df
+
+    def getCategoriesForJournal(self, journal_id: str) -> DataFrame:
+        jid = (journal_id or "").strip()
+        if not jid:
+            return DataFrame()
+
+        with connect(self.dbPathOrUrl) as con:
+            query = """
+                SELECT c.id, c.quartile
+                FROM HasCategory hc
+                JOIN IdentifiableEntity c
+                    ON hc.categoryId = c.internalId
+                WHERE hc.journalId = (
+                    SELECT internalId
+                    FROM IdentifiableEntity
+                    WHERE id = ?
+                    AND internalId LIKE 'journal-%'
+                    LIMIT 1
+                )
+            """
+            df = read_sql(query, con, params=[jid])
+
+        return df
+
+    def getJournalsInCategory(self, category_id: str) -> DataFrame:
+        cid = (category_id or "").strip()
+        if not cid:
+            return DataFrame()
+
+        with connect(self.dbPathOrUrl) as con:
+            query = """
+                SELECT j.id, j.publisher, j.license, j.apc, j.seal, j.languages
+                FROM HasCategory hc
+                JOIN IdentifiableEntity c
+                    ON hc.categoryId = c.internalId
+                JOIN IdentifiableEntity j
+                    ON hc.journalId = j.internalId
+                WHERE c.id = ?
+                AND j.internalId LIKE 'journal-%'
+            """
+            df = read_sql(query, con, params=[cid])
+
+        return df
