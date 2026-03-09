@@ -220,13 +220,16 @@ class JournalQueryHandler(QueryHandler):
     def getJournalsWithLicense(self, license_str):
         # Accept string, list, set, tuple
         if isinstance(license_str, (set, list, tuple)):
-            filters = " || ".join(
-                [f'CONTAINS(LCASE(STR(?license)), LCASE("{lic.strip().replace(\'"\', \'\\\\"\')}"))'
-                 for lic in license_str]
-            )
+            filters_list = []
+            for lic in license_str:
+                lic_clean = str(lic).strip().replace('"', '\\"')
+                filters_list.append(
+                    f'CONTAINS(LCASE(STR(?license)), LCASE("{lic_clean}"))'
+                )
+            filters = " || ".join(filters_list)
         else:
-            lic = (license_str or "").strip().replace('"', '\\"')
-            filters = f'CONTAINS(LCASE(STR(?license)), LCASE("{lic}"))'
+            lic_clean = str(license_str or "").strip().replace('"', '\\"')
+            filters = f'CONTAINS(LCASE(STR(?license)), LCASE("{lic_clean}"))'
 
         query = f"""
         PREFIX : <https://brigata.github.org/>
