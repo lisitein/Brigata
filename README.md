@@ -35,10 +35,10 @@ The architecture is modular, extensible, and designed to support heterogeneous d
 
 <img src="images/workflow.png" width="900"/>
 
-**1. CategoryUploadHandler** loads JSON into the relational database (SQLite).
-**2. JournalUploadHandler** loads CSV into the graph database (Blazegraph).
-**3. CategoryQueryHandler** and **JournalQueryHandler** retrieve data as Pandas DataFrames.
-**4. FullQueryEngine** integrates both sources and returns Python objects.
+1. **CategoryUploadHandler** loads JSON into the relational database (SQLite).  
+2. **JournalUploadHandler** loads CSV into the graph database (Blazegraph).  
+3. **CategoryQueryHandler** and **JournalQueryHandler** retrieve data as Pandas DataFrames.  
+4. **FullQueryEngine** integrates both sources and returns Python objects.
 
 ---
 
