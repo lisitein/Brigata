@@ -253,9 +253,6 @@ class BasicQueryEngine:
 
         for _, r in df.iterrows():
             raw_id = r.get("id", "")
-
-            # FIX: Yang returns ids as a comma-separated string (from GROUP_CONCAT),
-            # so we split it into a proper list instead of wrapping the whole string.
             if isinstance(raw_id, list):
                 identifiers = raw_id
             elif isinstance(raw_id, str) and raw_id:
