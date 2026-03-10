@@ -253,7 +253,15 @@ class BasicQueryEngine:
 
         for _, r in df.iterrows():
             raw_id = r.get("id", "")
-            identifiers = raw_id if isinstance(raw_id, list) else [raw_id] if raw_id else []
+
+            # FIX: Yang returns ids as a comma-separated string (from GROUP_CONCAT),
+            # so we split it into a proper list instead of wrapping the whole string.
+            if isinstance(raw_id, list):
+                identifiers = raw_id
+            elif isinstance(raw_id, str) and raw_id:
+                identifiers = [s.strip() for s in raw_id.split(",") if s.strip()]
+            else:
+                identifiers = []
 
             title = r.get("title", "") or ""
 
@@ -294,18 +302,10 @@ class BasicQueryEngine:
 
         return journals
 
-# ============================
-# FULL QUERY ENGINE
-# ============================
-
-class FullQueryEngine(BasicQueryEngine):
-    pass  # lasciato identico, non serve modificarlo
-
 
 # ============================
 # FULL QUERY ENGINE
 # ============================
-
 
 class FullQueryEngine(BasicQueryEngine):
     """
@@ -325,7 +325,6 @@ class FullQueryEngine(BasicQueryEngine):
         all_ids: Set[str] = set()
 
         for h in self.categoryHandlers:
-            # This method must exist on CategoryDataQueryHandler (Yang + Li)
             df = h.getAllAssignments()
             if df.empty:
                 continue
