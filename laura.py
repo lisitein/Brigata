@@ -8,14 +8,15 @@ from Yang import JournalQueryHandler, CategoryQueryHandler
 # ============================
 
 class IdentifiableEntity:
-    def __init__(self, id: str):
-        self.id = id
+    def __init__(self, ids: List[str]):
+        # Ora un'entità può avere più ID
+        self.id = ids
 
-    def getId(self) -> str:
+    def getId(self) -> List[str]:
         return self.id
 
     def getIds(self) -> Set[str]:
-        return {self.id}
+        return set(self.id)
 
 
 class Area(IdentifiableEntity):
@@ -24,7 +25,7 @@ class Area(IdentifiableEntity):
 
 class Category(IdentifiableEntity):
     def __init__(self, id: str, quartile: Optional[str] = None):
-        super().__init__(id)
+        super().__init__([id])
         self.quartile = quartile
 
     def getQuartile(self) -> Optional[str]:
@@ -34,7 +35,7 @@ class Category(IdentifiableEntity):
 class Journal(IdentifiableEntity):
     def __init__(
         self,
-        id: List[str],
+        ids: List[str],
         title: str,
         languages: List[str],
         publisher: Optional[str],
@@ -44,8 +45,7 @@ class Journal(IdentifiableEntity):
         hasCategory: List[str],
         hasArea: List[str],
     ):
-        super().__init__(id[0] if id else "")
-        self.identifiers = id or []
+        super().__init__(ids)
         self.title = title
         self.languages = languages
         self.publisher = publisher
@@ -54,9 +54,6 @@ class Journal(IdentifiableEntity):
         self.apc = apc
         self.hasCategory = hasCategory
         self.hasArea = hasArea
-
-    def getIds(self) -> Set[str]:
-        return set(self.identifiers)
 
     def getTitle(self) -> str:
         return self.title
@@ -215,7 +212,6 @@ class BasicQueryEngine:
                 if df is None or df.empty:
                     continue
 
-                # Accept both "area_id" and "id"
                 if "area_id" in df.columns:
                     col = "area_id"
                 elif "id" in df.columns:
@@ -225,7 +221,7 @@ class BasicQueryEngine:
 
                 df = df.drop_duplicates(subset=[col])
                 for _, r in df.iterrows():
-                    result.append(Area(r[col]))
+                    result.append(Area([r[col]]))
             except Exception:
                 continue
         return result
@@ -258,7 +254,7 @@ class BasicQueryEngine:
 
                 if "area_id" in df.columns:
                     row = df.iloc[0]
-                    return Area(row["area_id"])
+                    return Area([row["area_id"]])
             except Exception:
                 continue
 
@@ -291,7 +287,7 @@ class BasicQueryEngine:
                 for _, r in df.iterrows():
                     aid = r.get("area_id")
                     if aid:
-                        result.append(Area(aid))
+                        result.append(Area([aid]))
             except Exception:
                 continue
         return result
@@ -307,11 +303,11 @@ class BasicQueryEngine:
             try:
                 raw_id = r.get("id", "")
                 if isinstance(raw_id, list):
-                    identifiers = raw_id
+                    ids = raw_id
                 elif isinstance(raw_id, str) and raw_id:
-                    identifiers = [s.strip() for s in raw_id.split(",") if s.strip()]
+                    ids = [s.strip() for s in raw_id.split(",") if s.strip()]
                 else:
-                    identifiers = []
+                    ids = []
 
                 langs = r.get("languages", [])
                 if isinstance(langs, str):
@@ -329,7 +325,7 @@ class BasicQueryEngine:
 
                 journals.append(
                     Journal(
-                        id=identifiers,
+                        ids=ids,
                         title=r.get("title", "") or "",
                         languages=langs,
                         publisher=r.get("publisher"),
