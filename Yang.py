@@ -59,7 +59,9 @@ class JournalQueryHandler(QueryHandler):
         bindings = results.get("results", {}).get("bindings", [])
 
         if not bindings:
-            return None
+            return pd.DataFrame(columns=[
+                "journal", "id", "title", "publisher", "apc", "seal", "license", "languages"
+            ])
 
         b = bindings[0]
 
