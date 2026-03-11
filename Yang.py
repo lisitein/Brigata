@@ -238,6 +238,7 @@ class JournalQueryHandler(QueryHandler):
         return pd.DataFrame(data).drop_duplicates(subset=["id"])        # updated 10/02/26
 
     def getJournalsWithLicense(self, licenses: set[str]) -> pd.DataFrame:
+
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
 
         lics = [
@@ -248,11 +249,12 @@ class JournalQueryHandler(QueryHandler):
 
         if not lics:
             return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher", "apc", "seal", "license", "languages"
+                "journal", "id", "all_ids", "title", "publisher",
+                "apc", "seal", "license", "languages"
             ])
 
         filter_conditions = " || ".join(
-            [f'CONTAINS(LCASE(STR(?license)), LCASE("{lic}"))' for lic in lics]
+            [f'LCASE(STR(?license)) = LCASE("{lic}")' for lic in lics]
         )
 
         query = f"""
@@ -274,7 +276,7 @@ class JournalQueryHandler(QueryHandler):
         OPTIONAL {{ ?journal :seal ?seal }}
         OPTIONAL {{ ?journal :languages ?lang }}
         }}
-        GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
+        GROUP BY ?journal ?title ?publisher ?apc ?seal ?license
         """
 
         sparql.setQuery(query)
@@ -288,7 +290,8 @@ class JournalQueryHandler(QueryHandler):
 
         if not bindings:
             return pd.DataFrame(columns=[
-                "journal", "id", "title", "publisher", "apc", "seal", "license", "languages"
+                "journal", "id", "all_ids", "title", "publisher",
+                "apc", "seal", "license", "languages"
             ])
 
         def v(b, var):
@@ -296,7 +299,8 @@ class JournalQueryHandler(QueryHandler):
 
         data = [{
             "journal": v(b, "journal"),
-            "id": v(b, "all_ids"),
+            "id": v(b, "id"),
+            "all_ids": v(b, "all_ids"),
             "title": v(b, "title"),
             "publisher": v(b, "publisher"),
             "apc": v(b, "apc"),
@@ -305,7 +309,7 @@ class JournalQueryHandler(QueryHandler):
             "languages": v(b, "languages"),
         } for b in bindings]
 
-        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"])     # updated 22/02/26
+        return pd.DataFrame(data).drop_duplicates(subset=["id", "license"]) 
 
     def getJournalsWithAPC(self) -> pd.DataFrame:
         sparql = SPARQLWrapper(self.getDbPathOrUrl())
