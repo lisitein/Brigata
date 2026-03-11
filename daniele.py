@@ -1,277 +1,136 @@
 from pandas import *
 from json import load
 from sqlite3 import connect
-from baseHandler import UploadHandler, QueryHandler
+from baseHandler import UploadHandler
 
 #I created an image of the relational database and I uploaded on GitHub: yangish_database.png
 
-# ============================================================
-# CATEGORY UPLOAD HANDLER
-# ============================================================
-
 class CategoryUploadHandler(UploadHandler):
-    """
-    Uploads JSON data into the relational SQLite database.
-    This version preserves the original logic but fixes fragile merges,
-    ensures consistent quartile handling, and improves ID generation safety.
-    """
-
     def pushDataToDb(self, path):
-        # ---- Load JSON ----
         with open(path, mode="r", encoding="UTF-8") as f:
             json_content = load(f)
+            #print('Number of journals in the dataset:', len(json_content))     #the json file contains len(json_content) journals
 
-        # ---- Determine next internal IDs safely ----
+        # let's see if there are already tables in the database. In case, let's 
+        # understand what are the last internal ids used, so we continue from them
         with connect(self.dbPathOrUrl) as con:
             try:
                 existing = read_sql("SELECT internalId FROM IdentifiableEntity", con)
+                last_journal = max([int(id.split('-')[1]) for id in existing['internalId'] if id.startswith('journal-')], default=0) + 1
+                last_area = max([int(id.split('-')[1]) for id in existing['internalId'] if id.startswith('area-')], default=0) + 1
+                last_category = max([int(id.split('-')[1]) for id in existing['internalId'] if id.startswith('category-')], default=0) + 1
+            except:
+                last_journal = 0
+                last_area = 0
+                last_category = 0
 
-                def next_id(prefix):
-                    ids = [
-                        int(id.split('-')[1])
-                        for id in existing['internalId']
-                        if id.startswith(prefix)
-                    ]
-                    return (max(ids) + 1) if ids else 0
+        # let's collect the journals 
+        journal_internal_id=[]
+        journal_id=[]
+        placeholder=[]
+        for n in range(len(json_content)):
+            number_of_identifiers=len(json_content[n]['identifiers'])
+            for m in range(number_of_identifiers):
+                journal_internal_id.append(f'journal-{n+last_journal}')
+                journal_id.append(json_content[n]['identifiers'][m])
+                placeholder.append('')
 
-                last_journal = next_id("journal-")
-                last_area = next_id("area-")
-                last_category = next_id("category-")
-
-            except Exception:
-                last_journal = last_area = last_category = 0
-
-        # ============================================================
-        # JOURNALS
-        # ============================================================
-
-        journal_internal_id = []
-        journal_id = []
-        languages_col = []
-        publisher_col = []
-        license_col = []
-        apc_col = []
-        seal_col = []
-        placeholder = []
-
-        for n, entry in enumerate(json_content):
-            identifiers = entry.get("identifiers", [])
-            langs = ",".join(entry.get("languages", [])) if entry.get("languages") else ""
-            pub = entry.get("publisher", "") or ""
-            lic = entry.get("license", "") or ""
-            apc_val = str(entry.get("apc", "") or "")
-            seal_val = str(entry.get("seal", "") or "")
-
-            for ident in identifiers:
-                journal_internal_id.append(f"journal-{n + last_journal}")
-                journal_id.append(ident)
-                languages_col.append(langs)
-                publisher_col.append(pub)
-                license_col.append(lic)
-                apc_col.append(apc_val)
-                seal_col.append(seal_val)
-                placeholder.append("")
-
-        journal = DataFrame({
-            "internalId": Series(journal_internal_id, dtype="string"),
-            "id": Series(journal_id, dtype="string"),
-            "quartile": Series(placeholder, dtype="string"),
-            "languages": Series(languages_col, dtype="string"),
-            "publisher": Series(publisher_col, dtype="string"),
-            "license": Series(license_col, dtype="string"),
-            "apc": Series(apc_col, dtype="string"),
-            "seal": Series(seal_col, dtype="string"),
-        })
-
-        # ============================================================
-        # AREAS
-        # ============================================================
-
-        all_areas = {ar for j in json_content for ar in j.get("areas", [])}
-        all_areas = list(all_areas)
-
-        area = DataFrame({
-            "internalId": Series([f"area-{i + last_area}" for i in range(len(all_areas))], dtype="string"),
-            "id": Series(all_areas, dtype="string"),
-            "quartile": Series([""] * len(all_areas), dtype="string"),
-        })
-
-        # ============================================================
-        # CATEGORIES
-        # ============================================================
-
-        all_categories = set()
+        journal=DataFrame()                 
+        journal.insert(0, 'internalId', Series(journal_internal_id, dtype="string"))
+        journal.insert(1, 'id', Series(journal_id, dtype="string"))
+        journal.insert(2, 'quartile', Series(placeholder, dtype="string"))
+        
+        # let's collect the areas
+        all_areas_set=set()
         for j in json_content:
-            for elem in j.get("categories", []):
-                cid = elem.get("id", "")
-                q = elem.get("quartile", "") or ""
-                all_categories.add((cid, q))
+            for elem in j['areas']:
+                all_areas_set.add(elem)
+        all_areas_list=list(all_areas_set)
 
-        all_categories = list(all_categories)
+        area_internal_id=[]
+        area_id=[]
+        placeholder=[]
+        for n in range(len(all_areas_list)):
+            area_internal_id.append(f'area-{n+last_area}')
+            area_id.append(all_areas_list[n])
+            placeholder.append('')
 
-        category = DataFrame({
-            "internalId": Series([f"category-{i + last_category}" for i in range(len(all_categories))], dtype="string"),
-            "id": Series([c[0] for c in all_categories], dtype="string"),
-            "quartile": Series([c[1] for c in all_categories], dtype="string"),
-        })
+        area=DataFrame()
+        area.insert(0, 'internalId', Series(area_internal_id, dtype="string"))
+        area.insert(1, 'id', Series(area_id, dtype="string"))
+        area.insert(2, 'quartile', Series(placeholder, dtype="string"))
 
-        # ============================================================
-        # IDENTIFIABLE ENTITY TABLE
-        # ============================================================
+    # let's collect the categories
 
-        identifiable_entity = concat([journal, area, category], axis=0)
+        all_categories_set=set()                
+        for j in json_content:
+            for elem in j['categories']:
+                if "quartile" not in elem:
+                    elem["quartile"]=''
+                all_categories_set.add((elem['id'],elem['quartile']))
+        all_categories_list=list(all_categories_set)
 
-        # ============================================================
-        # HAS CATEGORY (robust merge)
-        # ============================================================
+        category_internal_id=[]
+        category_id=[]
+        quartile=[]
+        for n in range(len(all_categories_list)):
+            category_internal_id.append(f'category-{n+last_category}')
+            category_id.append(all_categories_list[n][0])
+            quartile.append(all_categories_list[n][1])
 
-        hc_journal = []
-        hc_category = []
-        hc_quartile = []
+        category=DataFrame()
+        category.insert(0, 'internalId', Series(category_internal_id, dtype="string"))
+        category.insert(1, 'id', Series(category_id, dtype="string"))
+        category.insert(2, 'quartile', Series(quartile, dtype="string"))
 
-        for n, entry in enumerate(json_content):
-            for categ in entry.get("categories", []):
-                hc_journal.append(f"journal-{n + last_journal}")
-                hc_category.append(categ.get("id", ""))
-                hc_quartile.append(categ.get("quartile", "") or "")
 
-        has_category = DataFrame({
-            "journalId": Series(hc_journal, dtype="string"),
-            "categoryName": Series(hc_category, dtype="string"),
-            "quartile": Series(hc_quartile, dtype="string"),
-        })
+    #let's create the TABLES for the relational database operating on the dataframes
 
-        category_lookup = identifiable_entity[
-            identifiable_entity["internalId"].str.startswith("category-")
-        ][["id", "internalId"]]
+    #I start with the table IdentifiableEntity
 
-        has_category = merge(
-            has_category,
-            category_lookup,
-            left_on="categoryName",
-            right_on="id",
-            how="inner"
-        )[["journalId", "internalId"]].rename(columns={"internalId": "categoryId"})
+        identifiable_entity=concat([journal,area,category],axis=0)
+  
+    #Now I work to create the table HasCategory
+        
+        starting_journal=[]
+        matching_category=[]
+        matching_quartile=[]
+        for n in range(len(json_content)):
+            for categ in json_content[n]['categories']:
+                starting_journal.append(f'journal-{n+last_journal}')
+                matching_category.append(categ['id'])
+                matching_quartile.append(categ['quartile'])
 
-        # ============================================================
-        # HAS AREA (robust merge)
-        # ============================================================
+        has_category=DataFrame()   
+        has_category.insert(0, 'journalId', Series(starting_journal, dtype="string"))
+        has_category.insert(1, 'categoryName', Series(matching_category, dtype="string")) 
+        has_category.insert(2, 'quartile', Series(matching_quartile, dtype="string"))
+        has_category=merge(identifiable_entity, has_category, left_on=["id", 'quartile'], right_on=['categoryName', 'quartile'])[['journalId', 'internalId']]
+        has_category=has_category.rename(columns={"internalId":"categoryId"})
 
-        ha_journal = []
-        ha_area = []
 
-        for n, entry in enumerate(json_content):
-            for ar in entry.get("areas", []):
-                ha_journal.append(f"journal-{n + last_journal}")
-                ha_area.append(ar)
+    #Now I work for table HasArea:
+        
+        starting_journal=[]
+        matching_area=[]
+        for n in range(len(json_content)):
+            for ar in json_content[n]['areas']:
+                starting_journal.append(f'journal-{n+last_journal}')
+                matching_area.append(ar)
 
-        has_area = DataFrame({
-            "journalId": Series(ha_journal, dtype="string"),
-            "areaName": Series(ha_area, dtype="string"),
-        })
+        has_area=DataFrame()   
+        has_area.insert(0, 'journalId', Series(starting_journal, dtype="string"))
+        has_area.insert(1, 'areaName', Series(matching_area, dtype="string")) 
 
-        area_lookup = identifiable_entity[
-            identifiable_entity["internalId"].str.startswith("area-")
-        ][["id", "internalId"]]
+        has_area=merge(identifiable_entity, has_area, left_on="id", right_on="areaName")[['journalId',"internalId"]]
+        has_area=has_area.rename(columns={"internalId":"areaId"})
 
-        has_area = merge(
-            has_area,
-            area_lookup,
-            left_on="areaName",
-            right_on="id",
-            how="inner"
-        )[["journalId", "internalId"]].rename(columns={"internalId": "areaId"})
+    #I upload the tables in the relational database:
 
-        # ============================================================
-        # WRITE TO DATABASE
-        # ============================================================
-
-        with connect(self.dbPathOrUrl) as con:
+        with connect(self.dbPathOrUrl) as con:  
             identifiable_entity.to_sql("IdentifiableEntity", con, if_exists="append", index=False)
             has_category.to_sql("HasCategory", con, if_exists="append", index=False)
             has_area.to_sql("HasArea", con, if_exists="append", index=False)
-            con.commit()
+            con.commit()            
 
         return True
-
-
-# ============================================================
-# CATEGORY QUERY HANDLER
-# ============================================================
-
-class CategoryQueryHandler(QueryHandler):
-    """
-    Handles all queries to the relational SQLite database.
-    Returns pandas DataFrames in a format compatible with BasicQueryEngine.
-    """
-
-    def getById(self, category_id: str) -> DataFrame:
-        cid = (category_id or "").strip()
-        if not cid:
-            return DataFrame()
-
-        with connect(self.dbPathOrUrl) as con:
-            query = """
-                SELECT id, quartile
-                FROM IdentifiableEntity
-                WHERE id = ?
-                AND internalId LIKE 'category-%'
-                LIMIT 1
-            """
-            df = read_sql(query, con, params=[cid])
-
-        return df
-
-    def getAllCategories(self) -> DataFrame:
-        with connect(self.dbPathOrUrl) as con:
-            query = """
-                SELECT id, quartile
-                FROM IdentifiableEntity
-                WHERE internalId LIKE 'category-%'
-            """
-            df = read_sql(query, con)
-
-        return df
-
-    def getCategoriesForJournal(self, journal_id: str) -> DataFrame:
-        jid = (journal_id or "").strip()
-        if not jid:
-            return DataFrame()
-
-        with connect(self.dbPathOrUrl) as con:
-            query = """
-                SELECT c.id, c.quartile
-                FROM HasCategory hc
-                JOIN IdentifiableEntity c
-                    ON hc.categoryId = c.internalId
-                WHERE hc.journalId = (
-                    SELECT internalId
-                    FROM IdentifiableEntity
-                    WHERE id = ?
-                    AND internalId LIKE 'journal-%'
-                    LIMIT 1
-                )
-            """
-            df = read_sql(query, con, params=[jid])
-
-        return df
-
-    def getJournalsInCategory(self, category_id: str) -> DataFrame:
-        cid = (category_id or "").strip()
-        if not cid:
-            return DataFrame()
-
-        with connect(self.dbPathOrUrl) as con:
-            query = """
-                SELECT j.id, j.publisher, j.license, j.apc, j.seal, j.languages
-                FROM HasCategory hc
-                JOIN IdentifiableEntity c
-                    ON hc.categoryId = c.internalId
-                JOIN IdentifiableEntity j
-                    ON hc.journalId = j.internalId
-                WHERE c.id = ?
-                AND j.internalId LIKE 'journal-%'
-            """
-            df = read_sql(query, con, params=[cid])
-
-        return df
