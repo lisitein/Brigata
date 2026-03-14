@@ -435,98 +435,111 @@ class CategoryQueryHandler(QueryHandler):
         if not eid:
             return pd.DataFrame()
 
-        # 1) identify journal / category / area
-        kind_row = pd.read_sql(
+        # recognize journal / category / area
+        is_journal = pd.read_sql(
             """
-            SELECT internalId
+            SELECT 1
             FROM IdentifiableEntity
             WHERE id = :eid COLLATE NOCASE
-            AND (
-                internalId LIKE 'journal-%'
-                OR internalId LIKE 'category-%'
-                OR internalId LIKE 'area-%'
-            )
-            ORDER BY
-            CASE
-                WHEN internalId LIKE 'journal-%' THEN 1
-                WHEN internalId LIKE 'category-%' THEN 2
-                WHEN internalId LIKE 'area-%' THEN 3
-                ELSE 99
-            END
+            AND internalId LIKE 'journal-%'
             LIMIT 1
             """,
             engine,
             params={"eid": eid},
         )
 
-        if kind_row.empty:
-            return pd.DataFrame()
-
-        internal_id = str(kind_row.loc[0, "internalId"])
-
-        # 2) journal_id (ISSN) -> categories + areas + quartile
-        if internal_id.startswith("journal-"):
+        if not is_journal.empty:
             query = """
-                SELECT 
+                SELECT DISTINCT
                     j.id AS journal_id,
-                    GROUP_CONCAT(DISTINCT c.id || ' (' || c.quartile || ')') AS categories_with_quartiles,
-                    GROUP_CONCAT(DISTINCT a.id) AS areas
-                FROM IdentifiableEntity j
-                LEFT JOIN HasCategory hc ON hc.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity c ON c.internalId = hc.categoryId
-                LEFT JOIN HasArea ha ON ha.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity a ON a.internalId = ha.areaId
-                WHERE j.id = :eid COLLATE NOCASE
-                GROUP BY j.id
-            """
-            df = pd.read_sql(query, engine, params={"eid": eid})
-            return df
-
-        # 3) category name -> quartile + all journals
-        if internal_id.startswith("category-"):
-            query = """
-                SELECT 
                     c.id AS category_id,
                     c.quartile AS category_quartile,
-                    j.id AS journal_id,
-                    GROUP_CONCAT(DISTINCT a.id) AS areas
-                FROM IdentifiableEntity c
-                JOIN HasCategory hc ON hc.categoryId = c.internalId
-                JOIN IdentifiableEntity j ON j.internalId = hc.journalId
-                LEFT JOIN HasArea ha ON ha.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity a ON a.internalId = ha.areaId
-                WHERE c.id = :eid COLLATE NOCASE
-                GROUP BY c.id, j.id
-                ORDER BY j.id
+                    a.id AS area_id
+                FROM IdentifiableEntity j
+                LEFT JOIN HasCategory hc
+                    ON hc.journalId = j.internalId
+                LEFT JOIN IdentifiableEntity c
+                    ON c.internalId = hc.categoryId
+                LEFT JOIN HasArea ha
+                    ON ha.journalId = j.internalId
+                LEFT JOIN IdentifiableEntity a
+                    ON a.internalId = ha.areaId
+                WHERE j.id = :eid COLLATE NOCASE
+                ORDER BY journal_id, category_id, category_quartile, area_id
             """
             df = pd.read_sql(query, engine, params={"eid": eid})
-            return df
+            return df if not df.empty else pd.DataFrame(
+                columns=["journal_id", "category_id", "category_quartile", "area_id"]
+            )
 
-        # 4) area name -> all journals
-        if internal_id.startswith("area-"):
+        is_category = pd.read_sql(
+            """
+            SELECT 1
+            FROM IdentifiableEntity
+            WHERE id = :eid COLLATE NOCASE
+            AND internalId LIKE 'category-%'
+            LIMIT 1
+            """,
+            engine,
+            params={"eid": eid},
+        )
+
+        if not is_category.empty:
             query = """
-                SELECT 
-                    a.id AS area_id,
-                    j.id AS journal_id,
-                    GROUP_CONCAT(DISTINCT c.id) AS specific_categories
-                FROM IdentifiableEntity a
-                JOIN HasArea ha ON ha.areaId = a.internalId
-                JOIN IdentifiableEntity j ON j.internalId = ha.journalId
-                LEFT JOIN HasCategory hc ON hc.journalId = j.internalId
-                LEFT JOIN IdentifiableEntity c ON c.internalId = hc.categoryId
-                WHERE a.id = :eid COLLATE NOCASE
-                GROUP BY j.id
-                ORDER BY j.id
+                SELECT DISTINCT
+                    c.id AS category_id,
+                    c.quartile AS category_quartile,
+                    j.id AS journal_id
+                FROM IdentifiableEntity c
+                JOIN HasCategory hc
+                    ON hc.categoryId = c.internalId
+                JOIN IdentifiableEntity j
+                    ON j.internalId = hc.journalId
+                WHERE c.id = :eid COLLATE NOCASE
+                ORDER BY category_id, category_quartile, journal_id
             """
             df = pd.read_sql(query, engine, params={"eid": eid})
-            return df
+            return df if not df.empty else pd.DataFrame(
+                columns=["category_id", "category_quartile", "journal_id"]
+            )
 
-        return pd.DataFrame() # updated 09/02/26
+        is_area = pd.read_sql(
+            """
+            SELECT 1
+            FROM IdentifiableEntity
+            WHERE id = :eid COLLATE NOCASE
+            AND internalId LIKE 'area-%'
+            LIMIT 1
+            """,
+            engine,
+            params={"eid": eid},
+        )
+
+        if not is_area.empty:
+            query = """
+                SELECT DISTINCT
+                    a.id AS area_id,
+                    j.id AS journal_id
+                FROM IdentifiableEntity a
+                JOIN HasArea ha
+                    ON ha.areaId = a.internalId
+                JOIN IdentifiableEntity j
+                    ON j.internalId = ha.journalId
+                WHERE a.id = :eid COLLATE NOCASE
+                ORDER BY area_id, journal_id
+            """
+            df = pd.read_sql(query, engine, params={"eid": eid})
+            return df if not df.empty else pd.DataFrame(
+                columns=["area_id", "journal_id"]
+            )
+
+        return pd.DataFrame()
+
 
     def getAllCategories(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
-        SELECT DISTINCT i.id AS category_id
+        SELECT DISTINCT i.id AS category_id, i.quartile AS quartile
         FROM IdentifiableEntity i
         WHERE i.internalId LIKE 'category-%'
         ORDER BY category_id
@@ -534,7 +547,7 @@ class CategoryQueryHandler(QueryHandler):
         df = pd.read_sql(query, engine)
         if "category_id" not in df.columns and "id" in df.columns:
             df = df.rename(columns={"id": "category_id"})
-        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"]) # updated 09/02/26
+        return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"])
 
     def getAllAreas(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
@@ -547,76 +560,140 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
-        if not quartiles:
-            return pd.DataFrame(columns=["category_id", "quartile"])
-
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        keys = [f"q{i}" for i in range(len(quartiles))]
+
+        # 1.  Normalization
+        normalized_quartiles = {
+            str(q).strip().upper()
+            for q in (quartiles or set())
+            if q is not None and str(q).strip()
+        }
+
+        # 2. IF IT IS EMPTY  = “ALL quartiles”
+        if not normalized_quartiles:
+            query = """
+                SELECT DISTINCT
+                    id AS category_id,
+                    quartile AS quartile
+                FROM IdentifiableEntity
+                WHERE internalId LIKE 'category-%'
+                ORDER BY category_id, quartile
+            """
+            return pd.read_sql(query, engine)
+
+        # 3. OR DEPENDS ON SPECIFIC quartiles 
+        keys = [f"q{i}" for i in range(len(normalized_quartiles))]
         placeholders = ", ".join([f":{k}" for k in keys])
-        params_dict = dict(zip(keys, list(quartiles)))
+        params_dict = dict(zip(keys, list(normalized_quartiles)))
 
         query = f"""
             SELECT DISTINCT
-                id       AS category_id,
+                id AS category_id,
                 quartile AS quartile
             FROM IdentifiableEntity
             WHERE internalId LIKE 'category-%'
-            AND quartile IN ({placeholders})
-            ORDER BY category_id
+            AND UPPER(TRIM(quartile)) IN ({placeholders})
+            ORDER BY category_id, quartile
         """
         return pd.read_sql(query, engine, params=params_dict)
 
     def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
-        if not area_ids:
-            return pd.DataFrame(columns=["category_id"])
-
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
 
-        keys = [f"a{i}" for i in range(len(area_ids))]
+        # NORMALIZATION
+        normalized_areas = {
+            str(a).strip()
+            for a in (area_ids or set())
+            if a is not None and str(a).strip()
+        }
+
+        # IF IT IS EMPTY THEN “ALL areas”
+        if not normalized_areas:
+            query = """
+                SELECT DISTINCT
+                    c.id AS category_id,
+                    c.quartile AS quartile
+                FROM HasArea ha
+                JOIN HasCategory hc
+                    ON hc.journalId = ha.journalId
+                JOIN IdentifiableEntity c
+                    ON c.internalId = hc.categoryId
+                JOIN IdentifiableEntity a
+                    ON a.internalId = ha.areaId
+                WHERE c.internalId LIKE 'category-%'
+                AND a.internalId LIKE 'area-%'
+                ORDER BY category_id, quartile
+            """
+            return pd.read_sql(query, engine)
+
+        # OR DEPENDS ON SPECIFIC area
+        keys = [f"a{i}" for i in range(len(normalized_areas))]
         placeholders = ", ".join([f":{k}" for k in keys])
-        
-        params_dict = dict(zip(keys, list(area_ids)))
+        params_dict = dict(zip(keys, list(normalized_areas)))
 
         query = f"""
-        SELECT DISTINCT
-            c.id AS category_id
-        FROM HasArea ha
-        JOIN HasCategory hc
-            ON hc.journalId = ha.journalId
-        JOIN IdentifiableEntity a
-            ON a.internalId = ha.areaId
-        JOIN IdentifiableEntity c
-            ON c.internalId = hc.categoryId
-        WHERE a.id IN ({placeholders})
-        ORDER BY category_id
+            SELECT DISTINCT
+                c.id AS category_id,
+                c.quartile AS quartile
+            FROM HasArea ha
+            JOIN IdentifiableEntity a
+                ON a.internalId = ha.areaId
+            JOIN HasCategory hc
+                ON hc.journalId = ha.journalId
+            JOIN IdentifiableEntity c
+                ON c.internalId = hc.categoryId
+            WHERE a.id IN ({placeholders})
+            AND a.internalId LIKE 'area-%'
+            AND c.internalId LIKE 'category-%'
+            ORDER BY category_id, quartile
         """
-
         return pd.read_sql(query, engine, params=params_dict)
 
     def getAreasAssignedToCategories(self, category_ids: set[str]) -> pd.DataFrame:
-        if not category_ids:
-            return pd.DataFrame(columns=["area_id"])
-
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
-        keys = [f"c{i}" for i in range(len(category_ids))]
+
+        normalized_categories = {
+            str(c).strip()
+            for c in (category_ids or set())
+            if c is not None and str(c).strip()
+        }
+
+        if not normalized_categories:
+            query = """
+                SELECT DISTINCT
+                    a.id AS area_id
+                FROM HasCategory hc
+                JOIN HasArea ha
+                    ON ha.journalId = hc.journalId
+                JOIN IdentifiableEntity c
+                    ON c.internalId = hc.categoryId
+                JOIN IdentifiableEntity a
+                    ON a.internalId = ha.areaId
+                WHERE c.internalId LIKE 'category-%'
+                AND a.internalId LIKE 'area-%'
+                ORDER BY area_id
+            """
+            return pd.read_sql(query, engine)
+
+        keys = [f"c{i}" for i in range(len(normalized_categories))]
         placeholders = ", ".join([f":{k}" for k in keys])
-        
-        params_dict = dict(zip(keys, list(category_ids)))
+        params_dict = dict(zip(keys, list(normalized_categories)))
 
         query = f"""
-        SELECT DISTINCT
-            a.id AS area_id
-        FROM HasCategory hc
-        JOIN HasArea ha
-            ON ha.journalId = hc.journalId
-        JOIN IdentifiableEntity c
-            ON c.internalId = hc.categoryId
-        JOIN IdentifiableEntity a
-            ON a.internalId = ha.areaId
-        WHERE c.id IN ({placeholders})
-        ORDER BY area_id
+            SELECT DISTINCT
+                a.id AS area_id
+            FROM HasCategory hc
+            JOIN IdentifiableEntity c
+                ON c.internalId = hc.categoryId
+            JOIN HasArea ha
+                ON ha.journalId = hc.journalId
+            JOIN IdentifiableEntity a
+                ON a.internalId = ha.areaId
+            WHERE c.id IN ({placeholders})
+            AND c.internalId LIKE 'category-%'
+            AND a.internalId LIKE 'area-%'
+            ORDER BY area_id
         """
-
         return pd.read_sql(query, engine, params=params_dict)
 
     def getAllCategoryAssignments(self) -> pd.DataFrame:
