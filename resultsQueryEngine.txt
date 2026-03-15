@@ -1,0 +1,535 @@
+***REPORT ABOUT THE BASIC QUERY ENGINE***
+15/03/2026 11:40
+
+
+
+
+
+GET ENTITY BY ID
+
+
+
+*** 0002-8282
+
+
+Type: Category
+id: ['Economics and Econometrics']
+quartile: Q1
+
+
+
+*** 1944-7981
+
+
+Type: Category
+id: ['Economics and Econometrics']
+quartile: Q1
+
+
+
+*** 2058-8437
+
+
+Type: Category
+id: ['Biomaterials']
+quartile: Q1
+
+
+
+*** 2224-9281
+
+
+Type: Category
+id: ['Philosophy']
+quartile: None
+
+
+
+*** 2238-8869
+
+
+Type: <class 'NoneType'>
+
+
+
+*** 1733-8670
+
+
+Type: <class 'NoneType'>
+
+
+
+*** 2392-0378
+
+
+Type: <class 'NoneType'>
+
+
+
+*** Energy
+
+
+Type: Area
+id: ['Energy']
+
+
+
+*** Philosophy
+
+
+Type: Category
+id: ['Philosophy']
+quartile: None
+
+
+
+*** Drug Discovery
+
+
+Type: Category
+id: ['Drug Discovery']
+quartile: Q1
+
+
+
+*** Medicine (miscellaneous)
+
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q1
+
+
+
+*** happy-yang
+
+
+Type: <class 'NoneType'>
+
+
+
+GET ALL JOURNALS
+
+
+
+GET JOURNALS WITH TITLE
+
+
+
+*** cien
+
+
+
+
+*** Tourism
+
+
+
+
+*** happy yang
+
+
+
+
+GET JOURNALS PUBLISHED BY
+
+
+
+*** MUS
+
+
+
+
+*** Univers
+
+
+
+
+*** Super Yang
+
+
+
+
+GET JOURNALS WITH LICENSE
+
+
+
+*** CC BY     -     CC BY-NC-SA
+
+
+
+
+*** CC BY-NC
+
+
+
+
+*** ChiChi
+
+
+
+
+*** no license specified
+
+
+
+
+GET JOURNALS WITH APC
+
+
+
+GET JOURNALS WITH DOAJ SEAL
+
+
+
+GET ALL CATEGORIES
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Biomaterials']
+quartile: Q1
+
+Type: Category
+id: ['Drug Discovery']
+quartile: Q1
+
+Type: Category
+id: ['Economics and Econometrics']
+quartile: Q1
+
+Type: Category
+id: ['Electronic, Optical and Magnetic Materials']
+quartile: Q1
+
+Type: Category
+id: ['Energy (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Materials Chemistry']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Pharmacology']
+quartile: Q1
+
+Type: Category
+id: ['Philosophy']
+quartile: 
+
+Type: Category
+id: ['Surfaces, Coatings and Films']
+quartile: Q1
+
+
+
+GET ALL AREAS
+
+Type: Area
+id: ['Arts and Humanities']
+
+Type: Area
+id: ['Biochemistry, Genetics and Molecular Biology']
+
+Type: Area
+id: ['Economics, Econometrics and Finance']
+
+Type: Area
+id: ['Energy']
+
+Type: Area
+id: ['Materials Science']
+
+Type: Area
+id: ['Medicine']
+
+Type: Area
+id: ['Pharmacology, Toxicology and Pharmaceutics']
+
+
+
+GET CATEGORIES WITH QUARTILE
+
+
+
+*** no quartile specified
+
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q3
+
+Type: Category
+id: ['Biomaterials']
+quartile: Q1
+
+Type: Category
+id: ['Drug Discovery']
+quartile: Q1
+
+Type: Category
+id: ['Economics and Econometrics']
+quartile: Q1
+
+Type: Category
+id: ['Electronic, Optical and Magnetic Materials']
+quartile: Q1
+
+Type: Category
+id: ['Energy (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Materials Chemistry']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q4
+
+Type: Category
+id: ['Pharmacology']
+quartile: Q1
+
+Type: Category
+id: ['Philosophy']
+quartile: 
+
+Type: Category
+id: ['Surfaces, Coatings and Films']
+quartile: Q1
+
+
+
+*** Q3
+
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q3
+
+
+
+*** Q3 - Q4
+
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q3
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q4
+
+
+
+GET CATEGORIES ASSIGNED TO AREAS
+
+
+
+*** no area specified
+
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q3
+
+Type: Category
+id: ['Biomaterials']
+quartile: Q1
+
+Type: Category
+id: ['Drug Discovery']
+quartile: Q1
+
+Type: Category
+id: ['Economics and Econometrics']
+quartile: Q1
+
+Type: Category
+id: ['Electronic, Optical and Magnetic Materials']
+quartile: Q1
+
+Type: Category
+id: ['Energy (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Materials Chemistry']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q4
+
+Type: Category
+id: ['Pharmacology']
+quartile: Q1
+
+Type: Category
+id: ['Philosophy']
+quartile: 
+
+Type: Category
+id: ['Surfaces, Coatings and Films']
+quartile: Q1
+
+
+
+*** Medicine
+
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Biochemistry, Genetics and Molecular Biology (miscellaneous)']
+quartile: Q3
+
+Type: Category
+id: ['Drug Discovery']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Medicine (miscellaneous)']
+quartile: Q4
+
+Type: Category
+id: ['Pharmacology']
+quartile: Q1
+
+
+
+*** Energy - Arts and Humanities
+
+
+Type: Category
+id: ['Biomaterials']
+quartile: Q1
+
+Type: Category
+id: ['Electronic, Optical and Magnetic Materials']
+quartile: Q1
+
+Type: Category
+id: ['Energy (miscellaneous)']
+quartile: Q1
+
+Type: Category
+id: ['Materials Chemistry']
+quartile: Q1
+
+Type: Category
+id: ['Philosophy']
+quartile: 
+
+Type: Category
+id: ['Surfaces, Coatings and Films']
+quartile: Q1
+
+
+
+*** happy-yang
+
+
+
+
+GET AREAS ASSIGNED TO CATEGORIES
+
+
+
+*** no category specified
+
+
+Type: Area
+id: ['Arts and Humanities']
+
+Type: Area
+id: ['Biochemistry, Genetics and Molecular Biology']
+
+Type: Area
+id: ['Economics, Econometrics and Finance']
+
+Type: Area
+id: ['Energy']
+
+Type: Area
+id: ['Materials Science']
+
+Type: Area
+id: ['Medicine']
+
+Type: Area
+id: ['Pharmacology, Toxicology and Pharmaceutics']
+
+
+
+*** Biomaterials
+
+
+Type: Area
+id: ['Energy']
+
+Type: Area
+id: ['Materials Science']
+
+
+
+*** Pharmacology - Philosophy
+
+
+Type: Area
+id: ['Arts and Humanities']
+
+Type: Area
+id: ['Medicine']
+
+Type: Area
+id: ['Pharmacology, Toxicology and Pharmaceutics']
+
+
+
+*** Medicine (miscellaneous)
+
+
+Type: Area
+id: ['Biochemistry, Genetics and Molecular Biology']
+
+Type: Area
+id: ['Medicine']
+
+Type: Area
+id: ['Pharmacology, Toxicology and Pharmaceutics']
+
+
+
+*** happy-yang
+

@@ -5,7 +5,7 @@ from impl import *
 with open('resultsJournalQueryHandler.txt','w') as f:
 
     yang=JournalQueryHandler()
-    yang.setDbPathOrUrl('http://10.201.2.51:9999/blazegraph/')
+    yang.setDbPathOrUrl('http://192.168.1.115:9999/blazegraph/')                     #http://10.201.2.51:9999/blazegraph/
 
     f.write('***REPORT ABOUT THE JOURNAL QUERY HANDLER***\n')
     f.write(datetime.now().strftime("%d/%m/%Y %H:%M\n\n\n"))

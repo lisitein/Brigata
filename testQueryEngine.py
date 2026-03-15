@@ -31,7 +31,7 @@ rel_path = "data/relational_database.db"
 cat = CategoryUploadHandler()
 cat.setDbPathOrUrl(rel_path)
 
-grp_endpoint = "http://10.201.2.51:9999/blazegraph/"  
+grp_endpoint = "http://192.168.1.115:9999/blazegraph/" # http://10.201.2.51:9999/blazegraph/
 jou = JournalUploadHandler()
 jou.setDbPathOrUrl(grp_endpoint)
 

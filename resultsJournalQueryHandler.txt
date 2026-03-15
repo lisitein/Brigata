@@ -1,0 +1,106 @@
+***REPORT ABOUT THE JOURNAL QUERY HANDLER***
+15/03/2026 11:45
+
+
+
+
+
+GET BY ID
+
+
+
+***2174-548X
+
+!!! ERROR IN EXECUTION
+
+
+***2224-9281
+
+!!! ERROR IN EXECUTION
+
+
+***happy-yang
+
+!!! ERROR IN EXECUTION
+
+
+GET ALL JOURNALS
+Empty DataFrame
+Columns: []
+Index: []
+
+
+
+
+
+
+GET JOURNALS WITH TITLE
+
+
+
+***happy-yang
+
+!!! ERROR IN EXECUTION
+
+
+***cien
+
+!!! ERROR IN EXECUTION
+
+
+***Tourism
+
+!!! ERROR IN EXECUTION
+
+
+GET JOURNALS PUBLISHED BY
+
+
+
+*** MUS
+
+!!! ERROR IN EXECUTION
+
+
+*** Univers
+
+!!! ERROR IN EXECUTION
+
+
+*** Super Yang
+
+!!! ERROR IN EXECUTION
+
+
+GET JOURNALS WITH LICENSE
+
+
+
+*** CC BY     -     CC BY-NC-SA
+
+!!! ERROR IN EXECUTION
+
+
+*** CC BY-NC
+
+!!! ERROR IN EXECUTION
+
+
+*** ChiChi
+
+!!! ERROR IN EXECUTION
+
+
+*** no license specified
+
+Empty DataFrame
+Columns: [journal, id, all_ids, title, publisher, apc, seal, license, languages]
+Index: []
+
+
+GET JOURNALS WITH APC
+!!! ERROR IN EXECUTION
+
+
+GET JOURNALS WITH DOAJ SEAL
+!!! ERROR IN EXECUTION
