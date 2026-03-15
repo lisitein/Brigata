@@ -450,21 +450,30 @@ class CategoryQueryHandler(QueryHandler):
 
         if not is_journal.empty:
             query = """
-                SELECT DISTINCT
-                    j.id AS journal_id,
+                WITH matched_journal AS (
+                    SELECT internalId
+                    FROM IdentifiableEntity
+                    WHERE id = :eid COLLATE NOCASE
+                    AND internalId LIKE 'journal-%'
+                    LIMIT 1
+                )
+                SELECT
+                    GROUP_CONCAT(DISTINCT j_all.id) AS journal_id,
                     c.id AS category_id,
                     c.quartile AS category_quartile,
                     a.id AS area_id
-                FROM IdentifiableEntity j
+                FROM matched_journal mj
+                JOIN IdentifiableEntity j_all
+                    ON j_all.internalId = mj.internalId
                 LEFT JOIN HasCategory hc
-                    ON hc.journalId = j.internalId
+                    ON hc.journalId = mj.internalId
                 LEFT JOIN IdentifiableEntity c
                     ON c.internalId = hc.categoryId
                 LEFT JOIN HasArea ha
-                    ON ha.journalId = j.internalId
+                    ON ha.journalId = mj.internalId
                 LEFT JOIN IdentifiableEntity a
                     ON a.internalId = ha.areaId
-                WHERE j.id = :eid COLLATE NOCASE
+                GROUP BY c.id, c.quartile, a.id
                 ORDER BY journal_id, category_id, category_quartile, area_id
             """
             df = pd.read_sql(query, engine, params={"eid": eid})
