@@ -9,7 +9,6 @@ from Yang import JournalQueryHandler, CategoryQueryHandler
 
 class IdentifiableEntity:
     def __init__(self, ids: List[str]):
-        # Ora un'entità può avere più ID
         self.id = ids
 
     def getId(self) -> List[str]:
@@ -182,9 +181,11 @@ class BasicQueryEngine:
                 df = h.getAllCategories()
                 if df is None or df.empty:
                     continue
-                if "category_id" not in df.columns:
-                    continue
-                df = df.drop_duplicates(subset=["category_id"])
+
+                # 🔥 PATCH: NON deduplicare solo per category_id
+                # Yang restituisce category_id + quartile
+                df = df.drop_duplicates(subset=["category_id", "quartile"])
+
                 for _, r in df.iterrows():
                     result.append(Category(r["category_id"], r.get("quartile")))
             except Exception:
@@ -212,6 +213,7 @@ class BasicQueryEngine:
                 if df is None or df.empty:
                     continue
 
+                # Qui il dedup è corretto
                 if "area_id" in df.columns:
                     col = "area_id"
                 elif "id" in df.columns:
