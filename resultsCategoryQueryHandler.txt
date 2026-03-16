@@ -1,5 +1,5 @@
 ***REPORT ABOUT THE CATEGORY QUERY HANDLER***
-15/03/2026 10:04
+16/03/2026 18:18
 
 
 
@@ -11,14 +11,14 @@ GET BY ID
 
 ***0002-8282
 
-  journal_id                 category_id category_quartile                              area_id
-0  0002-8282  Economics and Econometrics                Q1  Economics, Econometrics and Finance
+            journal_id                 category_id category_quartile                              area_id
+0  1944-7981,0002-8282  Economics and Econometrics                Q1  Economics, Econometrics and Finance
 
 
 ***1944-7981
 
-  journal_id                 category_id category_quartile                              area_id
-0  1944-7981  Economics and Econometrics                Q1  Economics, Econometrics and Finance
+            journal_id                 category_id category_quartile                              area_id
+0  1944-7981,0002-8282  Economics and Econometrics                Q1  Economics, Econometrics and Finance
 
 
 ***2058-8437
@@ -38,8 +38,8 @@ GET BY ID
 
 ***2224-9281
 
-  journal_id category_id category_quartile              area_id
-0  2224-9281  Philosophy                    Arts and Humanities
+            journal_id category_id category_quartile              area_id
+0  2224-9281,2414-990X  Philosophy                    Arts and Humanities
 
 
 ***Energy

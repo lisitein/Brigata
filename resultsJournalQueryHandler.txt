@@ -1,5 +1,5 @@
 ***REPORT ABOUT THE JOURNAL QUERY HANDLER***
-15/03/2026 11:45
+16/03/2026 18:17
 
 
 
@@ -11,7 +11,8 @@ GET BY ID
 
 ***2174-548X
 
-!!! ERROR IN EXECUTION
+          id                                       title             publisher   license    apc languages   seal
+0  2174-548X  Enlightening Tourism: A Pathmaking Journal  University of Huelva  CC BY-NC  false   English  false
 
 
 ***2224-9281
@@ -21,13 +22,13 @@ GET BY ID
 
 ***happy-yang
 
-!!! ERROR IN EXECUTION
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []
 
 
 GET ALL JOURNALS
-Empty DataFrame
-Columns: []
-Index: []
+!!! ERROR IN EXECUTION
 
 
 
@@ -40,17 +41,22 @@ GET JOURNALS WITH TITLE
 
 ***happy-yang
 
-!!! ERROR IN EXECUTION
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []
 
 
 ***cien
 
-!!! ERROR IN EXECUTION
+                                journal                    id                                                                   title                         publisher    apc   seal   license   languages
+0  https://brigata.github.org/journal_3  1733-8670, 2392-0378              Scientific Journals of the Maritime University of Szczecin                               MUS   true  false     CC BY     English
+1  https://brigata.github.org/journal_4             2238-8869  Fronteiras: Journal of Social, Technological and Environmental Science  Centro Universitário de Anápolis  false  false  CC BY-NC  Portuguese
 
 
 ***Tourism
 
-!!! ERROR IN EXECUTION
+                                journal         id                                       title             publisher    apc   seal   license languages
+0  https://brigata.github.org/journal_2  2174-548X  Enlightening Tourism: A Pathmaking Journal  University of Huelva  false  false  CC BY-NC   English
 
 
 GET JOURNALS PUBLISHED BY
@@ -59,7 +65,8 @@ GET JOURNALS PUBLISHED BY
 
 *** MUS
 
-!!! ERROR IN EXECUTION
+                                journal                    id                                                       title publisher   apc   seal license languages
+0  https://brigata.github.org/journal_3  1733-8670, 2392-0378  Scientific Journals of the Maritime University of Szczecin       MUS  true  false   CC BY   English
 
 
 *** Univers
@@ -69,7 +76,9 @@ GET JOURNALS PUBLISHED BY
 
 *** Super Yang
 
-!!! ERROR IN EXECUTION
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []
 
 
 GET JOURNALS WITH LICENSE
@@ -83,12 +92,16 @@ GET JOURNALS WITH LICENSE
 
 *** CC BY-NC
 
-!!! ERROR IN EXECUTION
+                                journal         id    all_ids                                                                   title                         publisher    apc   seal   license   languages
+0  https://brigata.github.org/journal_2  2174-548X  2174-548X                              Enlightening Tourism: A Pathmaking Journal              University of Huelva  false  false  CC BY-NC     English
+1  https://brigata.github.org/journal_4  2238-8869  2238-8869  Fronteiras: Journal of Social, Technological and Environmental Science  Centro Universitário de Anápolis  false  false  CC BY-NC  Portuguese
 
 
 *** ChiChi
 
-!!! ERROR IN EXECUTION
+Empty DataFrame
+Columns: [journal, id, all_ids, title, publisher, apc, seal, license, languages]
+Index: []
 
 
 *** no license specified
@@ -103,4 +116,6 @@ GET JOURNALS WITH APC
 
 
 GET JOURNALS WITH DOAJ SEAL
-!!! ERROR IN EXECUTION
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []

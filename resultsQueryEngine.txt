@@ -1,5 +1,5 @@
 ***REPORT ABOUT THE BASIC QUERY ENGINE***
-15/03/2026 11:40
+16/03/2026 18:17
 
 
 
@@ -39,30 +39,63 @@ quartile: Q1
 *** 2224-9281
 
 
-Type: Category
-id: ['Philosophy']
-quartile: None
-
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['2224-9281', '2414-990X']
+languages: ['English', 'Russian', 'Ukrainian']
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+!!! ERROR IN EXECUTION
 
 
 *** 2238-8869
 
 
-Type: <class 'NoneType'>
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['2238-8869']
+languages: ['Portuguese']
+license: CC BY-NC
+publisher: Centro Universit�rio de An�polis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
 
 
 
 *** 1733-8670
 
 
-Type: <class 'NoneType'>
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['1733-8670', '2392-0378']
+languages: ['English']
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
 
 
 
 *** 2392-0378
 
 
-Type: <class 'NoneType'>
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['1733-8670', '2392-0378']
+languages: ['English']
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
 
 
 
@@ -110,6 +143,27 @@ Type: <class 'NoneType'>
 
 GET ALL JOURNALS
 
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['1983-9979']
+languages: ['Portuguese']
+license: CC BY-NC-SA
+publisher: Universidade Federal da Para�ba
+seal: False
+title: Prol�ngua
+
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['2224-9281', '2414-990X']
+languages: ['English', 'Russian', 'Ukrainian']
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+!!! ERROR IN EXECUTION
 
 
 GET JOURNALS WITH TITLE
@@ -119,10 +173,43 @@ GET JOURNALS WITH TITLE
 *** cien
 
 
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['1733-8670', '2392-0378']
+languages: ['English']
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['2238-8869']
+languages: ['Portuguese']
+license: CC BY-NC
+publisher: Centro Universit�rio de An�polis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
+
 
 
 *** Tourism
 
+
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['2174-548X']
+languages: ['English']
+license: CC BY-NC
+publisher: University of Huelva
+seal: False
+title: Enlightening Tourism: A Pathmaking Journal
 
 
 
@@ -138,11 +225,43 @@ GET JOURNALS PUBLISHED BY
 *** MUS
 
 
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['1733-8670', '2392-0378']
+languages: ['English']
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
 
 
 *** Univers
 
 
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['1983-9979']
+languages: ['Portuguese']
+license: CC BY-NC-SA
+publisher: Universidade Federal da Para�ba
+seal: False
+title: Prol�ngua
+
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['2224-9281', '2414-990X']
+languages: ['English', 'Russian', 'Ukrainian']
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+!!! ERROR IN EXECUTION
 
 
 *** Super Yang
@@ -157,10 +276,53 @@ GET JOURNALS WITH LICENSE
 *** CC BY     -     CC BY-NC-SA
 
 
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['1983-9979']
+languages: ['Portuguese']
+license: CC BY-NC-SA
+publisher: Universidade Federal da Para�ba
+seal: False
+title: Prol�ngua
+
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['2224-9281']
+languages: ['English', 'Russian', 'Ukrainian']
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+!!! ERROR IN EXECUTION
 
 
 *** CC BY-NC
 
+
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['2174-548X']
+languages: ['English']
+license: CC BY-NC
+publisher: University of Huelva
+seal: False
+title: Enlightening Tourism: A Pathmaking Journal
+
+Type: Journal
+apc: False
+hasArea: []
+hasCategory: []
+id: ['2238-8869']
+languages: ['Portuguese']
+license: CC BY-NC
+publisher: Centro Universit�rio de An�polis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
 
 
 
@@ -176,6 +338,16 @@ GET JOURNALS WITH LICENSE
 
 GET JOURNALS WITH APC
 
+Type: Journal
+apc: True
+hasArea: []
+hasCategory: []
+id: ['2224-9281', '2414-990X']
+languages: ['English', 'Russian', 'Ukrainian']
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+!!! ERROR IN EXECUTION
 
 
 GET JOURNALS WITH DOAJ SEAL
