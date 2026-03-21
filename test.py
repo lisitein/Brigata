@@ -1,49 +1,31 @@
 import os
 import requests
 
-# ------------------------------------------------------------
-# 0. CHECK SERVER REACHABILITY
-# ------------------------------------------------------------
 try:
     response = requests.get('http://10.201.13.18:9999/blazegraph/', timeout=5)
     print("Blazegraph reachable:", response.status_code)
 except Exception as e:
     print("Blazegraph NOT reachable:", e)
 
-
-# ------------------------------------------------------------
-# 1. IMPORT ENGINE + HANDLERS
-# ------------------------------------------------------------
 from laura import *
 from daniele import CategoryUploadHandler, CategoryQueryHandler
 from li import JournalUploadHandler
 from Yang import JournalQueryHandler
 from baseHandler import UploadHandler
 
-
-# ------------------------------------------------------------
-# 2. RESET RELATIONAL DB (OPTIONAL BUT RECOMMENDED)
-# ------------------------------------------------------------
 if os.path.exists("data/relational_database.db"):
     os.remove("data/relational_database.db")
 
-
-# ------------------------------------------------------------
-# 3. INITIALIZE ENGINE
-# ------------------------------------------------------------
 engine = FullQueryEngine()
 
-# Upload relational DB
 cu = CategoryUploadHandler()
 cu.setDbPathOrUrl("data/relational_database.db")
 cu.pushDataToDb('data/scimago.json')
 
-# Upload graph DB
 ju = JournalUploadHandler()
 ju.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/namespace/kb/sparql")
 ju.pushDataToDb('data/doaj.csv')
 
-# Add handlers to engine
 cq = CategoryQueryHandler()
 cq.setDbPathOrUrl("data/relational_database.db")
 engine.addCategoryHandler(cq)
@@ -53,33 +35,27 @@ jq.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/namespace/kb/sparql")
 engine.addJournalHandler(jq)
 
 
-# ------------------------------------------------------------
-# 4. NORMALIZATION HELPERS
-# ------------------------------------------------------------
 def normalize_list(x):
-    """Convert None → [] and ensure list."""
     if x is None:
         return []
     return list(x)
 
 def same_list(a, b):
-    """Compare lists ignoring order."""
     return set(normalize_list(a)) == set(normalize_list(b))
 
 
 # ------------------------------------------------------------
-# 5. STATIC TEST DATA (AREAS, CATEGORIES, JOURNALS)
-# ------------------------------------------------------------
-# (Identical to Li’s definitions)
+# STATIC TEST DATA
+# FIX: Area takes a list, Journal uses categories= and areas=
 # ------------------------------------------------------------
 a = [
-    Area(id="Medicine"),
-    Area(id="Pharmacology, Toxicology and Pharmaceutics"),
-    Area(id="Economics, Econometrics and Finance"),
-    Area(id="Energy"),
-    Area(id="Materials Science"),
-    Area(id="Biochemistry, Genetics and Molecular Biology"),
-    Area(id="Arts and Humanities")
+    Area(["Medicine"]),
+    Area(["Pharmacology, Toxicology and Pharmaceutics"]),
+    Area(["Economics, Econometrics and Finance"]),
+    Area(["Energy"]),
+    Area(["Materials Science"]),
+    Area(["Biochemistry, Genetics and Molecular Biology"]),
+    Area(["Arts and Humanities"])
 ]
 
 c = [
@@ -99,23 +75,23 @@ c = [
 ]
 
 j = [
-    Journal(title="Prolíngua", id=["1983-9979"], languages=["Portuguese"], publisher="Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, hasCategory=[], hasArea=[]),
-    Journal(title="Проблеми Законності", id=["2224-9281","2414-990X"], languages=["Ukrainian","Russian","English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, hasCategory=[c[12]], hasArea=[a[6]]),
-    Journal(title="Enlightening Tourism: A Pathmaking Journal", id=["2174-548X"], languages=["English"], publisher="University of Huelva", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
-    Journal(title="Scientific Journals of the Maritime University of Szczecin", id=["1733-8670","2392-0378"], languages=["English"], publisher="MUS", seal=False, license="CC BY", apc=True, hasCategory=[], hasArea=[]),
-    Journal(title="Fronteiras: Journal of Social, Technological and Environmental Science", id=["2238-8869"], languages=["Portuguese"], publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, hasCategory=[], hasArea=[]),
-    Journal(title="Semina: Ciências Agrárias", id=["1676-546X","1679-0359"], languages=["Portuguese","English"], publisher="Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, hasCategory=[], hasArea=[]),
+    Journal(ids=["1983-9979"], title="Prolíngua", languages=["Portuguese"], publisher="Universidade Federal da Paraíba", seal=False, license="CC BY-NC-SA", apc=False, categories=[], areas=[]),
+    Journal(ids=["2224-9281","2414-990X"], title="Проблеми Законності", languages=["Ukrainian","Russian","English"], publisher="Yaroslav Mudryi National Law University", seal=False, license="CC BY", apc=True, categories=[c[12]], areas=[a[6]]),
+    Journal(ids=["2174-548X"], title="Enlightening Tourism: A Pathmaking Journal", languages=["English"], publisher="University of Huelva", seal=False, license="CC BY-NC", apc=False, categories=[], areas=[]),
+    Journal(ids=["1733-8670","2392-0378"], title="Scientific Journals of the Maritime University of Szczecin", languages=["English"], publisher="MUS", seal=False, license="CC BY", apc=True, categories=[], areas=[]),
+    Journal(ids=["2238-8869"], title="Fronteiras: Journal of Social, Technological and Environmental Science", languages=["Portuguese"], publisher="Centro Universitário de Anápolis", seal=False, license="CC BY-NC", apc=False, categories=[], areas=[]),
+    Journal(ids=["1676-546X","1679-0359"], title="Semina: Ciências Agrárias", languages=["Portuguese","English"], publisher="Universidade Estadual de Londrina", seal=False, license="Publisher's own license", apc=True, categories=[], areas=[]),
 
-    Journal(title="", id=["1474-1784","1474-1776"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[0],c[1],c[2]], hasArea=[a[0],a[1]]),
-    Journal(title="", id=["1944-7981","0002-8282"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[3]], hasArea=[a[2]]),
-    Journal(title="", id=["2058-8437"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=c[4:9], hasArea=[a[3],a[4]]),
-    Journal(title="", id=["1546-170X","1078-8956"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[9],c[1]], hasArea=[a[5],a[0]]),
-    Journal(title="", id=["0065-2598","2214-8019"], languages=[], publisher=[], seal=False, license="", apc=False, hasCategory=[c[10],c[11]], hasArea=[a[5],a[0]])
+    Journal(ids=["1474-1784","1474-1776"], title="", languages=[], publisher="", seal=False, license="", apc=False, categories=[c[0],c[1],c[2]], areas=[a[0],a[1]]),
+    Journal(ids=["1944-7981","0002-8282"], title="", languages=[], publisher="", seal=False, license="", apc=False, categories=[c[3]], areas=[a[2]]),
+    Journal(ids=["2058-8437"], title="", languages=[], publisher="", seal=False, license="", apc=False, categories=c[4:9], areas=[a[3],a[4]]),
+    Journal(ids=["1546-170X","1078-8956"], title="", languages=[], publisher="", seal=False, license="", apc=False, categories=[c[9],c[1]], areas=[a[5],a[0]]),
+    Journal(ids=["0065-2598","2214-8019"], title="", languages=[], publisher="", seal=False, license="", apc=False, categories=[c[10],c[11]], areas=[a[5],a[0]])
 ]
 
 
 # ------------------------------------------------------------
-# 6. TEST DEFINITIONS
+# TESTS
 # ------------------------------------------------------------
 
 def test_getEntityById():
@@ -188,10 +164,10 @@ def test_getJournalsPublishedBy():
 
 def test_getJournalsWithLicense():
     tests = [
-        ("CC BY-NC-SA", [j[0]]),
-        ("CC BY", [j[1], j[3]]),
-        ("Publisher's own license", [j[5]]),
-        ("CHI CHI", [])
+        ({"CC BY-NC-SA"}, [j[0]]),
+        ({"CC BY"}, [j[1], j[3]]),
+        ({"Publisher's own license"}, [j[5]]),
+        ({"CHI CHI"}, [])
     ]
 
     for i, (inp, expected) in enumerate(tests, start=1):
@@ -278,7 +254,7 @@ def test_getAreasAssignedToCategories():
 
 
 # ------------------------------------------------------------
-# 7. RUN TESTS
+# RUN
 # ------------------------------------------------------------
 test_getEntityById()
 test_getAllJournals()
