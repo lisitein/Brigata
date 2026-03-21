@@ -4,34 +4,60 @@ from impl import *
 
 
 def inspect_object(obj, indent='', f=None):
-    t=''
-    if isinstance(obj,Area):
-        t='Area'
-    elif isinstance(obj,Category):
-        t='Category'
-    elif isinstance(obj,Journal):
-        t='Journal'
+    if isinstance(obj, Area):
+        t = 'Area'
+    elif isinstance(obj, Category):
+        t = 'Category'
+    elif isinstance(obj, Journal):
+        t = 'Journal'
+    elif obj is None:
+        print(f"\n{indent}Type: None", file=f)
+        return
     else:
-        t=type(obj)
+        t = type(obj).__name__
+
     print(f"\n{indent}Type: {t}", file=f)
-    for name, value in inspect.getmembers(obj):
-        if not callable(value) and not name.startswith('__'):
+
+    attrs = {name: value for name, value in inspect.getmembers(obj)
+             if not callable(value) and not name.startswith('__')}
+
+    for name, value in attrs.items():
+
+        # List of complex objects (Journal, Category, Area)
+        if isinstance(value, list) and all(isinstance(e, (Area, Category, Journal)) for e in value):
+            print(f"{indent}{name}:", file=f)
+            if not value:
+                print(f"{indent}  (empty)", file=f)
+            for elem in value:
+                print(f"{indent}  [", file=f)
+                inspect_object(elem, indent=indent + '    ', f=f)
+                print(f"{indent}  ]", file=f)
+            continue
+
+        # Simple list
+        if isinstance(value, list):
+            try:
+                compact = ', '.join(str(v) for v in value)
+            except Exception:
+                compact = '<unprintable>'
+            print(f"{indent}{name}: [{compact}]", file=f)
+            continue
+
+        # Simple value
+        try:
             safe_val = str(value).encode('utf-8', errors='replace').decode('utf-8')
-            print(f"{indent}{name}: {safe_val}", file=f)
-            if isinstance(value, list):
-                for elem in value:
-                    if isinstance(elem,Area) or isinstance(elem,Category):
-                        print('\n\t[', file=f)
-                        inspect_object(elem, indent='\t', f=f)
-                        print('\t]\n', file=f)
-    print('\n')
+        except Exception:
+            safe_val = '<unprintable>'
+        print(f"{indent}{name}: {safe_val}", file=f)
+
+    print('', file=f)
 
 
 rel_path = "data/relational_database.db"
 cat = CategoryUploadHandler()
 cat.setDbPathOrUrl(rel_path)
 
-grp_endpoint = "http://127.0.0.1:9999/blazegraph/sparql" # http://10.201.2.51:9999/blazegraph/
+grp_endpoint = "http://10.42.131.65:9999/blazegraph/sparql"
 jou = JournalUploadHandler()
 jou.setDbPathOrUrl(grp_endpoint)
 
@@ -46,8 +72,7 @@ laura.addCategoryHandler(cat_qh)
 laura.addJournalHandler(jou_qh)
 
 
-
-with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
+with open('resultsQueryEngine.txt', 'w', encoding='utf-8') as f:
 
     f.write('***REPORT ABOUT THE BASIC QUERY ENGINE***\n')
     f.write(datetime.now().strftime("%d/%m/%Y %H:%M\n\n\n"))
@@ -57,7 +82,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('0002-8282\n\n')
     try:
-        o=laura.getEntityById('0002-8282')
+        o = laura.getEntityById('0002-8282')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
@@ -65,7 +90,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('1944-7981\n\n')
     try:
-        o=laura.getEntityById('1944-7981')
+        o = laura.getEntityById('1944-7981')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
@@ -73,79 +98,71 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('2058-8437\n\n')
     try:
-        o=laura.getEntityById('2058-8437')
+        o = laura.getEntityById('2058-8437')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('2224-9281\n\n')
     try:
-        o=laura.getEntityById('2224-9281')
+        o = laura.getEntityById('2224-9281')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('2238-8869\n\n')
     try:
-        o=laura.getEntityById('2238-8869')
+        o = laura.getEntityById('2238-8869')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('1733-8670\n\n')
     try:
-        o=laura.getEntityById('1733-8670')
+        o = laura.getEntityById('1733-8670')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('2392-0378\n\n')
     try:
-        o=laura.getEntityById('2392-0378')
+        o = laura.getEntityById('2392-0378')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('Energy\n\n')
     try:
-        o=laura.getEntityById('Energy')
+        o = laura.getEntityById('Energy')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('Philosophy\n\n')
     try:
-        o=laura.getEntityById('Philosophy')
+        o = laura.getEntityById('Philosophy')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('Drug Discovery\n\n')
     try:
-        o=laura.getEntityById('Drug Discovery')
+        o = laura.getEntityById('Drug Discovery')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
 
-
     f.write('\n\n\n*** ')
     f.write('Medicine (miscellaneous)\n\n')
     try:
-        o=laura.getEntityById('Medicine (miscellaneous)')
+        o = laura.getEntityById('Medicine (miscellaneous)')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
@@ -153,67 +170,63 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('happy-yang\n\n')
     try:
-        o=laura.getEntityById('happy-yang')
+        o = laura.getEntityById('happy-yang')
         inspect_object(o, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
 
     f.write('\n\n\nGET ALL JOURNALS\n')
     try:
-        j=laura.getAllJournals()
+        j = laura.getAllJournals()
         for elem in j:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\nGET JOURNALS WITH TITLE\n')
 
     f.write('\n\n\n*** ')
     f.write('cien\n\n')
     try:
-        j=laura.getJournalsWithTitle('cien')
+        j = laura.getJournalsWithTitle('cien')
         for elem in j:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('Tourism\n\n')
     try:
-        j=laura.getJournalsWithTitle('Tourism')
+        j = laura.getJournalsWithTitle('Tourism')
         for elem in j:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\n*** ')
     f.write('happy yang\n\n')
     try:
-        j=laura.getJournalsWithTitle('happy yang')
+        j = laura.getJournalsWithTitle('happy yang')
         for elem in j:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\nGET JOURNALS PUBLISHED BY\n')
 
     f.write('\n\n\n*** ')
     f.write('MUS\n\n')
     try:
-        j=laura.getJournalsPublishedBy('MUS')
+        j = laura.getJournalsPublishedBy('MUS')
         for elem in j:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-       
+
     f.write('\n\n\n*** ')
     f.write('Univers\n\n')
     try:
-        j=laura.getJournalsPublishedBy('Univers')
+        j = laura.getJournalsPublishedBy('Univers')
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -222,19 +235,18 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('Super Yang\n\n')
     try:
-        j=laura.getJournalsPublishedBy('Super Yang')
+        j = laura.getJournalsPublishedBy('Super Yang')
         for elem in j:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\nGET JOURNALS WITH LICENSE\n')
 
     f.write('\n\n\n*** ')
     f.write('CC BY     -     CC BY-NC-SA\n\n')
     try:
-        j=laura.getJournalsWithLicense({'CC BY', 'CC BY-NC-SA'})
+        j = laura.getJournalsWithLicense({'CC BY', 'CC BY-NC-SA'})
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -243,7 +255,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('CC BY-NC\n\n')
     try:
-        j=laura.getJournalsWithLicense({'CC BY-NC'})
+        j = laura.getJournalsWithLicense({'CC BY-NC'})
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -252,7 +264,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('ChiChi\n\n')
     try:
-        j=laura.getJournalsWithLicense({'ChiChi'})
+        j = laura.getJournalsWithLicense({'ChiChi'})
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -261,7 +273,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('no license specified\n\n')
     try:
-        j=laura.getJournalsWithLicense({})
+        j = laura.getJournalsWithLicense({})
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -269,7 +281,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
 
     f.write('\n\n\nGET JOURNALS WITH APC\n')
     try:
-        j=laura.getJournalsWithAPC()
+        j = laura.getJournalsWithAPC()
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -277,7 +289,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
 
     f.write('\n\n\nGET JOURNALS WITH DOAJ SEAL\n')
     try:
-        j=laura.getJournalsWithDOAJSeal()
+        j = laura.getJournalsWithDOAJSeal()
         for elem in j:
             inspect_object(elem, f=f)
     except:
@@ -285,7 +297,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
 
     f.write('\n\n\nGET ALL CATEGORIES\n')
     try:
-        c=laura.getAllCategories()
+        c = laura.getAllCategories()
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -293,37 +305,36 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
 
     f.write('\n\n\nGET ALL AREAS\n')
     try:
-        a=laura.getAllAreas()
+        a = laura.getAllAreas()
         for elem in a:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
 
     f.write('\n\n\nGET CATEGORIES WITH QUARTILE\n')
 
     f.write('\n\n\n*** ')
     f.write('no quartile specified\n\n')
     try:
-        c=laura.getCategoriesWithQuartile({})
+        c = laura.getCategoriesWithQuartile({})
         for elem in c:
-            inspect_object(elem, f=f) 
+            inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
 
     f.write('\n\n\n*** ')
     f.write('Q3\n\n')
     try:
-        c=laura.getCategoriesWithQuartile({'Q3'})
+        c = laura.getCategoriesWithQuartile({'Q3'})
         for elem in c:
-            inspect_object(elem, f=f) 
+            inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
 
     f.write('\n\n\n*** ')
     f.write('Q3 - Q4\n\n')
     try:
-        c=laura.getCategoriesWithQuartile({'Q3','Q4'})
+        c = laura.getCategoriesWithQuartile({'Q3', 'Q4'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -334,7 +345,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('no area specified\n\n')
     try:
-        c=laura.getCategoriesAssignedToAreas({})
+        c = laura.getCategoriesAssignedToAreas({})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -343,7 +354,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('Medicine\n\n')
     try:
-        c=laura.getCategoriesAssignedToAreas({'Medicine'})
+        c = laura.getCategoriesAssignedToAreas({'Medicine'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -352,7 +363,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('Energy - Arts and Humanities\n\n')
     try:
-        c=laura.getCategoriesAssignedToAreas({'Energy','Arts and Humanities'})
+        c = laura.getCategoriesAssignedToAreas({'Energy', 'Arts and Humanities'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -361,7 +372,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('happy-yang\n\n')
     try:
-        c=laura.getCategoriesAssignedToAreas({'happy-yang'})
+        c = laura.getCategoriesAssignedToAreas({'happy-yang'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -372,7 +383,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('no category specified\n\n')
     try:
-        c=laura.getAreasAssignedToCategories({})
+        c = laura.getAreasAssignedToCategories({})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -381,7 +392,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('Biomaterials\n\n')
     try:
-        c=laura.getAreasAssignedToCategories({'Biomaterials'})
+        c = laura.getAreasAssignedToCategories({'Biomaterials'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -390,7 +401,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('Pharmacology - Philosophy\n\n')
     try:
-        c=laura.getAreasAssignedToCategories({'Pharmacology','Philosophy'})
+        c = laura.getAreasAssignedToCategories({'Pharmacology', 'Philosophy'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -399,7 +410,7 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('Medicine (miscellaneous)\n\n')
     try:
-        c=laura.getAreasAssignedToCategories({'Medicine (miscellaneous)'})
+        c = laura.getAreasAssignedToCategories({'Medicine (miscellaneous)'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
@@ -408,13 +419,11 @@ with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
     f.write('\n\n\n*** ')
     f.write('happy-yang\n\n')
     try:
-        c=laura.getAreasAssignedToCategories({'happy-yang'})
+        c = laura.getAreasAssignedToCategories({'happy-yang'})
         for elem in c:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
-
-
 
 
 print('Done - Send immediately the results.txt file to Daniele ;P')
