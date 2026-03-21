@@ -17,6 +17,14 @@ class IdentifiableEntity:
     def getIds(self) -> Set[str]:
         return set(self.id)
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return set(self.id) == set(other.id)
+
+    def __hash__(self):
+        return hash(frozenset(self.id))
+
 
 class Area(IdentifiableEntity):
     pass
@@ -32,6 +40,14 @@ class Category(IdentifiableEntity):
 
     def getQuartile(self) -> Optional[str]:
         return self.quartile
+
+    def __eq__(self, other):
+        if not isinstance(other, Category):
+            return False
+        return set(self.id) == set(other.id) and self.quartile == other.quartile
+
+    def __hash__(self):
+        return hash((frozenset(self.id), self.quartile))
 
 
 class Journal(IdentifiableEntity):
@@ -80,6 +96,11 @@ class Journal(IdentifiableEntity):
 
     def getAreas(self) -> List[Area]:
         return self.areas
+
+    def __eq__(self, other):
+        if not isinstance(other, Journal):
+            return False
+        return set(self.id) == set(other.id)
 
 
 # ============================
