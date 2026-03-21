@@ -2,7 +2,7 @@ from datetime import datetime
 from impl import *
 
 
-with open('resultsJournalQueryHandler.txt','w') as f:
+with open('resultsJournalQueryHandler.txt','w', encoding='utf-8') as f:
 
     yang=JournalQueryHandler()
     yang.setDbPathOrUrl('http://127.0.0.1:9999/blazegraph/sparql')                     #http://10.201.2.51:9999/blazegraph/
