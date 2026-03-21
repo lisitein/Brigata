@@ -6,8 +6,6 @@ __all__ = [
     "IdentifiableEntity", "Area", "Category", "Journal", "BasicQueryEngine", "FullQueryEngine"
 ]
 
-# --- Helper to create a placeholder that raises a clear error when used ---
-
 
 def _missing_placeholder(name: str, module: str):
     class _Missing:
@@ -21,16 +19,12 @@ def _missing_placeholder(name: str, module: str):
     return _Missing
 
 
-# --- Import core handler base classes ---
 try:
     from baseHandler import Handler, UploadHandler  # type: ignore
-except Exception as e:
-    # Provide placeholders so importing impl.py never fails silently
+except Exception:
     Handler = _missing_placeholder("Handler", "baseHandler")
     UploadHandler = _missing_placeholder("UploadHandler", "baseHandler")
 
-
-# --- Import upload handlers ---
 try:
     from daniele import CategoryUploadHandler  # type: ignore
 except Exception:
@@ -41,8 +35,6 @@ try:
 except Exception:
     JournalUploadHandler = _missing_placeholder("JournalUploadHandler", "li")
 
-
-# --- Import query handlers ---
 try:
     from Yang import QueryHandler as QueryHandlerBase, JournalQueryHandler, CategoryQueryHandler  # type: ignore
     QueryHandler = QueryHandlerBase
@@ -51,8 +43,6 @@ except Exception:
     JournalQueryHandler = _missing_placeholder("JournalQueryHandler", "Yang")
     CategoryQueryHandler = _missing_placeholder("CategoryQueryHandler", "Yang")
 
-
-# --- Import engine and data model ---
 try:
     from laura import (
         IdentifiableEntity,
