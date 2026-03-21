@@ -15,9 +15,9 @@ def inspect_object(obj, indent='', f=None):
         t=type(obj)
     print(f"\n{indent}Type: {t}", file=f)
     for name, value in inspect.getmembers(obj):
-        # Filters out methods and internal dunder attributes
         if not callable(value) and not name.startswith('__'):
-            print(f"{indent}{name}: {value}", file=f)
+            safe_val = str(value).encode('utf-8', errors='replace').decode('utf-8')
+            print(f"{indent}{name}: {safe_val}", file=f)
             if isinstance(value, list):
                 for elem in value:
                     if isinstance(elem,Area) or isinstance(elem,Category):
@@ -47,7 +47,7 @@ laura.addJournalHandler(jou_qh)
 
 
 
-with open('resultsQueryEngine.txt','w') as f:
+with open('resultsQueryEngine.txt','w', encoding='utf-8') as f:
 
     f.write('***REPORT ABOUT THE BASIC QUERY ENGINE***\n')
     f.write(datetime.now().strftime("%d/%m/%Y %H:%M\n\n\n"))
