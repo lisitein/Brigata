@@ -54,8 +54,8 @@ class Journal(IdentifiableEntity):
     def __init__(
         self,
         ids: List[str],
-        title: str,
-        languages: List[str],
+        title: Optional[str],
+        languages: Optional[List[str]],
         publisher: Optional[str],
         seal: bool,
         license: Optional[str],
@@ -70,13 +70,13 @@ class Journal(IdentifiableEntity):
         self.seal = seal
         self.license = license
         self.apc = apc
-        self.categories = categories
-        self.areas = areas
+        self.hasCategory = categories  # UML attribute name
+        self.hasArea = areas           # UML attribute name
 
-    def getTitle(self) -> str:
+    def getTitle(self) -> Optional[str]:
         return self.title
 
-    def getLanguages(self) -> List[str]:
+    def getLanguages(self) -> Optional[List[str]]:
         return self.languages
 
     def getPublisher(self) -> Optional[str]:
@@ -92,16 +92,16 @@ class Journal(IdentifiableEntity):
         return self.apc
 
     def getCategories(self) -> List[Category]:
-        return self.categories
+        return self.hasCategory
 
     def getAreas(self) -> List[Area]:
-        return self.areas
+        return self.hasArea
 
     def __eq__(self, other):
         if not isinstance(other, Journal):
             return False
         return set(self.id) == set(other.id)
-    
+
     def __hash__(self):
         return hash(frozenset(self.id))
 
@@ -131,13 +131,13 @@ class BasicQueryEngine:
         self.categoryHandlers.clear()
         return True
 
-    def _clean_str(self, x) -> str:
+    def _clean_str(self, x) -> Optional[str]:
         try:
-            if x is None:
-                return ""
+            if x is None or str(x).strip() in ("", "None", "nan"):
+                return None
             return str(x).encode("utf-8", errors="replace").decode("utf-8")
         except Exception:
-            return ""
+            return None
 
     def _id_matches(self, cell, ids: Set[str]) -> bool:
         return any(i.strip() in ids for i in str(cell).split(","))
@@ -206,8 +206,8 @@ class BasicQueryEngine:
 
                     return Journal(
                         ids=sorted(all_jids),
-                        title="",
-                        languages=[],
+                        title=None,
+                        languages=None,
                         publisher=None,
                         seal=False,
                         license=None,
@@ -382,17 +382,19 @@ class BasicQueryEngine:
                 else:
                     ids = [s.strip() for s in str(raw_id).split(",") if s.strip()]
 
-                langs = r.get("languages", [])
-                if isinstance(langs, str):
-                    langs = [s.strip() for s in langs.split(",") if s.strip()]
-                elif isinstance(langs, list):
-                    langs = [str(s).strip() for s in langs if str(s).strip()]
+                langs_raw = r.get("languages")
+                if langs_raw is None or str(langs_raw).strip() in ("", "None", "nan"):
+                    langs = None
+                elif isinstance(langs_raw, str):
+                    langs = [s.strip() for s in langs_raw.split(",") if s.strip()] or None
+                elif isinstance(langs_raw, list):
+                    langs = [str(s).strip() for s in langs_raw if str(s).strip()] or None
                 else:
-                    langs = []
+                    langs = None
 
-                title = self._clean_str(r.get("title", ""))
-                publisher = self._clean_str(r.get("publisher", ""))
-                license_clean = self._clean_str(r.get("license", ""))
+                title = self._clean_str(r.get("title"))
+                publisher = self._clean_str(r.get("publisher"))
+                license_clean = self._clean_str(r.get("license"))
                 seal = str(r.get("seal", "")).strip().lower() in ["true", "yes", "1"]
                 apc = str(r.get("apc", "")).strip().lower() in ["true", "yes", "1"]
 
@@ -437,8 +439,8 @@ class BasicQueryEngine:
                         except Exception:
                             continue
 
-                journal.categories = [Category(cid, q) for cid, q in sorted(cats_dict.items())]
-                journal.areas = [Area([aid]) for aid in sorted(areas_set)]
+                journal.hasCategory = [Category(cid, q) for cid, q in sorted(cats_dict.items())]
+                journal.hasArea = [Area([aid]) for aid in sorted(areas_set)]
 
                 journals.append(journal)
 
