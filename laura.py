@@ -102,6 +102,8 @@ class Journal(IdentifiableEntity):
             return False
         return set(self.id) == set(other.id)
 
+    def __hash__(self):
+        return hash(frozenset(self.id))
 
 # ============================
 # BASIC QUERY ENGINE
