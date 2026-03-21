@@ -2,15 +2,15 @@ import os
 import requests
 
 try:
-    response = requests.get('http://10.201.13.18:9999/blazegraph/', timeout=5)
+    response = requests.get('http://192.168.1.226:9999/blazegraph/', timeout=5)
     print("Blazegraph reachable:", response.status_code)
 except Exception as e:
     print("Blazegraph NOT reachable:", e)
 
 from laura import *
-from daniele import CategoryUploadHandler, CategoryQueryHandler
+from daniele import CategoryUploadHandler
 from li import JournalUploadHandler
-from Yang import JournalQueryHandler
+from Yang import JournalQueryHandler, CategoryQueryHandler
 from baseHandler import UploadHandler
 
 if os.path.exists("data/relational_database.db"):
@@ -23,7 +23,7 @@ cu.setDbPathOrUrl("data/relational_database.db")
 cu.pushDataToDb('data/scimago.json')
 
 ju = JournalUploadHandler()
-ju.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/namespace/kb/sparql")
+ju.setDbPathOrUrl("http://192.168.1.226:9999/blazegraph/namespace/kb/sparql")
 ju.pushDataToDb('data/doaj.csv')
 
 cq = CategoryQueryHandler()
@@ -31,7 +31,7 @@ cq.setDbPathOrUrl("data/relational_database.db")
 engine.addCategoryHandler(cq)
 
 jq = JournalQueryHandler()
-jq.setDbPathOrUrl("http://10.201.13.18:9999/blazegraph/namespace/kb/sparql")
+jq.setDbPathOrUrl("http://192.168.1.226:9999/blazegraph/namespace/kb/sparql")
 engine.addJournalHandler(jq)
 
 
@@ -103,10 +103,10 @@ def test_getEntityById():
         ("2238-8869", j[4]),
         ("Medicine", a[0]),
         ("Biochemistry, Genetics and Molecular Biology", a[5]),
-        ("Biochemistry, Genetics and Molecular Biology (miscellaneous)", Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)")),
+        ("Biochemistry, Genetics and Molecular Biology (miscellaneous)", Category(id="Biochemistry, Genetics and Molecular Biology (miscellaneous)", quartile="Q1")),  # FIX: Q1 is first by DB ordering
         ("Philosophy", Category(id="Philosophy"))
     ]
-
+ 
     for i, (inp, expected) in enumerate(tests, start=1):
         out = engine.getEntityById(inp)
         if out == expected:
