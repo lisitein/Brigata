@@ -1,6 +1,5 @@
 from typing import List, Set, Optional
 import pandas as pd
-
 from Yang import JournalQueryHandler, CategoryQueryHandler
 
 # ============================
@@ -33,7 +32,7 @@ class Area(IdentifiableEntity):
 class Category(IdentifiableEntity):
     def __init__(self, id: str, quartile: Optional[str] = None):
         super().__init__([id])
-        if quartile is None or str(quartile).strip() in ("", "None", "NULL", "null"):
+        if quartile is None or str(quartile).strip() in ("", "None", "NULL", "null", "nan"):
             self.quartile = None
         else:
             self.quartile = str(quartile).strip()
@@ -70,8 +69,8 @@ class Journal(IdentifiableEntity):
         self.seal = seal
         self.license = license
         self.apc = apc
-        self.hasCategory = categories  # UML attribute name
-        self.hasArea = areas           # UML attribute name
+        self.hasCategory = categories
+        self.hasArea = areas
 
     def getTitle(self) -> Optional[str]:
         return self.title
@@ -145,6 +144,7 @@ class BasicQueryEngine:
     # -----------------------------------------
     # Entity lookup
     # -----------------------------------------
+
     def getEntityById(self, id: str):
         # 1. Try journals via SPARQL
         for h in self.journalHandlers:
@@ -164,7 +164,6 @@ class BasicQueryEngine:
                 df = h.getById(id)
                 if df is None or df.empty:
                     continue
-
                 cols = set(df.columns)
 
                 # Category result: has category_id but not area_id
@@ -215,7 +214,6 @@ class BasicQueryEngine:
                         categories=cats_for_journal,
                         areas=areas_for_journal,
                     )
-
             except Exception:
                 continue
 
@@ -224,6 +222,7 @@ class BasicQueryEngine:
     # -----------------------------------------
     # Journal queries
     # -----------------------------------------
+
     def getAllJournals(self) -> List['Journal']:
         result: List[Journal] = []
         for h in self.journalHandlers:
@@ -293,6 +292,7 @@ class BasicQueryEngine:
     # -----------------------------------------
     # Category and Area queries
     # -----------------------------------------
+
     def getAllCategories(self) -> List[Category]:
         result: List[Category] = []
         for h in self.categoryHandlers:
@@ -368,6 +368,7 @@ class BasicQueryEngine:
     # -----------------------------------------
     # Journal construction
     # -----------------------------------------
+
     def _makeJournals(self, df: pd.DataFrame) -> List['Journal']:
         journals: List[Journal] = []
         if df is None or df.empty:
@@ -375,7 +376,6 @@ class BasicQueryEngine:
 
         for _, r in df.iterrows():
             try:
-                # Prefer 'all_ids' if available (returned by getJournalsWithLicense)
                 raw_id = r.get("all_ids") or r.get("id", "")
                 if raw_id is None:
                     ids = []
@@ -392,11 +392,11 @@ class BasicQueryEngine:
                 else:
                     langs = None
 
-                title = self._clean_str(r.get("title"))
+                title     = self._clean_str(r.get("title"))
                 publisher = self._clean_str(r.get("publisher"))
                 license_clean = self._clean_str(r.get("license"))
                 seal = str(r.get("seal", "")).strip().lower() in ["true", "yes", "1"]
-                apc = str(r.get("apc", "")).strip().lower() in ["true", "yes", "1"]
+                apc  = str(r.get("apc",  "")).strip().lower() in ["true", "yes", "1"]
 
                 journal = Journal(
                     ids=ids,
@@ -411,7 +411,7 @@ class BasicQueryEngine:
                 )
 
                 # Enrich with categories and areas from SQLite
-                cats_dict: dict = {}  # category_id -> quartile
+                cats_dict: dict = {}
                 areas_set: Set[str] = set()
 
                 for jid in ids:
@@ -420,7 +420,6 @@ class BasicQueryEngine:
                             df_rel = h.getById(jid)
                             if df_rel is None or df_rel.empty:
                                 continue
-
                             if "category_id" in df_rel.columns:
                                 for _, rr in df_rel.iterrows():
                                     cid = rr.get("category_id")
@@ -429,19 +428,16 @@ class BasicQueryEngine:
                                         q = rr.get("category_quartile") or rr.get("quartile")
                                         if cid_str not in cats_dict:
                                             cats_dict[cid_str] = q
-
                             if "area_id" in df_rel.columns:
                                 for _, rr in df_rel.iterrows():
                                     aid = rr.get("area_id")
                                     if aid and str(aid).strip():
                                         areas_set.add(str(aid).strip())
-
                         except Exception:
                             continue
 
                 journal.hasCategory = [Category(cid, q) for cid, q in sorted(cats_dict.items())]
-                journal.hasArea = [Area([aid]) for aid in sorted(areas_set)]
-
+                journal.hasArea     = [Area([aid]) for aid in sorted(areas_set)]
                 journals.append(journal)
 
             except Exception:
@@ -469,16 +465,16 @@ class FullQueryEngine(BasicQueryEngine):
 
         if df is None or df.empty:
             return set()
-
         if "category" not in df.columns or "identifiers" not in df.columns:
             return set()
 
+        # Empty category_ids = all categories (per spec)
         if category_ids:
             df = df[df["category"].isin(category_ids)]
         if quartiles and "category_quartile" in df.columns:
             df = df[df["category_quartile"].isin(quartiles)]
 
-        ids = set()
+        ids: Set[str] = set()
         for _, r in df.iterrows():
             try:
                 for s in str(r.get("identifiers", "")).split(","):
@@ -501,14 +497,14 @@ class FullQueryEngine(BasicQueryEngine):
 
         if df is None or df.empty:
             return set()
-
         if "area" not in df.columns or "identifiers" not in df.columns:
             return set()
 
+        # Empty area_ids = all areas (per spec)
         if area_ids:
             df = df[df["area"].isin(area_ids)]
 
-        ids = set()
+        ids: Set[str] = set()
         for _, r in df.iterrows():
             try:
                 for s in str(r.get("identifiers", "")).split(","):
@@ -524,7 +520,7 @@ class FullQueryEngine(BasicQueryEngine):
         category_ids: Set[str],
         quartiles: Set[str],
     ) -> List[Journal]:
-        all_ids = set()
+        all_ids: Set[str] = set()
         for h in self.categoryHandlers:
             try:
                 all_ids.update(
@@ -536,7 +532,7 @@ class FullQueryEngine(BasicQueryEngine):
         if not all_ids:
             return []
 
-        result = []
+        result: List[Journal] = []
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
@@ -553,7 +549,7 @@ class FullQueryEngine(BasicQueryEngine):
         areas: Set[str],
         licenses: Set[str],
     ) -> List[Journal]:
-        all_ids = set()
+        all_ids: Set[str] = set()
         for h in self.categoryHandlers:
             try:
                 all_ids.update(
@@ -565,12 +561,17 @@ class FullQueryEngine(BasicQueryEngine):
         if not all_ids:
             return []
 
-        result = []
+        result: List[Journal] = []
         for h in self.journalHandlers:
             try:
-                df = h.getJournalsWithLicense(licenses)
+                if licenses:
+                    df = h.getJournalsWithLicense(licenses)
+                else:
+                    df = h.getAllJournals()
+
                 if df is None or df.empty:
                     continue
+
                 id_col = "all_ids" if "all_ids" in df.columns else "id"
                 mask = df[id_col].apply(lambda x: self._id_matches(x, all_ids))
                 result.extend(self._makeJournals(df[mask]))
@@ -584,8 +585,8 @@ class FullQueryEngine(BasicQueryEngine):
         category_ids: Set[str],
         quartiles: Set[str],
     ) -> List[Journal]:
-        ids_cat = set()
-        ids_area = set()
+        ids_cat:  Set[str] = set()
+        ids_area: Set[str] = set()
 
         for h in self.categoryHandlers:
             try:
@@ -598,17 +599,21 @@ class FullQueryEngine(BasicQueryEngine):
             except Exception:
                 continue
 
+        # Intersection: journal must appear in BOTH the requested categories AND areas
         all_ids = ids_cat & ids_area
+
         if not all_ids:
             return []
 
-        result = []
+        result: List[Journal] = []
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
                 if df is None or df.empty:
                     continue
+
                 mask_ids = df["id"].apply(lambda x: self._id_matches(x, all_ids))
+                # Diamond = no APC
                 apc_mask = df["apc"].astype(str).str.lower().isin(["no", "false", "0", ""])
                 mask = mask_ids & apc_mask
                 result.extend(self._makeJournals(df[mask]))
