@@ -3,15 +3,15 @@
 import os
 
 from laura import FullQueryEngine
-from daniele import CategoryUploadHandler, CategoryQueryHandler
+from daniele import CategoryUploadHandler
+from Yang import JournalQueryHandler, CategoryQueryHandler
 from li import JournalUploadHandler
-from Yang import JournalQueryHandler
 
 
 def main():
     # 1. set the db path
     relational_db = "my_journals.db"  # SQLite db file
-    graph_db = "http://127.0.0.1:9999/blazegraph/namespace/kb/sparql"  # Blazegraph endpoint
+    graph_db = "http://192.168.1.226:9999/blazegraph/namespace/kb/sparql"  # Blazegraph endpoint
     
     # reset relational DB to avoid duplicates
     if os.path.exists(relational_db):
@@ -82,9 +82,9 @@ def main():
     
     print("\n7. query diamond open access journals (example):")
     diamond_journals = engine.getDiamondJournalsInAreasAndCategoriesWithQuartile(
-        areas={"Medicine"},
-        category_ids={"Drug Discovery"},
-        quartiles={"Q1"}
+    area_ids={"Medicine"},
+    category_ids={"Drug Discovery"},
+    quartiles={"Q1"}
     )
     print(f"   found {len(diamond_journals)} diamond journals")
 
