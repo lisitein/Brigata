@@ -118,46 +118,46 @@ with open('resultsCategoryQueryHandler.txt','w') as f:
 
     f.write('\n\n\n***')
     f.write('no name specified\n\n')
-    f.write(yang.getCategoryWithName({}).to_string())
+    f.write(yang.getCategoryWithName('').to_string())
 
     f.write('\n\n\n***')
     f.write('Biomaterials\n\n')
-    f.write(yang.getCategoryWithName({'Biomaterials'}).to_string())
+    f.write(yang.getCategoryWithName('Biomaterials').to_string())
 
     f.write('\n\n\n***')
     f.write('Medicine\n\n')
-    f.write(yang.getCategoryWithName({'Medicine'}).to_string())
+    f.write(yang.getCategoryWithName('Medicine').to_string())
 
     f.write('\n\n\n***')
     f.write('co\n\n')
-    f.write(yang.getCategoryWithName({'co'}).to_string())
+    f.write(yang.getCategoryWithName('co').to_string())
 
     f.write('\n\n\n***')
     f.write('happy-yang\n\n')
-    f.write(yang.getCategoryWithName({'happy-yang'}).to_string())
+    f.write(yang.getCategoryWithName('happy-yang').to_string())
 
 
     f.write('\n\n\nGET AREA WITH NAME\n')
 
     f.write('\n\n\n***')
     f.write('no name specified\n\n')
-    f.write(yang.getAreaWithName({}).to_string())
+    f.write(yang.getAreaWithName('').to_string())
 
     f.write('\n\n\n***')
     f.write('materials science\n\n')
-    f.write(yang.getAreaWithName({'materials science'}).to_string())
+    f.write(yang.getAreaWithName('materials science').to_string())
 
     f.write('\n\n\n***')
     f.write('Energy\n\n')
-    f.write(yang.getAreaWithName({'Energy'}).to_string())
+    f.write(yang.getAreaWithName('Energy').to_string())
 
     f.write('\n\n\n***')
     f.write('co\n\n')
-    f.write(yang.getAreaWithName({'co'}).to_string())
+    f.write(yang.getAreaWithName('co').to_string())
 
     f.write('\n\n\n***')
     f.write('happy-yang\n\n')
-    f.write(yang.getAreaWithName({'happy-yang'}).to_string())
+    f.write(yang.getAreaWithName('happy-yang').to_string())
 
 
 

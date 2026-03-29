@@ -1,0 +1,318 @@
+***REPORT ABOUT THE CATEGORY QUERY HANDLER***
+29/03/2026 20:13
+
+
+
+
+
+GET BY ID
+
+
+
+***0002-8282
+
+            journal_id                 category_id category_quartile                              area_id
+0  1944-7981,0002-8282  Economics and Econometrics                Q1  Economics, Econometrics and Finance
+
+
+***1944-7981
+
+            journal_id                 category_id category_quartile                              area_id
+0  1944-7981,0002-8282  Economics and Econometrics                Q1  Economics, Econometrics and Finance
+
+
+***2058-8437
+
+  journal_id                                 category_id category_quartile            area_id
+0  2058-8437                                Biomaterials                Q1             Energy
+1  2058-8437                                Biomaterials                Q1  Materials Science
+2  2058-8437  Electronic, Optical and Magnetic Materials                Q1             Energy
+3  2058-8437  Electronic, Optical and Magnetic Materials                Q1  Materials Science
+4  2058-8437                      Energy (miscellaneous)                Q1             Energy
+5  2058-8437                      Energy (miscellaneous)                Q1  Materials Science
+6  2058-8437                         Materials Chemistry                Q1             Energy
+7  2058-8437                         Materials Chemistry                Q1  Materials Science
+8  2058-8437                Surfaces, Coatings and Films                Q1             Energy
+9  2058-8437                Surfaces, Coatings and Films                Q1  Materials Science
+
+
+***2224-9281
+
+            journal_id category_id category_quartile              area_id
+0  2224-9281,2414-990X  Philosophy                    Arts and Humanities
+
+
+***Energy
+
+  area_id journal_id
+0  Energy  2058-8437
+
+
+***Philosophy
+
+  category_id category_quartile journal_id
+0  Philosophy                    2224-9281
+1  Philosophy                    2414-990X
+
+
+***Drug Discovery
+
+      category_id category_quartile journal_id
+0  Drug Discovery                Q1  1474-1776
+1  Drug Discovery                Q1  1474-1784
+
+
+***Medicine (miscellaneous)
+
+                category_id category_quartile journal_id
+0  Medicine (miscellaneous)                Q1  1078-8956
+1  Medicine (miscellaneous)                Q1  1474-1776
+2  Medicine (miscellaneous)                Q1  1474-1784
+3  Medicine (miscellaneous)                Q1  1546-170X
+4  Medicine (miscellaneous)                Q4  0065-2598
+5  Medicine (miscellaneous)                Q4  2214-8019
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: []
+Index: []
+
+
+GET ALL CATEGORIES
+
+                                                     category_id quartile
+0   Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q1
+1   Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q3
+2                                                   Biomaterials       Q1
+3                                                 Drug Discovery       Q1
+4                                     Economics and Econometrics       Q1
+5                     Electronic, Optical and Magnetic Materials       Q1
+6                                         Energy (miscellaneous)       Q1
+7                                            Materials Chemistry       Q1
+8                                       Medicine (miscellaneous)       Q1
+9                                       Medicine (miscellaneous)       Q4
+10                                                  Pharmacology       Q1
+11                                                    Philosophy         
+12                                  Surfaces, Coatings and Films       Q1
+
+
+GET ALL AREAS
+
+                                             id
+0                           Arts and Humanities
+1  Biochemistry, Genetics and Molecular Biology
+2           Economics, Econometrics and Finance
+3                                        Energy
+4                             Materials Science
+5                                      Medicine
+6    Pharmacology, Toxicology and Pharmaceutics
+
+GET CATEGORIES WITH QUARTILE
+
+
+
+***no quartile specified
+
+                                                     category_id quartile
+0   Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q1
+1   Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q3
+2                                                   Biomaterials       Q1
+3                                                 Drug Discovery       Q1
+4                                     Economics and Econometrics       Q1
+5                     Electronic, Optical and Magnetic Materials       Q1
+6                                         Energy (miscellaneous)       Q1
+7                                            Materials Chemistry       Q1
+8                                       Medicine (miscellaneous)       Q1
+9                                       Medicine (miscellaneous)       Q4
+10                                                  Pharmacology       Q1
+11                                                    Philosophy         
+12                                  Surfaces, Coatings and Films       Q1
+
+
+***Q3
+
+                                                    category_id quartile
+0  Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q3
+
+
+***Q3-Q4
+
+                                                    category_id quartile
+0  Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q3
+1                                      Medicine (miscellaneous)       Q4
+
+
+GET CATEGORIES ASSIGNED TO AREAS
+
+
+
+***no area specified
+
+                                                     category_id quartile
+0   Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q1
+1   Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q3
+2                                                   Biomaterials       Q1
+3                                                 Drug Discovery       Q1
+4                                     Economics and Econometrics       Q1
+5                     Electronic, Optical and Magnetic Materials       Q1
+6                                         Energy (miscellaneous)       Q1
+7                                            Materials Chemistry       Q1
+8                                       Medicine (miscellaneous)       Q1
+9                                       Medicine (miscellaneous)       Q4
+10                                                  Pharmacology       Q1
+11                                                    Philosophy         
+12                                  Surfaces, Coatings and Films       Q1
+
+
+***Medicine
+
+                                                    category_id quartile
+0  Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q1
+1  Biochemistry, Genetics and Molecular Biology (miscellaneous)       Q3
+2                                                Drug Discovery       Q1
+3                                      Medicine (miscellaneous)       Q1
+4                                      Medicine (miscellaneous)       Q4
+5                                                  Pharmacology       Q1
+
+
+***Energy - Arts and Humanities
+
+                                  category_id quartile
+0                                Biomaterials       Q1
+1  Electronic, Optical and Magnetic Materials       Q1
+2                      Energy (miscellaneous)       Q1
+3                         Materials Chemistry       Q1
+4                                  Philosophy         
+5                Surfaces, Coatings and Films       Q1
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: [category_id, quartile]
+Index: []
+
+
+GET AREAS ASSIGNED TO CATEGORIES
+
+
+
+***no category specified
+
+                                        area_id
+0                           Arts and Humanities
+1  Biochemistry, Genetics and Molecular Biology
+2           Economics, Econometrics and Finance
+3                                        Energy
+4                             Materials Science
+5                                      Medicine
+6    Pharmacology, Toxicology and Pharmaceutics
+
+
+***Biomaterials
+
+             area_id
+0             Energy
+1  Materials Science
+
+
+***Pharmacology - Philosophy
+
+                                      area_id
+0                         Arts and Humanities
+1                                    Medicine
+2  Pharmacology, Toxicology and Pharmaceutics
+
+
+***Medicine (miscellaneous)
+
+                                        area_id
+0  Biochemistry, Genetics and Molecular Biology
+1                                      Medicine
+2    Pharmacology, Toxicology and Pharmaceutics
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: [area_id]
+Index: []
+
+
+GET CATEGORY WITH NAME
+
+
+
+***no name specified
+
+Empty DataFrame
+Columns: [category_id, quartile]
+Index: []
+
+
+***Biomaterials
+
+    category_id quartile
+0  Biomaterials       Q1
+
+
+***Medicine
+
+                category_id quartile
+0  Medicine (miscellaneous)       Q1
+1  Medicine (miscellaneous)       Q4
+
+
+***co
+
+                    category_id quartile
+0                Drug Discovery       Q1
+1    Economics and Econometrics       Q1
+2                  Pharmacology       Q1
+3  Surfaces, Coatings and Films       Q1
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: [category_id, quartile]
+Index: []
+
+
+GET AREA WITH NAME
+
+
+
+***no name specified
+
+Empty DataFrame
+Columns: [id]
+Index: []
+
+
+***materials science
+
+                  id
+0  Materials Science
+
+
+***Energy
+
+       id
+0  Energy
+
+
+***co
+
+                                           id
+0         Economics, Econometrics and Finance
+1  Pharmacology, Toxicology and Pharmaceutics
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: [id]
+Index: []
