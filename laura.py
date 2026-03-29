@@ -639,6 +639,57 @@ class FullQueryEngine(BasicQueryEngine):
                 continue
         return result
 
+    # ---------------------------------------------------------------
+    # Laura's methods for Peroni
+    # ---------------------------------------------------------------
+
+    def getJournalByName(self, name: str) -> List[Journal]:
+        name_clean = (name or "").strip()
+        if not name_clean:
+            return []
+
+        # Step 1: journals whose title contains the input string (from Blazegraph)
+        title_matches: List[Journal] = []
+        for h in self.journalHandlers:
+            try:
+                df = h.getJournalsWithTitle(name_clean)
+                if df is not None and not df.empty:
+                    title_matches.extend(self._makeJournals(df))
+            except Exception:
+                continue
+
+        # Step 2: category and area names that contain the input string (from SQLite)
+        matching_category_names: Set[str] = set()
+        matching_area_names: Set[str] = set()
+        for h in self.categoryHandlers:
+            try:
+                df_cat = h.getCategoryWithName(name_clean)
+                if df_cat is not None and not df_cat.empty:
+                    matching_category_names.update(df_cat["category_id"].dropna().tolist())
+                df_area = h.getAreaWithName(name_clean)
+                if df_area is not None and not df_area.empty:
+                    matching_area_names.update(df_area["id"].dropna().tolist())
+            except Exception:
+                continue
+
+        # Step 3: keep only journals that have at least one matching category OR area
+        result: List[Journal] = []
+        seen: Set[frozenset] = set()
+        for j in title_matches:
+            cat_names = {c.getId()[0] for c in j.getCategories()}
+            area_names = {a.getId()[0] for a in j.getAreas()}
+            if cat_names & matching_category_names or area_names & matching_area_names:
+                key = frozenset(j.getIds())
+                if key not in seen:
+                    seen.add(key)
+                    result.append(j)
+
+        return result
+
+    # ---------------------------------------------------------------
+    # end Laura's methods for Peroni
+    # ---------------------------------------------------------------
+
     def getDiamondJournalsInAreasAndCategoriesWithQuartile(
         self,
         area_ids: Set[str],
