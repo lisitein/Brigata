@@ -1,5 +1,7 @@
 from typing import List, Set, Optional
+from collections import defaultdict
 import pandas as pd
+from sqlalchemy import create_engine as _ce
 from Yang import JournalQueryHandler, CategoryQueryHandler
 
 # ============================
@@ -225,13 +227,77 @@ class BasicQueryEngine:
 
     def getAllJournals(self) -> List['Journal']:
         result: List[Journal] = []
+        seen_ids: Set[str] = set()
+
+        # 1. Prima prendi tutti i journal da Blazegraph (DOAJ)
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
                 if df is not None and not df.empty:
-                    result.extend(self._makeJournals(df))
+                    journals = self._makeJournals(df)
+                    for j in journals:
+                        result.append(j)
+                        for jid in j.getIds():
+                            seen_ids.add(jid)
             except Exception:
                 continue
+
+        # 2. Aggiungi i journal presenti solo in SQLite (Scimago) ma non in Blazegraph
+        for h in self.categoryHandlers:
+            try:
+                engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
+                df_sql = pd.read_sql(
+                    "SELECT DISTINCT internalId, id FROM IdentifiableEntity WHERE internalId LIKE 'journal-%'",
+                    engine
+                )
+                if df_sql.empty:
+                    continue
+
+                # Raggruppa gli ISSN per internalId
+                groups = defaultdict(list)
+                for _, row in df_sql.iterrows():
+                    groups[row["internalId"]].append(row["id"])
+
+                for internal_id, ids in groups.items():
+                    # Se nessuno di questi ISSN è già in Blazegraph, crea journal minimale
+                    if not any(i in seen_ids for i in ids):
+                        cats_dict: dict = {}
+                        areas_set: Set[str] = set()
+                        for jid in ids:
+                            try:
+                                df_rel = h.getById(jid)
+                                if df_rel is None or df_rel.empty:
+                                    continue
+                                if "category_id" in df_rel.columns:
+                                    for _, rr in df_rel.iterrows():
+                                        cid = rr.get("category_id")
+                                        q = rr.get("category_quartile")
+                                        if cid and str(cid).strip() and str(cid).strip() not in cats_dict:
+                                            cats_dict[str(cid).strip()] = q
+                                if "area_id" in df_rel.columns:
+                                    for _, rr in df_rel.iterrows():
+                                        aid = rr.get("area_id")
+                                        if aid and str(aid).strip():
+                                            areas_set.add(str(aid).strip())
+                            except Exception:
+                                continue
+
+                        result.append(Journal(
+                            ids=sorted(ids),
+                            title=None,
+                            languages=None,
+                            publisher=None,
+                            seal=False,
+                            license=None,
+                            apc=False,
+                            categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
+                            areas=[Area([aid]) for aid in sorted(areas_set)],
+                        ))
+                        for i in ids:
+                            seen_ids.add(i)
+            except Exception:
+                continue
+
         return result
 
     def getJournalsWithTitle(self, title: str) -> List['Journal']:
@@ -392,8 +458,8 @@ class BasicQueryEngine:
                 else:
                     langs = None
 
-                title     = self._clean_str(r.get("title"))
-                publisher = self._clean_str(r.get("publisher"))
+                title         = self._clean_str(r.get("title"))
+                publisher     = self._clean_str(r.get("publisher"))
                 license_clean = self._clean_str(r.get("license"))
                 seal = str(r.get("seal", "")).strip().lower() in ["true", "yes", "1"]
                 apc  = str(r.get("apc",  "")).strip().lower() in ["true", "yes", "1"]
@@ -468,7 +534,6 @@ class FullQueryEngine(BasicQueryEngine):
         if "category" not in df.columns or "identifiers" not in df.columns:
             return set()
 
-        # Empty category_ids = all categories (per spec)
         if category_ids:
             df = df[df["category"].isin(category_ids)]
         if quartiles and "category_quartile" in df.columns:
@@ -500,7 +565,6 @@ class FullQueryEngine(BasicQueryEngine):
         if "area" not in df.columns or "identifiers" not in df.columns:
             return set()
 
-        # Empty area_ids = all areas (per spec)
         if area_ids:
             df = df[df["area"].isin(area_ids)]
 
@@ -599,7 +663,6 @@ class FullQueryEngine(BasicQueryEngine):
             except Exception:
                 continue
 
-        # Intersection: journal must appear in BOTH the requested categories AND areas
         all_ids = ids_cat & ids_area
 
         if not all_ids:
@@ -613,7 +676,6 @@ class FullQueryEngine(BasicQueryEngine):
                     continue
 
                 mask_ids = df["id"].apply(lambda x: self._id_matches(x, all_ids))
-                # Diamond = no APC
                 apc_mask = df["apc"].astype(str).str.lower().isin(["no", "false", "0", ""])
                 mask = mask_ids & apc_mask
                 result.extend(self._makeJournals(df[mask]))
