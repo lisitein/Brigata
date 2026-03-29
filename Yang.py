@@ -705,6 +705,47 @@ class CategoryQueryHandler(QueryHandler):
         """
         return pd.read_sql(query, engine, params=params_dict)
 
+    # ---------------------------------------------------------------
+    # Laura's methods for Peroni
+    # ---------------------------------------------------------------
+
+    def getCategoryWithName(self, name: str) -> pd.DataFrame:
+        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        name_clean = (name or "").strip()
+        if not name_clean:
+            return pd.DataFrame(columns=["category_id", "quartile"])
+        # LIKE with % on both sides = partial, case-insensitive match
+        query = """
+            SELECT DISTINCT
+                id       AS category_id,
+                quartile AS quartile
+            FROM IdentifiableEntity
+            WHERE internalId LIKE 'category-%'
+            AND LOWER(id) LIKE LOWER(:pattern)
+            ORDER BY category_id, quartile
+        """
+        return pd.read_sql(query, engine, params={"pattern": f"%{name_clean}%"})
+
+    def getAreaWithName(self, name: str) -> pd.DataFrame:
+        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        name_clean = (name or "").strip()
+        if not name_clean:
+            return pd.DataFrame(columns=["id"])
+        # same partial match logic as getCategoryWithName
+        query = """
+            SELECT DISTINCT
+                id AS id
+            FROM IdentifiableEntity
+            WHERE internalId LIKE 'area-%'
+            AND LOWER(id) LIKE LOWER(:pattern)
+            ORDER BY id
+        """
+        return pd.read_sql(query, engine, params={"pattern": f"%{name_clean}%"})
+
+    # ---------------------------------------------------------------
+    # end Laura's methods for Peroni
+    # ---------------------------------------------------------------
+
     def getAllCategoryAssignments(self) -> pd.DataFrame:
         engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
         query = """
