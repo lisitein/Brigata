@@ -1,0 +1,79 @@
+[
+    {
+        "identifiers": [
+            "1217-8950",
+            "1588-2640"
+        ],
+        "categories": [
+            {
+                "id": "Immunology and Microbiology (miscellaneous)",
+                "quartile": "Q3"
+            },
+            {
+                "id": "Infectious Diseases",
+                "quartile": "Q3"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q3"
+            },
+            {
+                "id": "Microbiology (medical)",
+                "quartile": "Q3"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+
+        {
+        "identifiers": [
+            "2639-0175"
+        ],
+        "categories": [
+            {
+                "id": "Computer Networks and Communications",
+                "quartile": "Q2"
+            },
+            {
+                "id": "Computer Science Applications",
+                "quartile": "Q2"
+            },
+            {
+                "id": "Information Systems",
+                "quartile": "Q2"
+            },
+            {
+                "id": "Public Administration",
+                "quartile": "Q2"
+            },
+            {
+                "id": "Software",
+                "quartile": "Q3"
+            }
+        ],
+        "areas": [
+            "Computer Science",
+            "Social Sciences"
+        ]
+    },
+
+        {
+        "identifiers": [
+            "2287-0741",
+            "2287-075X"
+        ],
+        "categories": [
+            {
+                "id": "Environmental Science (miscellaneous)",
+                "quartile": "Q3"
+            }
+        ],
+        "areas": [
+            "Environmental Science"
+        ]
+    }
+
+]

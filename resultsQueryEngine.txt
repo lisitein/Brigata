@@ -1,5 +1,5 @@
 ***REPORT ABOUT THE BASIC QUERY ENGINE***
-29/03/2026 20:30
+29/03/2026 21:45
 
 
 
@@ -158,7 +158,7 @@ languages: [English, Russian, Ukrainian]
 license: CC BY
 publisher: Yaroslav Mudryi National Law University
 seal: False
-title: russian_title
+title: Проблеми Законності
 
 
 
@@ -304,7 +304,7 @@ languages: [English, Russian, Ukrainian]
 license: CC BY
 publisher: Yaroslav Mudryi National Law University
 seal: False
-title: russian_title
+title: Проблеми Законності
 
 
 Type: Journal
@@ -361,6 +361,48 @@ license: Publisher's own license
 publisher: Universidade Estadual de Londrina
 seal: False
 title: Semina: Ciências Agrárias
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [0514-7336, 2386-3943]
+languages: [English, Spanish]
+license: CC BY-NC-ND
+publisher: Ediciones Universidad de Salamanca
+seal: False
+title: Zephyrus
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1699-8774]
+languages: [English, Portuguese, Catalan, French, Galician, Italian, Spanish]
+license: CC BY
+publisher: Universitat de Barcelona
+seal: False
+title: Phonica
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1676-1871, 1676-3025]
+languages: [Portuguese, Spanish]
+license: CC BY
+publisher: Universidade Estadual Paulista Júlio de Mesquita Filho
+seal: False
+title: Revista Pegada Eletrônica
 
 
 Type: Journal
@@ -568,6 +610,142 @@ seal: False
 title: None
 
 
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Immunology and Microbiology]
+
+  ]
+  [
+
+    Type: Area
+    id: [Medicine]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Immunology and Microbiology (miscellaneous)]
+    quartile: Q3
+
+  ]
+  [
+
+    Type: Category
+    id: [Infectious Diseases]
+    quartile: Q3
+
+  ]
+  [
+
+    Type: Category
+    id: [Medicine (miscellaneous)]
+    quartile: Q3
+
+  ]
+  [
+
+    Type: Category
+    id: [Microbiology (medical)]
+    quartile: Q3
+
+  ]
+id: [1217-8950, 1588-2640]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Computer Science]
+
+  ]
+  [
+
+    Type: Area
+    id: [Social Sciences]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Computer Networks and Communications]
+    quartile: Q2
+
+  ]
+  [
+
+    Type: Category
+    id: [Computer Science Applications]
+    quartile: Q2
+
+  ]
+  [
+
+    Type: Category
+    id: [Information Systems]
+    quartile: Q2
+
+  ]
+  [
+
+    Type: Category
+    id: [Public Administration]
+    quartile: Q2
+
+  ]
+  [
+
+    Type: Category
+    id: [Software]
+    quartile: Q3
+
+  ]
+id: [2639-0175]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Environmental Science]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Environmental Science (miscellaneous)]
+    quartile: Q3
+
+  ]
+id: [2287-0741, 2287-075X]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
 
 
 GET JOURNALS WITH TITLE
@@ -693,7 +871,7 @@ languages: [English, Russian, Ukrainian]
 license: CC BY
 publisher: Yaroslav Mudryi National Law University
 seal: False
-title: russian_title
+title: Проблеми Законності
 
 
 Type: Journal
@@ -736,6 +914,48 @@ license: Publisher's own license
 publisher: Universidade Estadual de Londrina
 seal: False
 title: Semina: Ciências Agrárias
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [0514-7336, 2386-3943]
+languages: [English, Spanish]
+license: CC BY-NC-ND
+publisher: Ediciones Universidad de Salamanca
+seal: False
+title: Zephyrus
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1699-8774]
+languages: [English, Portuguese, Catalan, French, Galician, Italian, Spanish]
+license: CC BY
+publisher: Universitat de Barcelona
+seal: False
+title: Phonica
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1676-1871, 1676-3025]
+languages: [Portuguese, Spanish]
+license: CC BY
+publisher: Universidade Estadual Paulista Júlio de Mesquita Filho
+seal: False
+title: Revista Pegada Eletrônica
 
 
 
@@ -788,7 +1008,7 @@ languages: [English, Russian, Ukrainian]
 license: CC BY
 publisher: Yaroslav Mudryi National Law University
 seal: False
-title: russian_title
+title: Проблеми Законності
 
 
 Type: Journal
@@ -803,6 +1023,34 @@ license: CC BY
 publisher: MUS
 seal: False
 title: Scientific Journals of the Maritime University of Szczecin
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1699-8774]
+languages: [English, Portuguese, Catalan, French, Galician, Italian, Spanish]
+license: CC BY
+publisher: Universitat de Barcelona
+seal: False
+title: Phonica
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1676-1871, 1676-3025]
+languages: [Portuguese, Spanish]
+license: CC BY
+publisher: Universidade Estadual Paulista Júlio de Mesquita Filho
+seal: False
+title: Revista Pegada Eletrônica
 
 
 
@@ -874,7 +1122,7 @@ languages: [English, Russian, Ukrainian]
 license: CC BY
 publisher: Yaroslav Mudryi National Law University
 seal: False
-title: russian_title
+title: Проблеми Законності
 
 
 Type: Journal
@@ -929,6 +1177,16 @@ quartile: Q1
 
 
 Type: Category
+id: [Computer Networks and Communications]
+quartile: Q2
+
+
+Type: Category
+id: [Computer Science Applications]
+quartile: Q2
+
+
+Type: Category
 id: [Drug Discovery]
 quartile: Q1
 
@@ -949,18 +1207,48 @@ quartile: Q1
 
 
 Type: Category
+id: [Environmental Science (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Immunology and Microbiology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Infectious Diseases]
+quartile: Q3
+
+
+Type: Category
+id: [Information Systems]
+quartile: Q2
+
+
+Type: Category
 id: [Materials Chemistry]
 quartile: Q1
 
 
 Type: Category
 id: [Medicine (miscellaneous)]
+quartile: Q4
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
 quartile: Q1
 
 
 Type: Category
 id: [Medicine (miscellaneous)]
-quartile: Q4
+quartile: Q3
+
+
+Type: Category
+id: [Microbiology (medical)]
+quartile: Q3
 
 
 Type: Category
@@ -971,6 +1259,16 @@ quartile: Q1
 Type: Category
 id: [Philosophy]
 quartile: None
+
+
+Type: Category
+id: [Public Administration]
+quartile: Q2
+
+
+Type: Category
+id: [Software]
+quartile: Q3
 
 
 Type: Category
@@ -991,11 +1289,23 @@ id: [Biochemistry, Genetics and Molecular Biology]
 
 
 Type: Area
+id: [Computer Science]
+
+
+Type: Area
 id: [Economics, Econometrics and Finance]
 
 
 Type: Area
 id: [Energy]
+
+
+Type: Area
+id: [Environmental Science]
+
+
+Type: Area
+id: [Immunology and Microbiology]
 
 
 Type: Area
@@ -1008,6 +1318,10 @@ id: [Medicine]
 
 Type: Area
 id: [Pharmacology, Toxicology and Pharmaceutics]
+
+
+Type: Area
+id: [Social Sciences]
 
 
 
@@ -1035,6 +1349,16 @@ quartile: Q1
 
 
 Type: Category
+id: [Computer Networks and Communications]
+quartile: Q2
+
+
+Type: Category
+id: [Computer Science Applications]
+quartile: Q2
+
+
+Type: Category
 id: [Drug Discovery]
 quartile: Q1
 
@@ -1055,6 +1379,26 @@ quartile: Q1
 
 
 Type: Category
+id: [Environmental Science (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Immunology and Microbiology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Infectious Diseases]
+quartile: Q3
+
+
+Type: Category
+id: [Information Systems]
+quartile: Q2
+
+
+Type: Category
 id: [Materials Chemistry]
 quartile: Q1
 
@@ -1066,7 +1410,17 @@ quartile: Q1
 
 Type: Category
 id: [Medicine (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
 quartile: Q4
+
+
+Type: Category
+id: [Microbiology (medical)]
+quartile: Q3
 
 
 Type: Category
@@ -1077,6 +1431,16 @@ quartile: Q1
 Type: Category
 id: [Philosophy]
 quartile: None
+
+
+Type: Category
+id: [Public Administration]
+quartile: Q2
+
+
+Type: Category
+id: [Software]
+quartile: Q3
 
 
 Type: Category
@@ -1094,6 +1458,36 @@ id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
 quartile: Q3
 
 
+Type: Category
+id: [Environmental Science (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Immunology and Microbiology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Infectious Diseases]
+quartile: Q3
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Microbiology (medical)]
+quartile: Q3
+
+
+Type: Category
+id: [Software]
+quartile: Q3
+
+
 
 
 *** Q3 - Q4
@@ -1105,8 +1499,38 @@ quartile: Q3
 
 
 Type: Category
+id: [Environmental Science (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Immunology and Microbiology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Infectious Diseases]
+quartile: Q3
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
 id: [Medicine (miscellaneous)]
 quartile: Q4
+
+
+Type: Category
+id: [Microbiology (medical)]
+quartile: Q3
+
+
+Type: Category
+id: [Software]
+quartile: Q3
 
 
 
@@ -1134,6 +1558,16 @@ quartile: Q1
 
 
 Type: Category
+id: [Computer Networks and Communications]
+quartile: Q2
+
+
+Type: Category
+id: [Computer Science Applications]
+quartile: Q2
+
+
+Type: Category
 id: [Drug Discovery]
 quartile: Q1
 
@@ -1154,6 +1588,26 @@ quartile: Q1
 
 
 Type: Category
+id: [Environmental Science (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Immunology and Microbiology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Infectious Diseases]
+quartile: Q3
+
+
+Type: Category
+id: [Information Systems]
+quartile: Q2
+
+
+Type: Category
 id: [Materials Chemistry]
 quartile: Q1
 
@@ -1165,7 +1619,17 @@ quartile: Q1
 
 Type: Category
 id: [Medicine (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
 quartile: Q4
+
+
+Type: Category
+id: [Microbiology (medical)]
+quartile: Q3
 
 
 Type: Category
@@ -1176,6 +1640,16 @@ quartile: Q1
 Type: Category
 id: [Philosophy]
 quartile: None
+
+
+Type: Category
+id: [Public Administration]
+quartile: Q2
+
+
+Type: Category
+id: [Software]
+quartile: Q3
 
 
 Type: Category
@@ -1204,13 +1678,33 @@ quartile: Q1
 
 
 Type: Category
+id: [Immunology and Microbiology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Infectious Diseases]
+quartile: Q3
+
+
+Type: Category
 id: [Medicine (miscellaneous)]
 quartile: Q1
 
 
 Type: Category
 id: [Medicine (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
 quartile: Q4
+
+
+Type: Category
+id: [Microbiology (medical)]
+quartile: Q3
 
 
 Type: Category
@@ -1276,11 +1770,23 @@ id: [Biochemistry, Genetics and Molecular Biology]
 
 
 Type: Area
+id: [Computer Science]
+
+
+Type: Area
 id: [Economics, Econometrics and Finance]
 
 
 Type: Area
 id: [Energy]
+
+
+Type: Area
+id: [Environmental Science]
+
+
+Type: Area
+id: [Immunology and Microbiology]
 
 
 Type: Area
@@ -1293,6 +1799,10 @@ id: [Medicine]
 
 Type: Area
 id: [Pharmacology, Toxicology and Pharmaceutics]
+
+
+Type: Area
+id: [Social Sciences]
 
 
 
@@ -1332,6 +1842,10 @@ id: [Pharmacology, Toxicology and Pharmaceutics]
 
 Type: Area
 id: [Biochemistry, Genetics and Molecular Biology]
+
+
+Type: Area
+id: [Immunology and Microbiology]
 
 
 Type: Area

@@ -38,8 +38,12 @@ class JournalUploadHandler(UploadHandler):
         # journal_id = {} 
         id_cols = ['issn','eissn']
         attribute_cols = ['title', 'languages', 'publisher', 'seal', 'license', 'apc']
+        
+        endpoint =self.getDbPathOrUrl()
+        last_index = self.get_last_journal_index(endpoint)
+        
         for idx, row in journal.iterrows():
-            local_id = "journal_" + str(idx)  # internalId??
+            local_id = "journal_" + str(idx+last_index)  # internalId??
             subject = URIRef(base_url[local_id]) # can automatically deal with the URL
             self.graph.add((subject, RDF.type, URIRef(base_url["Journal"]))) # add type
         
@@ -125,3 +129,20 @@ class JournalUploadHandler(UploadHandler):
         store.close()
 
         return True
+
+
+    def get_last_journal_index(self, endpoint: str) -> int:
+        from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+        store = SPARQLUpdateStore()
+        try:
+            store.open((endpoint, endpoint))
+            query = """
+                SELECT (COUNT(DISTINCT ?s) AS ?count)
+                WHERE { ?s a <https://brigata.github.org/Journal> . }
+            """
+            results = list(store.query(query))
+            return int(results[0][0]) if results else 0
+        except Exception:
+            return 0
+        finally:
+            store.close()
