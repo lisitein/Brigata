@@ -229,6 +229,7 @@ class BasicQueryEngine:
         result: List[Journal] = []
         seen_ids: Set[str] = set()
 
+        # 1. Journals from Blazegraph (DOAJ)
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
@@ -241,6 +242,7 @@ class BasicQueryEngine:
             except Exception:
                 continue
 
+        # 2. Journals present only in SQLite (Scimago) — not in Blazegraph
         for h in self.categoryHandlers:
             try:
                 engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
@@ -575,6 +577,84 @@ class FullQueryEngine(BasicQueryEngine):
                 continue
         return ids
 
+    def _makeJournalsFromSQLiteIds(
+        self,
+        all_ids: Set[str],
+        blazegraph_ids: Set[str],
+        apc_filter: Optional[bool] = None,
+    ) -> List[Journal]:
+        # Builds minimal Journal objects for IDs found in SQLite but not in Blazegraph.
+        # apc_filter: True = only apc journals, False = only non-apc, None = all.
+        # SQLite-only journals have no APC info from DOAJ, so they are treated as apc=False.
+        # If apc_filter=True, they are excluded; otherwise they are included.
+        result: List[Journal] = []
+        sqlite_only_ids = all_ids - blazegraph_ids
+        if not sqlite_only_ids:
+            return result
+
+        for h in self.categoryHandlers:
+            try:
+                engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
+                df_sql = pd.read_sql(
+                    "SELECT DISTINCT internalId, id FROM IdentifiableEntity WHERE internalId LIKE 'journal-%'",
+                    engine
+                )
+                if df_sql.empty:
+                    continue
+
+                groups = defaultdict(list)
+                for _, row in df_sql.iterrows():
+                    groups[row["internalId"]].append(row["id"])
+
+                seen: Set[str] = set()
+                for internal_id, ids in groups.items():
+                    if not any(i in sqlite_only_ids for i in ids):
+                        continue
+                    key = str(frozenset(ids))
+                    if key in seen:
+                        continue
+                    seen.add(key)
+
+                    if apc_filter is True:
+                        continue  # SQLite-only journals can't have confirmed APC
+
+                    cats_dict: dict = {}
+                    areas_set: Set[str] = set()
+                    for jid in ids:
+                        try:
+                            df_rel = h.getById(jid)
+                            if df_rel is None or df_rel.empty:
+                                continue
+                            if "category_id" in df_rel.columns:
+                                for _, rr in df_rel.iterrows():
+                                    cid = rr.get("category_id")
+                                    q = rr.get("category_quartile")
+                                    if cid and str(cid).strip() and str(cid).strip() not in cats_dict:
+                                        cats_dict[str(cid).strip()] = q
+                            if "area_id" in df_rel.columns:
+                                for _, rr in df_rel.iterrows():
+                                    aid = rr.get("area_id")
+                                    if aid and str(aid).strip():
+                                        areas_set.add(str(aid).strip())
+                        except Exception:
+                            continue
+
+                    result.append(Journal(
+                        ids=sorted(ids),
+                        title=None,
+                        languages=None,
+                        publisher=None,
+                        seal=False,
+                        license=None,
+                        apc=False,
+                        categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
+                        areas=[Area([aid]) for aid in sorted(areas_set)],
+                    ))
+            except Exception:
+                continue
+
+        return result
+
     def getJournalsInCategoriesWithQuartile(
         self,
         category_ids: Set[str],
@@ -593,15 +673,24 @@ class FullQueryEngine(BasicQueryEngine):
             return []
 
         result: List[Journal] = []
+        blazegraph_ids: Set[str] = set()
+
+        # Journals found in Blazegraph
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
                 if df is None or df.empty:
                     continue
                 mask = df["id"].apply(lambda x: self._id_matches(x, all_ids))
-                result.extend(self._makeJournals(df[mask]))
+                matched = self._makeJournals(df[mask])
+                for j in matched:
+                    result.append(j)
+                    blazegraph_ids.update(j.getIds())
             except Exception:
                 continue
+
+        # Journals present only in SQLite
+        result.extend(self._makeJournalsFromSQLiteIds(all_ids, blazegraph_ids))
         return result
 
     def getJournalsInAreasWithLicense(
@@ -622,6 +711,9 @@ class FullQueryEngine(BasicQueryEngine):
             return []
 
         result: List[Journal] = []
+        blazegraph_ids: Set[str] = set()
+
+        # Journals found in Blazegraph, filtered by license
         for h in self.journalHandlers:
             try:
                 if licenses:
@@ -634,9 +726,18 @@ class FullQueryEngine(BasicQueryEngine):
 
                 id_col = "all_ids" if "all_ids" in df.columns else "id"
                 mask = df[id_col].apply(lambda x: self._id_matches(x, all_ids))
-                result.extend(self._makeJournals(df[mask]))
+                matched = self._makeJournals(df[mask])
+                for j in matched:
+                    result.append(j)
+                    blazegraph_ids.update(j.getIds())
             except Exception:
                 continue
+
+        # SQLite-only journals have no license info from DOAJ.
+        # Include them only when no license filter is applied (empty set = all licenses).
+        if not licenses:
+            result.extend(self._makeJournalsFromSQLiteIds(all_ids, blazegraph_ids))
+
         return result
 
     # ---------------------------------------------------------------
@@ -710,12 +811,18 @@ class FullQueryEngine(BasicQueryEngine):
             except Exception:
                 continue
 
+        # Intersection: journal must appear in BOTH the requested categories AND areas
         all_ids = ids_cat & ids_area
 
         if not all_ids:
             return []
 
         result: List[Journal] = []
+        blazegraph_ids: Set[str] = set()
+
+        # Journals found in Blazegraph, filtered by apc=False (diamond = no APC).
+        # We track ALL Blazegraph IDs (including apc=True ones that are excluded)
+        # so that SQLite does not re-add them as apc=False later.
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
@@ -723,9 +830,24 @@ class FullQueryEngine(BasicQueryEngine):
                     continue
 
                 mask_ids = df["id"].apply(lambda x: self._id_matches(x, all_ids))
-                apc_mask = df["apc"].astype(str).str.lower().isin(["no", "false", "0", ""])
-                mask = mask_ids & apc_mask
-                result.extend(self._makeJournals(df[mask]))
+                df_candidates = df[mask_ids]
+
+                # Register all candidate IDs as seen in Blazegraph (regardless of APC)
+                for _, row in df_candidates.iterrows():
+                    raw = row.get("id") or row.get("all_ids", "")
+                    for s in str(raw).split(","):
+                        s = s.strip()
+                        if s:
+                            blazegraph_ids.add(s)
+
+                # Only keep diamond journals (apc=False)
+                apc_mask = df_candidates["apc"].astype(str).str.lower().isin(["no", "false", "0", ""])
+                matched = self._makeJournals(df_candidates[apc_mask])
+                result.extend(matched)
             except Exception:
                 continue
+
+        # SQLite-only journals are treated as apc=False, so they qualify as diamond.
+        # Blazegraph journals with apc=True are already in blazegraph_ids and won't be re-added.
+        result.extend(self._makeJournalsFromSQLiteIds(all_ids, blazegraph_ids, apc_filter=False))
         return result
