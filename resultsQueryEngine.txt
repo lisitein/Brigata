@@ -1,0 +1,1348 @@
+***REPORT ABOUT THE BASIC QUERY ENGINE***
+29/03/2026 20:30
+
+
+
+
+
+GET ENTITY BY ID
+
+
+
+*** 0002-8282
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Economics, Econometrics and Finance]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Economics and Econometrics]
+    quartile: Q1
+
+  ]
+id: [0002-8282, 1944-7981]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+
+
+*** 1944-7981
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Economics, Econometrics and Finance]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Economics and Econometrics]
+    quartile: Q1
+
+  ]
+id: [0002-8282, 1944-7981]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+
+
+*** 2058-8437
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Energy]
+
+  ]
+  [
+
+    Type: Area
+    id: [Materials Science]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Biomaterials]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Electronic, Optical and Magnetic Materials]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Energy (miscellaneous)]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Materials Chemistry]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Surfaces, Coatings and Films]
+    quartile: Q1
+
+  ]
+id: [2058-8437]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+
+
+*** 2224-9281
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** 2238-8869
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2238-8869]
+languages: [Portuguese]
+license: CC BY-NC
+publisher: Centro Universitário de Anápolis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
+
+
+
+
+*** 1733-8670
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+
+
+*** 2392-0378
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+
+
+*** Energy
+
+
+Type: Area
+id: [Energy]
+
+
+
+
+*** Philosophy
+
+
+Type: Category
+id: [Philosophy]
+quartile: None
+
+
+
+
+*** Drug Discovery
+
+
+Type: Category
+id: [Drug Discovery]
+quartile: Q1
+
+
+
+
+*** Medicine (miscellaneous)
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q1
+
+
+
+
+*** happy-yang
+
+
+Type: None
+
+
+
+GET ALL JOURNALS
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1983-9979]
+languages: [Portuguese]
+license: CC BY-NC-SA
+publisher: Universidade Federal da Paraíba
+seal: False
+title: Prolíngua
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2174-548X]
+languages: [English]
+license: CC BY-NC
+publisher: University of Huelva
+seal: False
+title: Enlightening Tourism: A Pathmaking Journal
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2238-8869]
+languages: [Portuguese]
+license: CC BY-NC
+publisher: Centro Universitário de Anápolis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1676-546X, 1679-0359]
+languages: [English, Portuguese]
+license: Publisher's own license
+publisher: Universidade Estadual de Londrina
+seal: False
+title: Semina: Ciências Agrárias
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Medicine]
+
+  ]
+  [
+
+    Type: Area
+    id: [Pharmacology, Toxicology and Pharmaceutics]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Drug Discovery]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Medicine (miscellaneous)]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Pharmacology]
+    quartile: Q1
+
+  ]
+id: [1474-1776, 1474-1784]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Economics, Econometrics and Finance]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Economics and Econometrics]
+    quartile: Q1
+
+  ]
+id: [0002-8282, 1944-7981]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Energy]
+
+  ]
+  [
+
+    Type: Area
+    id: [Materials Science]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Biomaterials]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Electronic, Optical and Magnetic Materials]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Energy (miscellaneous)]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Materials Chemistry]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Surfaces, Coatings and Films]
+    quartile: Q1
+
+  ]
+id: [2058-8437]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Biochemistry, Genetics and Molecular Biology]
+
+  ]
+  [
+
+    Type: Area
+    id: [Medicine]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+    quartile: Q1
+
+  ]
+  [
+
+    Type: Category
+    id: [Medicine (miscellaneous)]
+    quartile: Q1
+
+  ]
+id: [1078-8956, 1546-170X]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+Type: Journal
+apc: False
+hasArea:
+  [
+
+    Type: Area
+    id: [Biochemistry, Genetics and Molecular Biology]
+
+  ]
+  [
+
+    Type: Area
+    id: [Medicine]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+    quartile: Q3
+
+  ]
+  [
+
+    Type: Category
+    id: [Medicine (miscellaneous)]
+    quartile: Q4
+
+  ]
+id: [0065-2598, 2214-8019]
+languages: None
+license: None
+publisher: None
+seal: False
+title: None
+
+
+
+
+GET JOURNALS WITH TITLE
+
+
+
+*** cien
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2238-8869]
+languages: [Portuguese]
+license: CC BY-NC
+publisher: Centro Universitário de Anápolis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
+
+
+
+
+*** Tourism
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2174-548X]
+languages: [English]
+license: CC BY-NC
+publisher: University of Huelva
+seal: False
+title: Enlightening Tourism: A Pathmaking Journal
+
+
+
+
+*** happy yang
+
+
+
+
+GET JOURNALS PUBLISHED BY
+
+
+
+*** MUS
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+
+
+*** Univers
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1983-9979]
+languages: [Portuguese]
+license: CC BY-NC-SA
+publisher: Universidade Federal da Paraíba
+seal: False
+title: Prolíngua
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2174-548X]
+languages: [English]
+license: CC BY-NC
+publisher: University of Huelva
+seal: False
+title: Enlightening Tourism: A Pathmaking Journal
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2238-8869]
+languages: [Portuguese]
+license: CC BY-NC
+publisher: Centro Universitário de Anápolis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1676-546X, 1679-0359]
+languages: [English, Portuguese]
+license: Publisher's own license
+publisher: Universidade Estadual de Londrina
+seal: False
+title: Semina: Ciências Agrárias
+
+
+
+
+*** Super Yang
+
+
+
+
+GET JOURNALS WITH LICENSE
+
+
+
+*** CC BY     -     CC BY-NC-SA
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1983-9979]
+languages: [Portuguese]
+license: CC BY-NC-SA
+publisher: Universidade Federal da Paraíba
+seal: False
+title: Prolíngua
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+
+
+*** CC BY-NC
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2174-548X]
+languages: [English]
+license: CC BY-NC
+publisher: University of Huelva
+seal: False
+title: Enlightening Tourism: A Pathmaking Journal
+
+
+Type: Journal
+apc: False
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [2238-8869]
+languages: [Portuguese]
+license: CC BY-NC
+publisher: Centro Universitário de Anápolis
+seal: False
+title: Fronteiras: Journal of Social, Technological and Environmental Science
+
+
+
+
+*** ChiChi
+
+
+
+
+*** no license specified
+
+
+
+
+GET JOURNALS WITH APC
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1733-8670, 2392-0378]
+languages: [English]
+license: CC BY
+publisher: MUS
+seal: False
+title: Scientific Journals of the Maritime University of Szczecin
+
+
+Type: Journal
+apc: True
+hasArea:
+  (empty)
+hasCategory:
+  (empty)
+id: [1676-546X, 1679-0359]
+languages: [English, Portuguese]
+license: Publisher's own license
+publisher: Universidade Estadual de Londrina
+seal: False
+title: Semina: Ciências Agrárias
+
+
+
+
+GET JOURNALS WITH DOAJ SEAL
+
+
+
+GET ALL CATEGORIES
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Biomaterials]
+quartile: Q1
+
+
+Type: Category
+id: [Drug Discovery]
+quartile: Q1
+
+
+Type: Category
+id: [Economics and Econometrics]
+quartile: Q1
+
+
+Type: Category
+id: [Electronic, Optical and Magnetic Materials]
+quartile: Q1
+
+
+Type: Category
+id: [Energy (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Materials Chemistry]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q4
+
+
+Type: Category
+id: [Pharmacology]
+quartile: Q1
+
+
+Type: Category
+id: [Philosophy]
+quartile: None
+
+
+Type: Category
+id: [Surfaces, Coatings and Films]
+quartile: Q1
+
+
+
+
+GET ALL AREAS
+
+Type: Area
+id: [Arts and Humanities]
+
+
+Type: Area
+id: [Biochemistry, Genetics and Molecular Biology]
+
+
+Type: Area
+id: [Economics, Econometrics and Finance]
+
+
+Type: Area
+id: [Energy]
+
+
+Type: Area
+id: [Materials Science]
+
+
+Type: Area
+id: [Medicine]
+
+
+Type: Area
+id: [Pharmacology, Toxicology and Pharmaceutics]
+
+
+
+
+GET CATEGORIES WITH QUARTILE
+
+
+
+*** no quartile specified
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Biomaterials]
+quartile: Q1
+
+
+Type: Category
+id: [Drug Discovery]
+quartile: Q1
+
+
+Type: Category
+id: [Economics and Econometrics]
+quartile: Q1
+
+
+Type: Category
+id: [Electronic, Optical and Magnetic Materials]
+quartile: Q1
+
+
+Type: Category
+id: [Energy (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Materials Chemistry]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q4
+
+
+Type: Category
+id: [Pharmacology]
+quartile: Q1
+
+
+Type: Category
+id: [Philosophy]
+quartile: None
+
+
+Type: Category
+id: [Surfaces, Coatings and Films]
+quartile: Q1
+
+
+
+
+*** Q3
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q3
+
+
+
+
+*** Q3 - Q4
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q4
+
+
+
+
+GET CATEGORIES ASSIGNED TO AREAS
+
+
+
+*** no area specified
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Biomaterials]
+quartile: Q1
+
+
+Type: Category
+id: [Drug Discovery]
+quartile: Q1
+
+
+Type: Category
+id: [Economics and Econometrics]
+quartile: Q1
+
+
+Type: Category
+id: [Electronic, Optical and Magnetic Materials]
+quartile: Q1
+
+
+Type: Category
+id: [Energy (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Materials Chemistry]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q4
+
+
+Type: Category
+id: [Pharmacology]
+quartile: Q1
+
+
+Type: Category
+id: [Philosophy]
+quartile: None
+
+
+Type: Category
+id: [Surfaces, Coatings and Films]
+quartile: Q1
+
+
+
+
+*** Medicine
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Biochemistry, Genetics and Molecular Biology (miscellaneous)]
+quartile: Q3
+
+
+Type: Category
+id: [Drug Discovery]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Medicine (miscellaneous)]
+quartile: Q4
+
+
+Type: Category
+id: [Pharmacology]
+quartile: Q1
+
+
+
+
+*** Energy - Arts and Humanities
+
+
+Type: Category
+id: [Biomaterials]
+quartile: Q1
+
+
+Type: Category
+id: [Electronic, Optical and Magnetic Materials]
+quartile: Q1
+
+
+Type: Category
+id: [Energy (miscellaneous)]
+quartile: Q1
+
+
+Type: Category
+id: [Materials Chemistry]
+quartile: Q1
+
+
+Type: Category
+id: [Philosophy]
+quartile: None
+
+
+Type: Category
+id: [Surfaces, Coatings and Films]
+quartile: Q1
+
+
+
+
+*** happy-yang
+
+
+
+
+GET AREAS ASSIGNED TO CATEGORIES
+
+
+
+*** no category specified
+
+
+Type: Area
+id: [Arts and Humanities]
+
+
+Type: Area
+id: [Biochemistry, Genetics and Molecular Biology]
+
+
+Type: Area
+id: [Economics, Econometrics and Finance]
+
+
+Type: Area
+id: [Energy]
+
+
+Type: Area
+id: [Materials Science]
+
+
+Type: Area
+id: [Medicine]
+
+
+Type: Area
+id: [Pharmacology, Toxicology and Pharmaceutics]
+
+
+
+
+*** Biomaterials
+
+
+Type: Area
+id: [Energy]
+
+
+Type: Area
+id: [Materials Science]
+
+
+
+
+*** Pharmacology - Philosophy
+
+
+Type: Area
+id: [Arts and Humanities]
+
+
+Type: Area
+id: [Medicine]
+
+
+Type: Area
+id: [Pharmacology, Toxicology and Pharmaceutics]
+
+
+
+
+*** Medicine (miscellaneous)
+
+
+Type: Area
+id: [Biochemistry, Genetics and Molecular Biology]
+
+
+Type: Area
+id: [Medicine]
+
+
+Type: Area
+id: [Pharmacology, Toxicology and Pharmaceutics]
+
+
+
+
+*** happy-yang
+

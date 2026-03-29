@@ -57,7 +57,7 @@ rel_path = "data/relational_database.db"
 cat = CategoryUploadHandler()
 cat.setDbPathOrUrl(rel_path)
 
-grp_endpoint = "http://10.42.131.65:9999/blazegraph/sparql"
+grp_endpoint = "http://127.0.0.1:9999/blazegraph/sparql"
 jou = JournalUploadHandler()
 jou.setDbPathOrUrl(grp_endpoint)
 

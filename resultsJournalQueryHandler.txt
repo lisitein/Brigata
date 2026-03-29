@@ -1,0 +1,139 @@
+***REPORT ABOUT THE JOURNAL QUERY HANDLER***
+29/03/2026 20:24
+
+
+
+
+
+GET BY ID
+
+
+
+***2174-548X
+
+          id                                       title             publisher   license    apc languages   seal
+0  2174-548X  Enlightening Tourism: A Pathmaking Journal  University of Huelva  CC BY-NC  false   English  false
+
+
+***2224-9281
+
+                     id          title                                publisher license   apc                    languages   seal
+0  2224-9281, 2414-990X  russian_title  Yaroslav Mudryi National Law University   CC BY  true  English, Russian, Ukrainian  false
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []
+
+
+GET ALL JOURNALS
+                                journal                    id                                                                   title                                publisher    apc   seal                  license                    languages
+0  https://brigata.github.org/journal_0             1983-9979                                                               Prolíngua          Universidade Federal da Paraíba  false  false              CC BY-NC-SA                   Portuguese
+1  https://brigata.github.org/journal_1  2224-9281, 2414-990X                                                           russian_title  Yaroslav Mudryi National Law University   true  false                    CC BY  English, Russian, Ukrainian
+2  https://brigata.github.org/journal_2             2174-548X                              Enlightening Tourism: A Pathmaking Journal                     University of Huelva  false  false                 CC BY-NC                      English
+3  https://brigata.github.org/journal_3  1733-8670, 2392-0378              Scientific Journals of the Maritime University of Szczecin                                      MUS   true  false                    CC BY                      English
+4  https://brigata.github.org/journal_4             2238-8869  Fronteiras: Journal of Social, Technological and Environmental Science         Centro Universitário de Anápolis  false  false                 CC BY-NC                   Portuguese
+5  https://brigata.github.org/journal_5  1676-546X, 1679-0359                                               Semina: Ciências Agrárias        Universidade Estadual de Londrina   true  false  Publisher's own license          English, Portuguese
+
+
+
+
+
+
+GET JOURNALS WITH TITLE
+
+
+
+***happy-yang
+
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []
+
+
+***cien
+
+                                journal                    id                                                                   title                         publisher    apc   seal   license   languages
+0  https://brigata.github.org/journal_3  1733-8670, 2392-0378              Scientific Journals of the Maritime University of Szczecin                               MUS   true  false     CC BY     English
+1  https://brigata.github.org/journal_4             2238-8869  Fronteiras: Journal of Social, Technological and Environmental Science  Centro Universitário de Anápolis  false  false  CC BY-NC  Portuguese
+
+
+***Tourism
+
+                                journal         id                                       title             publisher    apc   seal   license languages
+0  https://brigata.github.org/journal_2  2174-548X  Enlightening Tourism: A Pathmaking Journal  University of Huelva  false  false  CC BY-NC   English
+
+
+GET JOURNALS PUBLISHED BY
+
+
+
+*** MUS
+
+                                journal                    id                                                       title publisher   apc   seal license languages
+0  https://brigata.github.org/journal_3  1733-8670, 2392-0378  Scientific Journals of the Maritime University of Szczecin       MUS  true  false   CC BY   English
+
+
+*** Univers
+
+                                journal                    id                                                                   title                                publisher    apc   seal                  license                    languages
+0  https://brigata.github.org/journal_0             1983-9979                                                               Prolíngua          Universidade Federal da Paraíba  false  false              CC BY-NC-SA                   Portuguese
+1  https://brigata.github.org/journal_1  2224-9281, 2414-990X                                                           russian_title  Yaroslav Mudryi National Law University   true  false                    CC BY  English, Russian, Ukrainian
+2  https://brigata.github.org/journal_2             2174-548X                              Enlightening Tourism: A Pathmaking Journal                     University of Huelva  false  false                 CC BY-NC                      English
+3  https://brigata.github.org/journal_4             2238-8869  Fronteiras: Journal of Social, Technological and Environmental Science         Centro Universitário de Anápolis  false  false                 CC BY-NC                   Portuguese
+4  https://brigata.github.org/journal_5  1676-546X, 1679-0359                                               Semina: Ciências Agrárias        Universidade Estadual de Londrina   true  false  Publisher's own license          English, Portuguese
+
+
+*** Super Yang
+
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []
+
+
+GET JOURNALS WITH LICENSE
+
+
+
+*** CC BY     -     CC BY-NC-SA
+
+                                journal         id               all_ids                                                       title                                publisher    apc   seal      license                    languages
+0  https://brigata.github.org/journal_0  1983-9979             1983-9979                                                   Prolíngua          Universidade Federal da Paraíba  false  false  CC BY-NC-SA                   Portuguese
+1  https://brigata.github.org/journal_1  2224-9281  2224-9281, 2414-990X                                               russian_title  Yaroslav Mudryi National Law University   true  false        CC BY  English, Russian, Ukrainian
+2  https://brigata.github.org/journal_3  1733-8670  1733-8670, 2392-0378  Scientific Journals of the Maritime University of Szczecin                                      MUS   true  false        CC BY                      English
+
+
+*** CC BY-NC
+
+                                journal         id    all_ids                                                                   title                         publisher    apc   seal   license   languages
+0  https://brigata.github.org/journal_2  2174-548X  2174-548X                              Enlightening Tourism: A Pathmaking Journal              University of Huelva  false  false  CC BY-NC     English
+1  https://brigata.github.org/journal_4  2238-8869  2238-8869  Fronteiras: Journal of Social, Technological and Environmental Science  Centro Universitário de Anápolis  false  false  CC BY-NC  Portuguese
+
+
+*** ChiChi
+
+Empty DataFrame
+Columns: [journal, id, all_ids, title, publisher, apc, seal, license, languages]
+Index: []
+
+
+*** no license specified
+
+Empty DataFrame
+Columns: [journal, id, all_ids, title, publisher, apc, seal, license, languages]
+Index: []
+
+
+GET JOURNALS WITH APC
+                                journal                    id                                                       title                                publisher   apc   seal                  license                    languages
+0  https://brigata.github.org/journal_1  2224-9281, 2414-990X                                               russian_title  Yaroslav Mudryi National Law University  true  false                    CC BY  English, Russian, Ukrainian
+1  https://brigata.github.org/journal_3  1733-8670, 2392-0378  Scientific Journals of the Maritime University of Szczecin                                      MUS  true  false                    CC BY                      English
+2  https://brigata.github.org/journal_5  1676-546X, 1679-0359                                   Semina: Ciências Agrárias        Universidade Estadual de Londrina  true  false  Publisher's own license          English, Portuguese
+
+
+GET JOURNALS WITH DOAJ SEAL
+Empty DataFrame
+Columns: [journal, id, title, publisher, apc, seal, license, languages]
+Index: []

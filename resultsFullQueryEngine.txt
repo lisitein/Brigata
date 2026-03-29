@@ -1,0 +1,322 @@
+***REPORT ABOUT THE FULL QUERY ENGINE***
+29/03/2026 20:31
+
+
+
+
+
+GET JOURNALS IN CATEGORIES WITH QUARTILE
+
+
+
+*** category={"Drug Discovery"}, quartile={"Q1"}
+
+(empty list)
+
+
+
+*** category={"Philosophy"}, quartile={} (all quartiles)
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** category={"Biomaterials", "Drug Discovery"}, quartile={"Q1"}
+
+(empty list)
+
+
+
+*** category={"Biochemistry, Genetics and Molecular Biology (miscellaneous)"}, quartile={"Q3"}
+
+(empty list)
+
+
+
+*** category={} (all categories), quartile={"Q1"}
+
+(empty list)
+
+
+
+*** category={} (all), quartile={} (all)
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** category={"happy-yang"}, quartile={"Q1"}
+
+(empty list)
+
+
+
+GET JOURNALS IN AREAS WITH LICENSE
+
+
+
+*** area={"Arts and Humanities"}, license={"CC BY"}
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** area={"Medicine"}, license={"CC BY"}
+
+(empty list)
+
+
+
+*** area={"Arts and Humanities", "Economics, Econometrics and Finance"}, license={"CC BY", "CC BY-NC-SA"}
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** area={"Arts and Humanities"}, license={} (all licenses)
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** area={} (all areas), license={"CC BY"}
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** area={} (all), license={} (all)
+
+
+Type: Journal
+apc: True
+hasArea:
+  [
+
+    Type: Area
+    id: [Arts and Humanities]
+
+  ]
+hasCategory:
+  [
+
+    Type: Category
+    id: [Philosophy]
+    quartile: None
+
+  ]
+id: [2224-9281, 2414-990X]
+languages: [English, Russian, Ukrainian]
+license: CC BY
+publisher: Yaroslav Mudryi National Law University
+seal: False
+title: russian_title
+
+
+
+
+*** area={"happy-yang"}, license={"CC BY"}
+
+(empty list)
+
+
+
+*** area={"Medicine"}, license={"ChiChi"}
+
+(empty list)
+
+
+
+GET DIAMOND JOURNALS IN AREAS AND CATEGORIES WITH QUARTILE
+
+
+
+*** area={"Arts and Humanities"}, category={"Philosophy"}, quartile={} (all quartiles)
+
+(empty list)
+
+
+
+*** area={"Medicine"}, category={"Drug Discovery"}, quartile={"Q1"}
+
+(empty list)
+
+
+
+*** area={"Energy"}, category={"Energy (miscellaneous)"}, quartile={"Q1"}
+
+(empty list)
+
+
+
+*** area={} (all areas), category={"Philosophy"}, quartile={} (all quartiles)
+
+(empty list)
+
+
+
+*** area={"Energy"}, category={} (all categories), quartile={"Q1"}
+
+(empty list)
+
+
+
+*** area={} (all), category={} (all), quartile={} (all)
+
+(empty list)
+
+
+
+*** area={"happy-yang"}, category={"Philosophy"}, quartile={} (all quartiles)
+
+(empty list)
+
+
+
+*** area={"Arts and Humanities"}, category={"happy-yang"}, quartile={"Q1"}
+
+(empty list)
