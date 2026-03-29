@@ -1,0 +1,3014 @@
+[
+    {
+        "identifiers": [
+            "1542-4863",
+            "0007-9235"
+        ],
+        "categories": [
+            {
+                "id": "Hematology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1935-8245",
+            "1935-8237"
+        ],
+        "categories": [
+            {
+                "id": "Artificial Intelligence",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Human-Computer Interaction",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Software",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Computer Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1471-0072",
+            "1471-0080"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "0033-5533",
+            "1531-4650"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1474-175X",
+            "1474-1768"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0092-8674",
+            "1097-4172"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1474-1784",
+            "1474-1776"
+        ],
+        "categories": [
+            {
+                "id": "Drug Discovery",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Pharmacology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine",
+            "Pharmacology, Toxicology and Pharmaceutics"
+        ]
+    },
+    {
+        "identifiers": [
+            "1944-7981",
+            "0002-8282"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "2058-8437"
+        ],
+        "categories": [
+            {
+                "id": "Biomaterials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electronic, Optical and Magnetic Materials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Energy (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Chemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Surfaces, Coatings and Films",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1759-4782",
+            "1759-4774"
+        ],
+        "categories": [
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0028-4793",
+            "1533-4406"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0022-1082",
+            "1540-6261"
+        ],
+        "categories": [
+            {
+                "id": "Accounting",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1546-170X",
+            "1078-8956"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1934-3396",
+            "1934-340X"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Structural Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2380-8942",
+            "2380-8950"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0022-3808",
+            "1537-534X"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1476-4687",
+            "0028-0836"
+        ],
+        "categories": [
+            {
+                "id": "Multidisciplinary",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Multidisciplinary"
+        ]
+    },
+    {
+        "identifiers": [
+            "1546-1696",
+            "1087-0156"
+        ],
+        "categories": [
+            {
+                "id": "Applied Microbiology and Biotechnology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Bioengineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Biomedical Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Biotechnology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Chemical Engineering",
+            "Engineering",
+            "Immunology and Microbiology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1520-6890",
+            "0009-2665"
+        ],
+        "categories": [
+            {
+                "id": "Chemistry (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemistry"
+        ]
+    },
+    {
+        "identifiers": [
+            "0012-9682",
+            "1468-0262"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1465-7368",
+            "0893-9454"
+        ],
+        "categories": [
+            {
+                "id": "Accounting",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1535-6108",
+            "1878-3686"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2058-7546"
+        ],
+        "categories": [
+            {
+                "id": "Electronic, Optical and Magnetic Materials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Energy Engineering and Power Technology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Fuel Technology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Renewable Energy, Sustainability and the Environment",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1061-4036",
+            "1546-1718"
+        ],
+        "categories": [
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "0034-6861",
+            "1539-0756"
+        ],
+        "categories": [
+            {
+                "id": "Physics and Astronomy (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1474-1741",
+            "1474-1733"
+        ],
+        "categories": [
+            {
+                "id": "Immunology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology and Allergy",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1553-877X"
+        ],
+        "categories": [
+            {
+                "id": "Electrical and Electronic Engineering",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Engineering"
+        ]
+    },
+    {
+        "identifiers": [
+            "1723-8617"
+        ],
+        "categories": [
+            {
+                "id": "Psychiatry and Mental Health",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1545-3278",
+            "0732-0582"
+        ],
+        "categories": [
+            {
+                "id": "Immunology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology and Allergy",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1551-8922",
+            "1551-8930"
+        ],
+        "categories": [
+            {
+                "id": "Life-span and Life-course Studies",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "1548-7091",
+            "1548-7105"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Biotechnology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1460-6976",
+            "0001-8732"
+        ],
+        "categories": [
+            {
+                "id": "Condensed Matter Physics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "2791-0091",
+            "2790-8119"
+        ],
+        "categories": [
+            {
+                "id": "Chemistry (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Energy (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemistry",
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1057-5987",
+            "1545-8601"
+        ],
+        "categories": [
+            {
+                "id": "Epidemiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health Information Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health (social science)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health, Toxicology and Mutagenesis",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Environmental Science",
+            "Health Professions",
+            "Medicine",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "1941-6520",
+            "1941-6067"
+        ],
+        "categories": [
+            {
+                "id": "Business and International Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Organizational Behavior and Human Resource Management",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting"
+        ]
+    },
+    {
+        "identifiers": [
+            "1748-3387",
+            "1748-3395"
+        ],
+        "categories": [
+            {
+                "id": "Atomic and Molecular Physics, and Optics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Bioengineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Biomedical Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Condensed Matter Physics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electrical and Electronic Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Nanoscience and Nanotechnology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemical Engineering",
+            "Engineering",
+            "Materials Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1471-0056",
+            "1471-0064"
+        ],
+        "categories": [
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Genetics (clinical)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1476-4660",
+            "1476-1122"
+        ],
+        "categories": [
+            {
+                "id": "Chemistry (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Condensed Matter Physics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Mechanical Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Mechanics of Materials",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemistry",
+            "Engineering",
+            "Materials Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "0001-8392",
+            "1930-3815"
+        ],
+        "categories": [
+            {
+                "id": "Arts and Humanities (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Public Administration",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Sociology and Political Science",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Arts and Humanities",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "1569-8041",
+            "0923-7534"
+        ],
+        "categories": [
+            {
+                "id": "Hematology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0304-405X"
+        ],
+        "categories": [
+            {
+                "id": "Accounting",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Strategy and Management",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "0034-6527",
+            "1467-937X"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1097-4180",
+            "1074-7613"
+        ],
+        "categories": [
+            {
+                "id": "Immunology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology and Allergy",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Infectious Diseases",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2520-1158"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Bioengineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Catalysis",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Process Chemistry and Technology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Chemical Engineering"
+        ]
+    },
+    {
+        "identifiers": [
+            "0149-2195",
+            "1545-861X"
+        ],
+        "categories": [
+            {
+                "id": "Epidemiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health Information Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health (social science)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health, Toxicology and Mutagenesis",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Environmental Science",
+            "Health Professions",
+            "Medicine",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "0306-0012",
+            "1460-4744"
+        ],
+        "categories": [
+            {
+                "id": "Chemistry (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemistry"
+        ]
+    },
+    {
+        "identifiers": [
+            "1945-7707",
+            "1945-7715"
+        ],
+        "categories": [
+            {
+                "id": "Economics, Econometrics and Finance (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "2662-8449"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2097-2431",
+            "2667-1417"
+        ],
+        "categories": [
+            {
+                "id": "Electrochemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Chemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Renewable Energy, Sustainability and the Environment",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemistry",
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1097-6256",
+            "1546-1726"
+        ],
+        "categories": [
+            {
+                "id": "Neuroscience (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Neuroscience"
+        ]
+    },
+    {
+        "identifiers": [
+            "1470-2045",
+            "1474-5488"
+        ],
+        "categories": [
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0140-6736",
+            "1474-547X"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1095-9203",
+            "0036-8075"
+        ],
+        "categories": [
+            {
+                "id": "History and Philosophy of Science",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Multidisciplinary",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Arts and Humanities",
+            "Multidisciplinary"
+        ]
+    },
+    {
+        "identifiers": [
+            "2662-1347"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1547-7185",
+            "0022-2429"
+        ],
+        "categories": [
+            {
+                "id": "Business and International Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Marketing",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1553-4006",
+            "1553-4014"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Pathology and Forensic Medicine",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Plant Science",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Agricultural and Biological Sciences",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2542-4351"
+        ],
+        "categories": [
+            {
+                "id": "Energy (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Energy"
+        ]
+    },
+    {
+        "identifiers": [
+            "2520-1131"
+        ],
+        "categories": [
+            {
+                "id": "Electrical and Electronic Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electronic, Optical and Magnetic Materials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Instrumentation",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Engineering",
+            "Materials Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "2397-3358"
+        ],
+        "categories": [
+            {
+                "id": "Chemical Engineering (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Chemistry (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemical Engineering",
+            "Chemistry"
+        ]
+    },
+    {
+        "identifiers": [
+            "1550-4131",
+            "1932-7420"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Physiology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1529-2908",
+            "1529-2916"
+        ],
+        "categories": [
+            {
+                "id": "Immunology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology and Allergy",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1749-4885"
+        ],
+        "categories": [
+            {
+                "id": "Atomic and Molecular Physics, and Optics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electronic, Optical and Magnetic Materials",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Materials Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "0022-0515"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1754-5692",
+            "1754-5706"
+        ],
+        "categories": [
+            {
+                "id": "Environmental Chemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Nuclear Energy and Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Pollution",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Renewable Energy, Sustainability and the Environment",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Energy",
+            "Environmental Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1522-1210",
+            "0031-9333"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Physiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Physiology (medical)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1527-7755",
+            "0732-183X"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0363-7425"
+        ],
+        "categories": [
+            {
+                "id": "Business, Management and Accounting (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Management of Technology and Innovation",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Strategy and Management",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting"
+        ]
+    },
+    {
+        "identifiers": [
+            "1545-8636",
+            "1546-0738"
+        ],
+        "categories": [
+            {
+                "id": "Epidemiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health Information Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health (social science)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health, Toxicology and Mutagenesis",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Environmental Science",
+            "Health Professions",
+            "Medicine",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "1934-5909",
+            "1875-9777"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "2213-8595",
+            "2213-8587"
+        ],
+        "categories": [
+            {
+                "id": "Endocrinology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Endocrinology, Diabetes and Metabolism",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Internal Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2056-676X"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1433-8351",
+            "2367-3613"
+        ],
+        "categories": [
+            {
+                "id": "Physics and Astronomy (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "2160-0031",
+            "1529-1006"
+        ],
+        "categories": [
+            {
+                "id": "Psychology (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Psychology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1600-0641",
+            "0168-8278"
+        ],
+        "categories": [
+            {
+                "id": "Hepatology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1947-5454",
+            "1947-5462"
+        ],
+        "categories": [
+            {
+                "id": "Condensed Matter Physics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Materials Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1545-4509",
+            "0066-4154"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1759-5045",
+            "1759-5053"
+        ],
+        "categories": [
+            {
+                "id": "Gastroenterology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Hepatology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0935-4956",
+            "1432-0754"
+        ],
+        "categories": [
+            {
+                "id": "Astronomy and Astrophysics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Space and Planetary Science",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Earth and Planetary Sciences",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1740-1534",
+            "1740-1526"
+        ],
+        "categories": [
+            {
+                "id": "Immunology and Microbiology (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Infectious Diseases",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Microbiology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2662-138X"
+        ],
+        "categories": [
+            {
+                "id": "Atmospheric Science",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Earth-Surface Processes",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Nature and Landscape Conservation",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Pollution",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Earth and Planetary Sciences",
+            "Environmental Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1748-7838",
+            "1001-0602"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "0066-4308",
+            "1545-2085"
+        ],
+        "categories": [
+            {
+                "id": "Psychology (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Psychology"
+        ]
+    },
+    {
+        "identifiers": [
+            "2468-2667"
+        ],
+        "categories": [
+            {
+                "id": "Public Health, Environmental and Occupational Health",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1097-4164",
+            "1097-2765"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "0935-9648",
+            "1521-4095"
+        ],
+        "categories": [
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Mechanical Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Mechanics of Materials",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Nanoscience and Nanotechnology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Engineering",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "0304-4076",
+            "1872-6895"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "2468-1253"
+        ],
+        "categories": [
+            {
+                "id": "Gastroenterology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Hepatology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1945-7790",
+            "1945-7782"
+        ],
+        "categories": [
+            {
+                "id": "Economics, Econometrics and Finance (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1941-1383",
+            "1941-1391"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1474-0508",
+            "0962-4929"
+        ],
+        "categories": [
+            {
+                "id": "Mathematics (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Numerical Analysis",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Mathematics"
+        ]
+    },
+    {
+        "identifiers": [
+            "1476-4679",
+            "1465-7392"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1944-9208",
+            "8755-1209"
+        ],
+        "categories": [
+            {
+                "id": "Geophysics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Earth and Planetary Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "2666-979X"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1558-3597",
+            "0735-1097"
+        ],
+        "categories": [
+            {
+                "id": "Cardiology and Cardiovascular Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2470-9468"
+        ],
+        "categories": [
+            {
+                "id": "Immunology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology and Allergy",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1614-6832",
+            "1614-6840"
+        ],
+        "categories": [
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Renewable Energy, Sustainability and the Environment",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "2059-3635",
+            "2095-9907"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1943-8206"
+        ],
+        "categories": [
+            {
+                "id": "Atomic and Molecular Physics, and Optics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Water Science and Technology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Environmental Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "0733-8716"
+        ],
+        "categories": [
+            {
+                "id": "Computer Networks and Communications",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electrical and Electronic Engineering",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Computer Science",
+            "Engineering"
+        ]
+    },
+    {
+        "identifiers": [
+            "0147-006X",
+            "1545-4126"
+        ],
+        "categories": [
+            {
+                "id": "Neuroscience (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Neuroscience"
+        ]
+    },
+    {
+        "identifiers": [
+            "2662-8643",
+            "2097-1710"
+        ],
+        "categories": [
+            {
+                "id": "Atomic and Molecular Physics, and Optics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Electronic, Optical and Magnetic Materials",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Materials Science",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1474-4465",
+            "1474-4422"
+        ],
+        "categories": [
+            {
+                "id": "Neurology (clinical)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0009-7322",
+            "1524-4539"
+        ],
+        "categories": [
+            {
+                "id": "Cardiology and Cardiovascular Medicine",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Physiology (medical)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0033-2909",
+            "1939-1455"
+        ],
+        "categories": [
+            {
+                "id": "History and Philosophy of Science",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Psychology (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Arts and Humanities",
+            "Psychology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1759-5010",
+            "1759-5002"
+        ],
+        "categories": [
+            {
+                "id": "Cardiology and Cardiovascular Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0165-4101"
+        ],
+        "categories": [
+            {
+                "id": "Accounting",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "0001-4273"
+        ],
+        "categories": [
+            {
+                "id": "Business and International Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Business, Management and Accounting (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Management of Technology and Innovation",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Strategy and Management",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting"
+        ]
+    },
+    {
+        "identifiers": [
+            "1745-2473"
+        ],
+        "categories": [
+            {
+                "id": "Physics and Astronomy (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1476-4598"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Medicine",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2666-6510"
+        ],
+        "categories": [
+            {
+                "id": "Artificial Intelligence",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Computer Science Applications",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Computer Vision and Pattern Recognition",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Human-Computer Interaction",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Information Systems",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Software",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Computer Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1468-3288",
+            "0017-5749"
+        ],
+        "categories": [
+            {
+                "id": "Gastroenterology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1567-2409",
+            "1567-2395"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "2058-5276"
+        ],
+        "categories": [
+            {
+                "id": "Applied Microbiology and Biotechnology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Microbiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Microbiology (medical)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Immunology and Microbiology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2213-2619",
+            "2213-2600"
+        ],
+        "categories": [
+            {
+                "id": "Pulmonary and Respiratory Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2157-846X"
+        ],
+        "categories": [
+            {
+                "id": "Bioengineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Biomedical Engineering",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Biotechnology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Computer Science Applications",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Chemical Engineering",
+            "Computer Science",
+            "Engineering",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1945-7189",
+            "0163-769X"
+        ],
+        "categories": [
+            {
+                "id": "Endocrinology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Endocrinology, Diabetes and Metabolism",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1556-1380",
+            "1556-0864"
+        ],
+        "categories": [
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Pulmonary and Respiratory Medicine",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1471-0048",
+            "1471-003X"
+        ],
+        "categories": [
+            {
+                "id": "Neuroscience (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Neuroscience"
+        ]
+    },
+    {
+        "identifiers": [
+            "2374-2445",
+            "2374-2437"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2522-5820"
+        ],
+        "categories": [
+            {
+                "id": "Physics and Astronomy (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "2215-0374",
+            "2215-0366"
+        ],
+        "categories": [
+            {
+                "id": "Biological Psychiatry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Psychiatry and Mental Health",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine",
+            "Neuroscience"
+        ]
+    },
+    {
+        "identifiers": [
+            "1097-0266",
+            "0143-2095"
+        ],
+        "categories": [
+            {
+                "id": "Business and International Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Strategy and Management",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting"
+        ]
+    },
+    {
+        "identifiers": [
+            "1873-2208",
+            "0079-6425"
+        ],
+        "categories": [
+            {
+                "id": "Materials Science (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1573-692X",
+            "1572-3097"
+        ],
+        "categories": [
+            {
+                "id": "Accounting",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1557-7368",
+            "0730-0301"
+        ],
+        "categories": [
+            {
+                "id": "Computer Graphics and Computer-Aided Design",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Computer Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1934-6069",
+            "1931-3128"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Immunology and Microbiology (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Microbiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Parasitology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Virology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Immunology and Microbiology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1097-4199",
+            "0896-6273"
+        ],
+        "categories": [
+            {
+                "id": "Neuroscience (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Neuroscience"
+        ]
+    },
+    {
+        "identifiers": [
+            "1758-6798",
+            "1758-678X"
+        ],
+        "categories": [
+            {
+                "id": "Environmental Science (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Social Sciences (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Environmental Science",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "2327-0608"
+        ],
+        "categories": [
+            {
+                "id": "Applied Psychology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Organizational Behavior and Human Resource Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Social Psychology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Psychology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1545-2123",
+            "1543-5008"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Physiology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Plant Science",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Agricultural and Biological Sciences",
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "0034-6535",
+            "1530-9142"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Social Sciences (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "0149-2063",
+            "1557-1211"
+        ],
+        "categories": [
+            {
+                "id": "Finance",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Strategy and Management",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Business, Management and Accounting",
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "2159-8274",
+            "2159-8290"
+        ],
+        "categories": [
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1756-8722"
+        ],
+        "categories": [
+            {
+                "id": "Cancer Research",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Hematology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Molecular Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Oncology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "0895-3309"
+        ],
+        "categories": [
+            {
+                "id": "Economics and Econometrics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Economics, Econometrics and Finance"
+        ]
+    },
+    {
+        "identifiers": [
+            "1614-4961",
+            "2367-3648"
+        ],
+        "categories": [
+            {
+                "id": "Astronomy and Astrophysics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Space and Planetary Science",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Earth and Planetary Sciences",
+            "Physics and Astronomy"
+        ]
+    },
+    {
+        "identifiers": [
+            "1754-2189"
+        ],
+        "categories": [
+            {
+                "id": "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "1545-2948",
+            "0066-4197"
+        ],
+        "categories": [
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    },
+    {
+        "identifiers": [
+            "2398-9629"
+        ],
+        "categories": [
+            {
+                "id": "Ecology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Food Science",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Geography, Planning and Development",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Global and Planetary Change",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Management, Monitoring, Policy and Law",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Nature and Landscape Conservation",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Renewable Energy, Sustainability and the Environment",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Urban Studies",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Agricultural and Biological Sciences",
+            "Energy",
+            "Environmental Science",
+            "Social Sciences"
+        ]
+    },
+    {
+        "identifiers": [
+            "1528-0012",
+            "0016-5085"
+        ],
+        "categories": [
+            {
+                "id": "Gastroenterology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Hepatology",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1548-5951",
+            "1548-5943"
+        ],
+        "categories": [
+            {
+                "id": "Clinical Psychology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Psychiatry and Mental Health",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Medicine",
+            "Psychology"
+        ]
+    },
+    {
+        "identifiers": [
+            "2589-7500"
+        ],
+        "categories": [
+            {
+                "id": "Decision Sciences (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health Informatics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Health Information Management",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Medicine (miscellaneous)",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Decision Sciences",
+            "Health Professions",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "1759-5037",
+            "1759-5029"
+        ],
+        "categories": [
+            {
+                "id": "Endocrinology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Endocrinology, Diabetes and Metabolism",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Biochemistry, Genetics and Molecular Biology",
+            "Medicine"
+        ]
+    },
+    {
+        "identifiers": [
+            "2666-6758"
+        ],
+        "categories": [
+            {
+                "id": "Multidisciplinary",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Multidisciplinary"
+        ]
+    },
+    {
+        "identifiers": [
+            "2380-8195"
+        ],
+        "categories": [
+            {
+                "id": "Chemistry (miscellaneous)",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Energy Engineering and Power Technology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Fuel Technology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Materials Chemistry",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Renewable Energy, Sustainability and the Environment",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Chemistry",
+            "Energy",
+            "Materials Science"
+        ]
+    },
+    {
+        "identifiers": [
+            "1474-7596"
+        ],
+        "categories": [
+            {
+                "id": "Cell Biology",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Ecology, Evolution, Behavior and Systematics",
+                "quartile": "Q1"
+            },
+            {
+                "id": "Genetics",
+                "quartile": "Q1"
+            }
+        ],
+        "areas": [
+            "Agricultural and Biological Sciences",
+            "Biochemistry, Genetics and Molecular Biology"
+        ]
+    }
+]

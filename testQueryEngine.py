@@ -53,7 +53,7 @@ def inspect_object(obj, indent='', f=None):
     print('', file=f)
 
 
-rel_path = "data/relational_database_doubled.db"
+rel_path = "data/relational_database.db"
 cat = CategoryUploadHandler()
 cat.setDbPathOrUrl(rel_path)
 
