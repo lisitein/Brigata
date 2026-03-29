@@ -4,7 +4,6 @@
 ## 🎯 Project Goal
 
 This project integrates scholarly journal metadata coming from two heterogeneous sources:
-
 - **a graph database** (Blazegraph + RDF triples)
 - **a relational database** (SQLite)
 
@@ -16,13 +15,11 @@ The architecture is modular, extensible, and designed to support heterogeneous d
 ## 📚 Data Sources
 
 ### Graph Database (CSV → RDF → Blazegraph)
-
 - Source: *Directory of Open Access Journals (DOAJ)*
 - Contains: ISSN, title, languages, publisher, license, APC, DOAJ Seal
 - Loaded via: **JournalUploadHandler**
 
 ### Relational Database (JSON → SQLite)
-
 - Source: *Scimago Journal Rank (SJR)*
 - Contains: categories, areas, quartiles
 - Loaded via: **CategoryUploadHandler**
@@ -35,9 +32,9 @@ The architecture is modular, extensible, and designed to support heterogeneous d
 
 <img src="images/workflow.png" width="900"/>
 
-1. **CategoryUploadHandler** loads JSON into the relational database (SQLite).  
-2. **JournalUploadHandler** loads CSV into the graph database (Blazegraph).  
-3. **CategoryQueryHandler** and **JournalQueryHandler** retrieve data as Pandas DataFrames.  
+1. **CategoryUploadHandler** loads JSON into the relational database (SQLite).
+2. **JournalUploadHandler** loads CSV into the graph database (Blazegraph).
+3. **CategoryQueryHandler** and **JournalQueryHandler** retrieve data as Pandas DataFrames.
 4. **FullQueryEngine** integrates both sources and returns Python objects.
 
 ---
@@ -47,7 +44,6 @@ The architecture is modular, extensible, and designed to support heterogeneous d
 <img src="images/relational_database_structure.png" width="900"/>
 
 The schema includes:
-
 - `IdentifiableEntity`
 - `HasCategory`
 - `HasArea`
@@ -61,11 +57,9 @@ This structure supports many-to-many relationships between journals, categories,
 <img src="images/datamodel.png" width="700"/>
 
 ### IdentifiableEntity
-
 Base class for all entities with one or more identifiers.
 
 ### Journal
-
 - title
 - languages
 - publisher
@@ -76,22 +70,28 @@ Base class for all entities with one or more identifiers.
 - hasArea
 
 ### Category
-
 - id
 - quartile
 
 ### Area
-
 - id
 
 ---
 
 ## 🔍 Query Engine
 
+### CategoryQueryHandler
+Queries the relational database (SQLite):
+- `getAllCategories()`
+- `getAllAreas()`
+- `getCategoriesWithQuartile()`
+- `getCategoriesAssignedToAreas()`
+- `getAreasAssignedToCategories()`
+- `getCategoryWithName()` — returns all categories whose name partially matches the input string
+- `getAreaWithName()` — returns all areas whose name partially matches the input string
+
 ### BasicQueryEngine
-
-Provides simple filters:
-
+Provides simple filters over the graph database:
 - `getAllJournals()`
 - `getJournalsWithTitle()`
 - `getJournalsPublishedBy()`
@@ -103,35 +103,33 @@ Provides simple filters:
 - `getCategoriesWithQuartile()`
 
 ### FullQueryEngine
-
 Provides composite queries combining graph + relational data:
-
 - `getJournalsInCategoriesWithQuartile()`
 - `getJournalsInAreasWithLicense()`
 - `getDiamondJournalsInAreasAndCategoriesWithQuartile()`
+- `getJournalByName()` — returns journals whose title contains the input string and that have at least one category or area whose name also contains it
 
 ---
 
 ## 📦 Project Structure
 
 ```
-your_project/
+Brigata/
 ├── main.py
+├── impl.py
 ├── laura.py
 ├── Yang.py
 ├── daniele.py
 ├── li.py
 ├── baseHandler.py
-├── test.py
 ├── images/
-│   ├── pipeline.png
-│   ├── relational_schema.png
-│   ├── data_model.png
-│   ├── uml_query_handlers.png
+│   ├── workflow.png
+│   ├── relational_database_structure.png
+│   ├── datamodel.png
 ├── data/
 │   ├── doaj.csv
 │   ├── scimago.json
-└── my_journals.db   # auto-generated
+└── relational.db        # auto-generated
 ```
 
 ---
@@ -139,8 +137,9 @@ your_project/
 ## ⚙️ Installation
 
 Install dependencies:
+
 ```
-pip install pandas rdflib SPARQLWrapper sqlalchemy
+pip install pandas rdflib SPARQLWrapper sqlalchemy requests
 ```
 
 ---
@@ -148,19 +147,20 @@ pip install pandas rdflib SPARQLWrapper sqlalchemy
 ## 🔥 Running Blazegraph
 
 Download Blazegraph:
+
 ```
 wget https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.jar
 ```
 
 Start the server:
+
 ```
 java -server -Xmx1g -jar blazegraph.jar
 ```
 
-Verify:
-```
-http://localhost:9999/blazegraph/
-```
+Verify at `http://localhost:9999/blazegraph/`.
+
+> ⚠️ Update the Blazegraph endpoint URL in `main.py` to match your local setup. The default is `http://127.0.0.1:9999/blazegraph/namespace/kb/sparql`.
 
 ---
 
@@ -171,7 +171,6 @@ python main.py
 ```
 
 This will:
-
 - upload CSV to Blazegraph
 - upload JSON to SQLite
 - initialize the query engine
