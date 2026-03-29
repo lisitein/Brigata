@@ -229,7 +229,6 @@ class BasicQueryEngine:
         result: List[Journal] = []
         seen_ids: Set[str] = set()
 
-        # 1. Prima prendi tutti i journal da Blazegraph (DOAJ)
         for h in self.journalHandlers:
             try:
                 df = h.getAllJournals()
@@ -242,7 +241,6 @@ class BasicQueryEngine:
             except Exception:
                 continue
 
-        # 2. Aggiungi i journal presenti solo in SQLite (Scimago) ma non in Blazegraph
         for h in self.categoryHandlers:
             try:
                 engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
@@ -253,13 +251,11 @@ class BasicQueryEngine:
                 if df_sql.empty:
                     continue
 
-                # Raggruppa gli ISSN per internalId
                 groups = defaultdict(list)
                 for _, row in df_sql.iterrows():
                     groups[row["internalId"]].append(row["id"])
 
                 for internal_id, ids in groups.items():
-                    # Se nessuno di questi ISSN è già in Blazegraph, crea journal minimale
                     if not any(i in seen_ids for i in ids):
                         cats_dict: dict = {}
                         areas_set: Set[str] = set()
