@@ -1,6 +1,7 @@
 import inspect
 from datetime import datetime
 from impl import *
+from li import *
 
 
 def inspect_object(obj, indent='', f=None):
@@ -71,7 +72,7 @@ laura = FullQueryEngine()
 laura.addCategoryHandler(cat_qh)
 laura.addJournalHandler(jou_qh)
 
-
+'''
 with open('resultsQueryEngine.txt', 'w', encoding='utf-8') as f:
 
     f.write('***REPORT ABOUT THE BASIC QUERY ENGINE***\n')
@@ -424,6 +425,103 @@ with open('resultsQueryEngine.txt', 'w', encoding='utf-8') as f:
             inspect_object(elem, f=f)
     except:
         f.write('!!! ERROR IN EXECUTION')
+
+
+
+
+
+
+
+    f.write('\n\n\nGET JOURNALS IN CATEGORIES WITH QUARTILE\n')
+
+    f.write('\n\n\n*** ')
+    f.write('Biomaterials - Q1\n\n')
+    try:
+        c = laura.getJournalsInCategoriesWithQuartile({'Biomaterials'}, {'Q1'})
+        for elem in c:
+            inspect_object(elem, f=f)
+    except:
+        f.write('!!! ERROR IN EXECUTION')
+
+    f.write('\n\n\n*** ')
+    f.write('Biomaterials/Materials Chemistry - Q1\n\n')
+    try:
+        c = laura.getJournalsInCategoriesWithQuartile({'Biomaterials', 'Materials Chemistry'}, {'Q1'})
+        for elem in c:
+            inspect_object(elem, f=f)
+    except:
+        f.write('!!! ERROR IN EXECUTION')
+
+    f.write('\n\n\n*** ')
+    f.write('no specification\n\n')
+    try:
+        c = laura.getJournalsInCategoriesWithQuartile({},{})
+        for elem in c:
+            inspect_object(elem, f=f)
+    except:
+        f.write('!!! ERROR IN EXECUTION')
+
+    f.write('\n\n\n*** ')
+    f.write('Philosophy - no quartile specified\n\n')
+    try:
+        c = laura.getJournalsInCategoriesWithQuartile({'Philosophy'},{})
+        for elem in c:
+            inspect_object(elem, f=f)
+    except:
+        f.write('!!! ERROR IN EXECUTION')
+
+    f.write('\n\n\n*** ')
+    f.write('no category specified - Q3\n\n')
+    try:
+        c = laura.getJournalsInCategoriesWithQuartile({},{'Q3'})
+        for elem in c:
+            inspect_object(elem, f=f)
+    except:
+        f.write('!!! ERROR IN EXECUTION')
+
+    f.write('\n\n\n*** ')
+    f.write('happy-yang\n\n')
+    try:
+        c = laura.getJournalsInCategoriesWithQuartile({'happy-yang'},{})
+        for elem in c:
+            inspect_object(elem, f=f)
+    except:
+        f.write('!!! ERROR IN EXECUTION')
+
+'''
+def count_overlapping_journals(graph_link, json_path):
+
+    c = laura.getAllJournals()
+    print(f"Total extracted journals: {len(c)} elements.")
+
+    sophie=JournalUploadHandler()
+    ai=sophie.get_last_journal_index(graph_link, )
+    print(f"Graph database: {ai} elements.")
+
+
+    import json
+
+    # Percorso del tuo file
+    file_path = json_path
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            # Carica il contenuto del file in una variabile Python
+            data = json.load(f)
+        
+        # Conta gli elementi (funziona sia per liste che per dizionari)
+        conteggio = len(data)
+        
+        print(f"Relational database: {conteggio} elements.")
+
+    except FileNotFoundError:
+        print("Errore: Il file non è stato trovato.")
+    except json.JSONDecodeError:
+        print("Errore: Il file non è un JSON valido.")
+
+    print('Overlapping journals:', len(c)-(ai+conteggio))
+
+count_overlapping_journals('http://127.0.0.1:9999/blazegraph/sparql', 'data/scimago.json')
 
 
 print('Done - Send immediately the results.txt file to Daniele ;P')
