@@ -714,6 +714,8 @@ class FullQueryEngine(BasicQueryEngine):
         blazegraph_ids: Set[str] = set()
 
         # Journals found in Blazegraph, filtered by license
+        normalized_licenses = {lic.strip().lower() for lic in licenses if lic} if licenses else set()
+
         for h in self.journalHandlers:
             try:
                 if licenses:
@@ -723,6 +725,16 @@ class FullQueryEngine(BasicQueryEngine):
 
                 if df is None or df.empty:
                     continue
+
+                # Exact-match filter on license: some journals have multiple license triples
+                # in Blazegraph (e.g. "CC BY" and "CC BY-NC"), so Yang returns one row per
+                # license. We keep only rows whose license is exactly one of the requested ones.
+                if normalized_licenses:
+                    df = df[df["license"].apply(
+                        lambda x: str(x).strip().lower() in normalized_licenses
+                    )]
+                    if df.empty:
+                        continue
 
                 id_col = "all_ids" if "all_ids" in df.columns else "id"
                 mask = df[id_col].apply(lambda x: self._id_matches(x, all_ids))
