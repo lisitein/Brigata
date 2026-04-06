@@ -374,4 +374,65 @@ with open('resultsFullQueryEngine.txt', 'w', encoding='utf-8') as f:
         f.write(f'!!! ERROR IN EXECUTION: {e}\n')
 
 
+    # ===========================================================
+    # GET JOURNAL BY NAME
+    # ===========================================================
+    # Searches journals whose title contains the input string AND
+    # whose categories or areas also match it.
+    # Test cases are grounded in the actual DOAJ + Scimago data.
+    f.write('\n\n\nGET JOURNAL BY NAME\n')
+
+    # Exact title match + area/category match:
+    # "Kepes" -> area "Arts and Humanities", category "Visual Arts and Performing Arts" (Q2)
+    f.write('\n\n\n*** ')
+    f.write('name="Kepes"\n\n')
+    try:
+        j = laura.getJournalByName('Kepes')
+        if not j:
+            f.write('(empty list)\n')
+        for elem in j:
+            inspect_object(elem, f=f)
+    except Exception as e:
+        f.write(f'!!! ERROR IN EXECUTION: {e}\n')
+
+    # Partial title match + area match:
+    # Many journals contain "Psychology" in title AND belong to area "Psychology"
+    # e.g. "Collabra: Psychology" (CC BY), "Frontiers in Psychology" (CC BY)
+    f.write('\n\n\n*** ')
+    f.write('name="Psychology"\n\n')
+    try:
+        j = laura.getJournalByName('Psychology')
+        if not j:
+            f.write('(empty list)\n')
+        for elem in j:
+            inspect_object(elem, f=f)
+    except Exception as e:
+        f.write(f'!!! ERROR IN EXECUTION: {e}\n')
+
+    # Partial title match + category match:
+    # Journals with "Oncology" in title that also have category "Oncology" in Scimago
+    f.write('\n\n\n*** ')
+    f.write('name="Oncology"\n\n')
+    try:
+        j = laura.getJournalByName('Oncology')
+        if not j:
+            f.write('(empty list)\n')
+        for elem in j:
+            inspect_object(elem, f=f)
+    except Exception as e:
+        f.write(f'!!! ERROR IN EXECUTION: {e}\n')
+
+    # Non-existent name: must return empty list
+    f.write('\n\n\n*** ')
+    f.write('name="happy-yang"\n\n')
+    try:
+        j = laura.getJournalByName('happy-yang')
+        if not j:
+            f.write('(empty list)\n')
+        for elem in j:
+            inspect_object(elem, f=f)
+    except Exception as e:
+        f.write(f'!!! ERROR IN EXECUTION: {e}\n')
+
+
 print('Done - Send immediately the results.txt file to Daniele ;P')
