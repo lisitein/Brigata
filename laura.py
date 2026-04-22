@@ -143,6 +143,13 @@ class BasicQueryEngine:
     def _id_matches(self, cell, ids: Set[str]) -> bool:
         return any(i.strip() in ids for i in str(cell).split(","))
 
+    def _license_matches(self, license_str: str, requested: Set[str]) -> bool:
+        # Split stored license string on commas and check each token.
+        # e.g. "CC BY, CC0" -> {"cc by", "cc0"}
+        # "CC BY-NC" does NOT match {"CC BY"} because tokens differ.
+        tokens = {t.strip().lower() for t in str(license_str).split(',')}
+        return any(lic.strip().lower() in tokens for lic in requested)
+
     # -----------------------------------------
     # Entity lookup
     # -----------------------------------------
@@ -321,12 +328,24 @@ class BasicQueryEngine:
         return result
 
     def getJournalsWithLicense(self, licenses: Set[str]) -> List['Journal']:
+        if not licenses:
+            return []
         result: List[Journal] = []
+        seen: Set[frozenset] = set()
         for h in self.journalHandlers:
             try:
-                df = h.getJournalsWithLicense(licenses)
-                if df is not None and not df.empty:
-                    result.extend(self._makeJournals(df))
+                df = h.getAllJournals()
+                if df is None or df.empty:
+                    continue
+                df = df[df["license"].apply(
+                    lambda x: self._license_matches(x, licenses)
+                )]
+                if not df.empty:
+                    for j in self._makeJournals(df):
+                        key = frozenset(j.getIds())
+                        if key not in seen:
+                            seen.add(key)
+                            result.append(j)
             except Exception:
                 continue
         return result
@@ -731,7 +750,7 @@ class FullQueryEngine(BasicQueryEngine):
                 # license. We keep only rows whose license is exactly one of the requested ones.
                 if normalized_licenses:
                     df = df[df["license"].apply(
-                        lambda x: str(x).strip().lower() in normalized_licenses
+                        lambda x: self._license_matches(x, licenses)
                     )]
                     if df.empty:
                         continue
