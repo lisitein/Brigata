@@ -207,11 +207,11 @@ class BasicQueryEngine:
 
                     return Journal(
                         ids=sorted(all_jids),
-                        title=None,
-                        languages=None,
+                        title="",
+                        languages=[],
                         publisher=None,
                         seal=False,
-                        license=None,
+                        license="",
                         apc=False,
                         categories=cats_for_journal,
                         areas=areas_for_journal,
@@ -282,11 +282,11 @@ class BasicQueryEngine:
 
                         result.append(Journal(
                             ids=sorted(ids),
-                            title=None,
-                            languages=None,
+                            title="",
+                            languages=[],
                             publisher=None,
                             seal=False,
-                            license=None,
+                            license="",
                             apc=False,
                             categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
                             areas=[Area([aid]) for aid in sorted(areas_set)],
@@ -641,11 +641,11 @@ class FullQueryEngine(BasicQueryEngine):
 
                     result.append(Journal(
                         ids=sorted(ids),
-                        title=None,
-                        languages=None,
+                        title="",
+                        languages=[],
                         publisher=None,
                         seal=False,
-                        license=None,
+                        license="",
                         apc=False,
                         categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
                         areas=[Area([aid]) for aid in sorted(areas_set)],
