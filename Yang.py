@@ -105,14 +105,6 @@ class JournalQueryHandler(QueryHandler):
 
         results = sparql.query().convert()
 
-        print("DEBUG type:", type(results))
-
-        if isinstance(results, bytes):
-            text = results.decode("utf-8", errors="replace")
-            print("DEBUG raw response first 500 chars:")
-            print(text[:500])
-            return pd.DataFrame()
-
         bindings = results.get("results", {}).get("bindings", [])
 
         if not bindings:
@@ -774,3 +766,4 @@ class CategoryQueryHandler(QueryHandler):
         """
         df = pd.read_sql(query, engine)
         return df if not df.empty else pd.DataFrame(columns=["area","identifiers"])
+
