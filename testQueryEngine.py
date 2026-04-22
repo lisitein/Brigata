@@ -521,7 +521,7 @@ def count_overlapping_journals(graph_link, json_path):
 
     print('Overlapping journals:', len(c)-(ai+conteggio))
 
-count_overlapping_journals('http://127.0.0.1:9999/blazegraph/sparql', 'data/scimago.json')
+#count_overlapping_journals('http://127.0.0.1:9999/blazegraph/sparql', 'data/scimago.json')
 
 
 print('Done - Send immediately the results.txt file to Daniele ;P')

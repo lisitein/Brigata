@@ -23,9 +23,11 @@ def inspect_object(obj, indent='', f=None):
 
     for name, value in attrs.items():
 
+        v_type = type(value).__name__
+
         # List of complex objects (Journal, Category, Area)
         if isinstance(value, list) and all(isinstance(e, (Area, Category, Journal)) for e in value):
-            print(f"{indent}{name}:", file=f)
+            print(f"{indent}{name} ({v_type}):", file=f)
             if not value:
                 print(f"{indent}  (empty)", file=f)
             for elem in value:
@@ -40,7 +42,7 @@ def inspect_object(obj, indent='', f=None):
                 compact = ', '.join(str(v) for v in value)
             except Exception:
                 compact = '<unprintable>'
-            print(f"{indent}{name}: [{compact}]", file=f)
+            print(f"{indent}{name} ({v_type}): [{compact}]", file=f)
             continue
 
         # Simple value
@@ -48,7 +50,7 @@ def inspect_object(obj, indent='', f=None):
             safe_val = str(value).encode('utf-8', errors='replace').decode('utf-8')
         except Exception:
             safe_val = '<unprintable>'
-        print(f"{indent}{name}: {safe_val}", file=f)
+        print(f"{indent}{name} ({v_type}): {safe_val}", file=f)
 
     print('', file=f)
 
@@ -77,7 +79,7 @@ laura = FullQueryEngine()
 laura.addCategoryHandler(cat_qh)
 laura.addJournalHandler(jou_qh)
 
-
+'''
 with open('resultsFullQueryEngine.txt', 'w', encoding='utf-8') as f:
 
     f.write('***REPORT ABOUT THE FULL QUERY ENGINE***\n')
@@ -433,6 +435,10 @@ with open('resultsFullQueryEngine.txt', 'w', encoding='utf-8') as f:
             inspect_object(elem, f=f)
     except Exception as e:
         f.write(f'!!! ERROR IN EXECUTION: {e}\n')
+
+'''
+
+laura.getEntityById('')
 
 
 print('Done - Send immediately the results.txt file to Daniele ;P')

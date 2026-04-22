@@ -32,8 +32,9 @@ class TestProjectBasic(unittest.TestCase):
     journal = "data" + sep + "doaj.csv"
     category = "data" + sep + "scimago.json"
     relational = "." + sep + "relational.db"
-    graph = "http://192.168.1.226:9999/blazegraph/namespace/kb/sparql"
-    
+    #graph = "http://192.168.1.226:9999/blazegraph/namespace/kb/sparql"
+    graph = "http://127.0.0.1:9999/blazegraph/sparql"  
+
     def test_01_JournalUploadHandler(self):
         u = JournalUploadHandler()
         self.assertTrue(u.setDbPathOrUrl(self.graph))
