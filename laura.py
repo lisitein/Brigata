@@ -115,6 +115,8 @@ class BasicQueryEngine:
     def __init__(self):
         self.journalHandlers: List[JournalQueryHandler] = []
         self.categoryHandlers: List[CategoryQueryHandler] = []
+        self.journalQuery = self.journalHandlers
+        self.categoryQuery = self.categoryHandlers
 
     def addJournalHandler(self, handler) -> bool:
         self.journalHandlers.append(handler)
