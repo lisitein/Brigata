@@ -151,7 +151,7 @@ class JournalQueryHandler(QueryHandler):
             OPTIONAL {{ ?journal :license ?license }}
             OPTIONAL {{ ?journal :languages ?lang }}
         }}
-        GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
+        GROUP BY ?journal ?title ?publisher ?apc ?seal ?license
         """
 
         sparql.setQuery(query)
@@ -202,7 +202,7 @@ class JournalQueryHandler(QueryHandler):
         OPTIONAL {{ ?journal :license ?license }}
         OPTIONAL {{ ?journal :languages ?lang }}
         }}
-        GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
+        GROUP BY ?journal ?title ?publisher ?apc ?seal ?license
         """
 
         sparql.setQuery(query)
@@ -327,7 +327,7 @@ class JournalQueryHandler(QueryHandler):
 
         FILTER(BOUND(?apc) && LCASE(STR(?apc)) = "true")
         }
-        GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
+        GROUP BY ?journal ?title ?publisher ?apc ?seal ?license
         """
 
         sparql.setQuery(query)
@@ -383,7 +383,7 @@ class JournalQueryHandler(QueryHandler):
 
         FILTER(BOUND(?seal) && LCASE(STR(?seal)) = "true")
         }
-        GROUP BY ?journal ?id ?title ?publisher ?apc ?seal ?license
+        GROUP BY ?journal ?title ?publisher ?apc ?seal ?license
         """
 
         sparql.setQuery(query)
@@ -419,9 +419,25 @@ class JournalQueryHandler(QueryHandler):
 
 
 class CategoryQueryHandler(QueryHandler):
+    def __init__(self):
+        super().__init__()
+        self._engine = None
     
+    def _get_engine(self):
+        if self._engine is None:
+            self._engine = create_engine(
+                f"sqlite:///{self.getDbPathOrUrl()}",
+                connect_args={"check_same_thread": False}
+            )
+        return self._engine
+    
+    def setDbPathOrUrl(self, url: str):
+        super().setDbPathOrUrl(url)
+        self._engine = None  
+        return True
+
     def getById(self, entity_id: str) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         eid = (entity_id or "").strip()
 
         if not eid:
@@ -538,7 +554,7 @@ class CategoryQueryHandler(QueryHandler):
 
 
     def getAllCategories(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         query = """
         SELECT DISTINCT i.id AS category_id, i.quartile AS quartile
         FROM IdentifiableEntity i
@@ -551,7 +567,7 @@ class CategoryQueryHandler(QueryHandler):
         return df if not df.empty else pd.DataFrame(columns=["category_id", "quartile"])
 
     def getAllAreas(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         query = """
         SELECT DISTINCT i.id AS id
         FROM IdentifiableEntity i
@@ -561,7 +577,7 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine)
 
     def getCategoriesWithQuartile(self, quartiles: set[str]) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
 
         # 1.  Normalization
         normalized_quartiles = {
@@ -599,7 +615,7 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine, params=params_dict)
 
     def getCategoriesAssignedToAreas(self, area_ids: set[str]) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
 
         # NORMALIZATION
         normalized_areas = {
@@ -651,7 +667,7 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine, params=params_dict)
 
     def getAreasAssignedToCategories(self, category_ids: set[str]) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
 
         normalized_categories = {
             str(c).strip()
@@ -702,7 +718,7 @@ class CategoryQueryHandler(QueryHandler):
     # ---------------------------------------------------------------
 
     def getCategoryWithName(self, name: str) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         name_clean = (name or "").strip()
         if not name_clean:
             return pd.DataFrame(columns=["category_id", "quartile"])
@@ -719,7 +735,7 @@ class CategoryQueryHandler(QueryHandler):
         return pd.read_sql(query, engine, params={"pattern": f"%{name_clean}%"})
 
     def getAreaWithName(self, name: str) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         name_clean = (name or "").strip()
         if not name_clean:
             return pd.DataFrame(columns=["id"])
@@ -739,7 +755,7 @@ class CategoryQueryHandler(QueryHandler):
     # ---------------------------------------------------------------
 
     def getAllCategoryAssignments(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         query = """
         SELECT
         c.id AS category,
@@ -754,7 +770,7 @@ class CategoryQueryHandler(QueryHandler):
         return df if not df.empty else pd.DataFrame(columns=["category","category_quartile","identifiers"])
 
     def getAllAreaAssignments(self) -> pd.DataFrame:
-        engine = create_engine(f"sqlite:///{self.getDbPathOrUrl()}")
+        engine = self._get_engine()
         query = """
         SELECT
         a.id AS area,

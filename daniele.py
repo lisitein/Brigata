@@ -105,7 +105,10 @@ class CategoryUploadHandler(UploadHandler):
         has_category.insert(0, 'journalId', Series(starting_journal, dtype="string"))
         has_category.insert(1, 'categoryName', Series(matching_category, dtype="string")) 
         has_category.insert(2, 'quartile', Series(matching_quartile, dtype="string"))
-        has_category=merge(identifiable_entity, has_category, left_on=["id", 'quartile'], right_on=['categoryName', 'quartile'])[['journalId', 'internalId']]
+
+        # Add a filter to distinguish categories from areas in the identifiable_entity table
+        only_categories = identifiable_entity[identifiable_entity['internalId'].str.startswith('category-')]
+        has_category=merge(only_categories, has_category, left_on=["id", 'quartile'], right_on=['categoryName', 'quartile'])[['journalId', 'internalId']]
         has_category=has_category.rename(columns={"internalId":"categoryId"})
 
 
@@ -122,7 +125,9 @@ class CategoryUploadHandler(UploadHandler):
         has_area.insert(0, 'journalId', Series(starting_journal, dtype="string"))
         has_area.insert(1, 'areaName', Series(matching_area, dtype="string")) 
 
-        has_area=merge(identifiable_entity, has_area, left_on="id", right_on="areaName")[['journalId',"internalId"]]
+        # Add a filter to distinguish areas from categories in the identifiable_entity table
+        only_areas = identifiable_entity[identifiable_entity['internalId'].str.startswith('area-')]
+        has_area=merge(only_areas, has_area, left_on="id", right_on="areaName")[['journalId',"internalId"]]
         has_area=has_area.rename(columns={"internalId":"areaId"})
 
     #I upload the tables in the relational database:
