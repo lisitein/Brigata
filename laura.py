@@ -1,8 +1,10 @@
-from typing import List, Set, Optional
+from typing import List, Set, Optional, Dict
 from collections import defaultdict
 import pandas as pd
 from sqlalchemy import create_engine as _ce
 from Yang import JournalQueryHandler, CategoryQueryHandler
+from tqdm.auto import tqdm
+
 
 # ============================
 # DATA MODEL
@@ -15,8 +17,8 @@ class IdentifiableEntity:
     def getId(self) -> List[str]:
         return self.id
 
-    def getIds(self) -> Set[str]:
-        return set(self.id)
+    def getIds(self) -> List[str]:
+        return self.id
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -116,6 +118,22 @@ class BasicQueryEngine:
         self.journalHandlers: List[JournalQueryHandler] = []
         self.categoryHandlers: List[CategoryQueryHandler] = []
 
+    def query_relational(self, query):
+        lista_df = []
+        for h in self.categoryHandlers:
+            engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
+            with engine.connect() as connection:
+                df_parziale = pd.read_sql(query, con=connection)
+                lista_df.append(df_parziale)
+            #engine.dispose()
+
+        if lista_df:
+            df_finale = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df_finale = pd.DataFrame()
+
+        return df_finale
+
     def addJournalHandler(self, handler) -> bool:
         self.journalHandlers.append(handler)
         return True
@@ -150,83 +168,169 @@ class BasicQueryEngine:
         tokens = {t.strip().lower() for t in str(license_str).split(',')}
         return any(lic.strip().lower() in tokens for lic in requested)
 
+    def enrich_entity_with_categories_and_areas(self, obj: IdentifiableEntity, id: str) -> IdentifiableEntity:
+        lista_df = []
+
+        for h in self.categoryHandlers:
+            d_parziale = h.getById(id)
+            lista_df.append(d_parziale)
+
+        if lista_df:
+            df_finale = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df_finale = pd.DataFrame()
+
+
+        if df_finale is None or df_finale.empty:
+            return obj
+        obj.hasCategory = [Category(c,q) for c,q in df_finale[['category_id', 'category_quartile']].drop_duplicates().values]
+        obj.hasArea     = [Area([a]) for a in df_finale['area_id'].drop_duplicates().values]
+        return obj
+
+    def enrich_journals_with_categories_and_areas(self, output_journals, tutti_gli_id_validi):
+
+        journal_ids_for_query ='(' + ', '.join(f"'{t}'" for t in tutti_gli_id_validi) + ')'
+
+        query_for_areas='''SELECT DISTINCT  ie1.internalId AS journal_internal_id,
+                                            ie1.id AS journal_id,
+                                            ie2.id AS area_id
+                                    FROM IdentifiableEntity AS ie1
+                                        LEFT JOIN HasArea AS ha
+                                            ON ie1.internalId == ha.journalId
+                                        LEFT JOIN IdentifiableEntity AS ie2
+                                        ON ha.areaId == ie2.internalId
+                                    WHERE ie1.id IN ''' + journal_ids_for_query
+
+        df_with_areas = self.query_relational(query_for_areas)
+
+
+        query_for_categories='''SELECT DISTINCT ie1.internalId AS journal_internal_id,
+                                                ie1.id AS journal_id,
+                                                ie2.id AS category_id,
+                                                ie2.quartile
+                                        FROM IdentifiableEntity AS ie1
+                                            LEFT JOIN HasCategory AS hc
+                                                ON ie1.internalId == hc.journalId
+                                            LEFT JOIN IdentifiableEntity AS ie2
+                                            ON hc.categoryId == ie2.internalId
+                                        WHERE ie1.id IN''' + journal_ids_for_query
+
+        df_with_categories = self.query_relational(query_for_categories)
+
+        for obj in tqdm(output_journals, desc='Enriching journals'):
+            obj_ids = obj.getIds()
+            for obj_id in obj_ids:
+                df_with_areas_filtered = df_with_areas[df_with_areas['journal_id'] == obj_id]
+                obj.hasArea     = [Area([a]) for a in df_with_areas_filtered['area_id'].drop_duplicates().values]
+                df_with_categories_filtered = df_with_categories[df_with_categories['journal_id'] == obj_id]
+                obj.hasCategory = [Category(c,q) for c,q in df_with_categories_filtered[['category_id', 'quartile']].drop_duplicates().values]
+                if obj.hasCategory or obj.hasArea:
+                    break 
+            
+        return output_journals
+
+
+
+
     # -----------------------------------------
     # Entity lookup
     # -----------------------------------------
 
-    def getEntityById(self, id: str):
+    def getEntityById_core(self, id: str):
+
+        lista_df_graph = []
+
+
         # 1. Try journals via SPARQL
         for h in self.journalHandlers:
-            try:
-                df = h.getById(id)
-                if df is not None and not df.empty:
-                    journals = self._makeJournals(df)
-                    for j in journals:
-                        if id in j.getIds():
-                            return j
-            except Exception:
-                continue
+            df_parziale = h.getById(id)
+            lista_df_graph.append(df_parziale)
+
+        if lista_df_graph:
+            df_finale_graph = pd.concat(lista_df_graph, ignore_index=True).drop_duplicates()
+        else:
+            df_finale_graph = pd.DataFrame()
+
+        if df_finale_graph is not None and not df_finale_graph.empty:
+            journals = self._makeJournals(df_finale_graph)
+            for j in journals:
+                if id in j.getIds():
+                    return j
 
         # 2. Try categories and areas via SQLite
+        lista_df = []
+
         for h in self.categoryHandlers:
-            try:
-                df = h.getById(id)
-                if df is None or df.empty:
-                    continue
-                cols = set(df.columns)
+            df_parziale = h.getById(id)
+            lista_df.append(df_parziale)
 
-                # Category result: has category_id but not area_id
-                if "category_id" in cols and "area_id" not in cols and "journal_id" in cols:
-                    row = df.iloc[0]
-                    q = row.get("category_quartile") or row.get("quartile")
-                    return Category(str(id), q)
+        if lista_df:
+            df = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df = pd.DataFrame()
 
-                # Area result: has area_id but not category_id
-                if "area_id" in cols and "category_id" not in cols:
-                    return Area([str(id)])
 
-                # Journal result: not found in Blazegraph, build minimal object from SQLite
-                if "journal_id" in cols and ("category_id" in cols or "area_id" in cols):
-                    cats_for_journal: List[Category] = []
-                    areas_for_journal: List[Area] = []
-                    seen_cats: Set[str] = set()
-                    seen_areas: Set[str] = set()
 
-                    for _, rr in df.iterrows():
-                        cid = rr.get("category_id")
-                        q = rr.get("category_quartile")
-                        if cid and str(cid) not in seen_cats:
-                            seen_cats.add(str(cid))
-                            cats_for_journal.append(Category(str(cid), q))
+#        if df is None or df.empty:
+#            continue
+        cols = set(df.columns)
 
-                        aid = rr.get("area_id")
-                        if aid and str(aid) not in seen_areas:
-                            seen_areas.add(str(aid))
-                            areas_for_journal.append(Area([str(aid)]))
+        # Category result: has category_id but not area_id
+        if "category_id" in cols and "area_id" not in cols and "journal_id" in cols:
+            row = df.iloc[0]
+            q = row.get("category_quartile") or row.get("quartile")
+            return Category(str(id), q)
 
-                    all_jids = set()
-                    for _, rr in df.iterrows():
-                        jid_cell = rr.get("journal_id", "")
-                        for s in str(jid_cell).split(","):
-                            s = s.strip()
-                            if s:
-                                all_jids.add(s)
+        # Area result: has area_id but not category_id
+        if "area_id" in cols and "category_id" not in cols:
+            return Area([str(id)])
 
-                    return Journal(
-                        ids=sorted(all_jids),
-                        title="",
-                        languages=[],
-                        publisher=None,
-                        seal=False,
-                        license="",
-                        apc=False,
-                        categories=cats_for_journal,
-                        areas=areas_for_journal,
-                    )
-            except Exception:
-                continue
+        # Journal result: not found in Blazegraph, build minimal object from SQLite
+        if "journal_id" in cols and ("category_id" in cols or "area_id" in cols):
+            cats_for_journal: List[Category] = []
+            areas_for_journal: List[Area] = []
+            seen_cats: Set[str] = set()
+            seen_areas: Set[str] = set()
+
+            for _, rr in df.iterrows():
+                cid = rr.get("category_id")
+                q = rr.get("category_quartile")
+                if cid and str(cid) not in seen_cats:
+                    seen_cats.add(str(cid))
+                    cats_for_journal.append(Category(str(cid), q))
+
+                aid = rr.get("area_id")
+                if aid and str(aid) not in seen_areas:
+                    seen_areas.add(str(aid))
+                    areas_for_journal.append(Area([str(aid)]))
+
+            all_jids = set()
+            for _, rr in df.iterrows():
+                jid_cell = rr.get("journal_id", "")
+                for s in str(jid_cell).split(","):
+                    s = s.strip()
+                    if s:
+                        all_jids.add(s)
+
+            return Journal(
+                ids=sorted(all_jids),
+                title="",
+                languages=[],
+                publisher=None,
+                seal=False,
+                license="",
+                apc=False,
+                categories=cats_for_journal,
+                areas=areas_for_journal,
+            )
 
         return None
+
+    def getEntityById(self, id: str):
+        entity=self.getEntityById_core(id)
+        if type(entity)==Journal:
+            entity=self.enrich_entity_with_categories_and_areas(entity, id)
+        return entity
 
     # -----------------------------------------
     # Journal queries
@@ -237,95 +341,101 @@ class BasicQueryEngine:
         seen_ids: Set[str] = set()
 
         # 1. Journals from Blazegraph (DOAJ)
+
         for h in self.journalHandlers:
-            try:
-                df = h.getAllJournals()
-                if df is not None and not df.empty:
-                    journals = self._makeJournals(df)
-                    for j in journals:
-                        result.append(j)
-                        for jid in j.getIds():
-                            seen_ids.add(jid)
-            except Exception:
-                continue
+            df = h.getAllJournals()
+            if df is not None and not df.empty:
+                journals = self._makeJournals(df)
+                for j in journals:
+                    result.append(j)
+                    for jid in j.getIds():
+                        seen_ids.add(jid)
+
+
+        '''we don't need the journals in the relational database, this is why I commented the following lines:
 
         # 2. Journals present only in SQLite (Scimago) — not in Blazegraph
         for h in self.categoryHandlers:
-            try:
-                engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
-                df_sql = pd.read_sql(
-                    "SELECT DISTINCT internalId, id FROM IdentifiableEntity WHERE internalId LIKE 'journal-%'",
-                    engine
-                )
-                if df_sql.empty:
-                    continue
-
-                groups = defaultdict(list)
-                for _, row in df_sql.iterrows():
-                    groups[row["internalId"]].append(row["id"])
-
-                for internal_id, ids in groups.items():
-                    if not any(i in seen_ids for i in ids):
-                        cats_dict: dict = {}
-                        areas_set: Set[str] = set()
-                        for jid in ids:
-                            try:
-                                df_rel = h.getById(jid)
-                                if df_rel is None or df_rel.empty:
-                                    continue
-                                if "category_id" in df_rel.columns:
-                                    for _, rr in df_rel.iterrows():
-                                        cid = rr.get("category_id")
-                                        q = rr.get("category_quartile")
-                                        if cid and str(cid).strip() and str(cid).strip() not in cats_dict:
-                                            cats_dict[str(cid).strip()] = q
-                                if "area_id" in df_rel.columns:
-                                    for _, rr in df_rel.iterrows():
-                                        aid = rr.get("area_id")
-                                        if aid and str(aid).strip():
-                                            areas_set.add(str(aid).strip())
-                            except Exception:
-                                continue
-
-                        result.append(Journal(
-                            ids=sorted(ids),
-                            title="",
-                            languages=[],
-                            publisher=None,
-                            seal=False,
-                            license="",
-                            apc=False,
-                            categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
-                            areas=[Area([aid]) for aid in sorted(areas_set)],
-                        ))
-                        for i in ids:
-                            seen_ids.add(i)
-            except Exception:
+            engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
+            df_sql = pd.read_sql(
+                "SELECT DISTINCT internalId, id FROM IdentifiableEntity WHERE internalId LIKE 'journal-%'",
+                engine
+            )
+            if df_sql.empty:
                 continue
 
-        return result
+            groups = defaultdict(list)
+            for _, row in df_sql.iterrows():
+                groups[row["internalId"]].append(row["id"])
+
+            
+            for internal_id, ids in tqdm(groups.items(), desc='Processing SQLite-only journals', total=len(groups), unit='journal'):
+                if not any(i in seen_ids for i in ids):
+                    cats_dict: dict = {}
+                    areas_set: Set[str] = set()
+                    for jid in ids:
+                        try:
+                            df_rel = h.getById(jid)
+                            if df_rel is None or df_rel.empty:
+                                continue
+                            if "category_id" in df_rel.columns:
+                                for _, rr in df_rel.iterrows():
+                                    cid = rr.get("category_id")
+                                    q = rr.get("category_quartile")
+                                    if cid and str(cid).strip() and str(cid).strip() not in cats_dict:
+                                        cats_dict[str(cid).strip()] = q
+                            if "area_id" in df_rel.columns:
+                                for _, rr in df_rel.iterrows():
+                                    aid = rr.get("area_id")
+                                    if aid and str(aid).strip():
+                                        areas_set.add(str(aid).strip())
+                        except Exception:
+                            continue
+
+                    result.append(Journal(
+                        ids=sorted(ids),
+                        title="",
+                        languages=[],
+                        publisher=None,
+                        seal=False,
+                        license="",
+                        apc=False,
+                        categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
+                        areas=[Area([aid]) for aid in sorted(areas_set)],
+                    ))
+                    for i in ids:
+                        seen_ids.add(i)
+            '''
+
+        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
 
     def getJournalsWithTitle(self, title: str) -> List['Journal']:
         result: List[Journal] = []
+        seen_ids: Set[str] = set()
+
         for h in self.journalHandlers:
-            try:
-                df = h.getJournalsWithTitle(title)
-                if df is not None and not df.empty:
-                    result.extend(self._makeJournals(df))
-            except Exception:
-                continue
-        return result
+            df = h.getJournalsWithTitle(title)
+            if df is not None and not df.empty:
+                result.extend(self._makeJournals(df))
+            for j in result:
+                for jid in j.getIds():
+                    seen_ids.add(jid)
+
+        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
 
     def getJournalsPublishedBy(self, publisher: str) -> List['Journal']:
         result: List[Journal] = []
+        seen_ids: Set[str] = set()
+
         for h in self.journalHandlers:
-            try:
-                df = h.getJournalsPublishedBy(publisher)
-                if df is not None and not df.empty:
-                    result.extend(self._makeJournals(df))
-            except Exception:
-                continue
-        return result
+            df = h.getJournalsPublishedBy(publisher)
+            if df is not None and not df.empty:
+                result.extend(self._makeJournals(df))
+            for j in result:
+                for jid in j.getIds():
+                    seen_ids.add(jid)
+
+        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
 
     def getJournalsWithLicense(self, licenses: Set[str]) -> List['Journal']:
         if not licenses:
@@ -333,44 +443,48 @@ class BasicQueryEngine:
         result: List[Journal] = []
         seen: Set[frozenset] = set()
         for h in self.journalHandlers:
-            try:
-                df = h.getAllJournals()
-                if df is None or df.empty:
-                    continue
-                df = df[df["license"].apply(
-                    lambda x: self._license_matches(x, licenses)
-                )]
-                if not df.empty:
-                    for j in self._makeJournals(df):
-                        key = frozenset(j.getIds())
-                        if key not in seen:
-                            seen.add(key)
-                            result.append(j)
-            except Exception:
+            df = h.getAllJournals()
+            if df is None or df.empty:
                 continue
-        return result
+            df = df[df["license"].apply(
+                lambda x: self._license_matches(x, licenses)
+            )]
+            if not df.empty:
+                for j in self._makeJournals(df):
+                    key = frozenset(j.getIds())
+                    if key not in seen:
+                        seen.add(key)
+                        result.append(j)
+        
+        seen_ids = set().union(*seen)
+        
+        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
 
     def getJournalsWithAPC(self) -> List['Journal']:
         result: List[Journal] = []
+        seen_ids: Set[str] = set()
         for h in self.journalHandlers:
-            try:
-                df = h.getJournalsWithAPC()
-                if df is not None and not df.empty:
-                    result.extend(self._makeJournals(df))
-            except Exception:
-                continue
-        return result
+            df = h.getJournalsWithAPC()
+            if df is not None and not df.empty:
+                result.extend(self._makeJournals(df))
+            for j in result:
+                for jid in j.getIds():
+                    seen_ids.add(jid)
+
+        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
 
     def getJournalsWithDOAJSeal(self) -> List['Journal']:
         result: List[Journal] = []
+        seen_ids: Set[str] = set()
         for h in self.journalHandlers:
-            try:
-                df = h.getJournalsWithDOAJSeal()
-                if df is not None and not df.empty:
-                    result.extend(self._makeJournals(df))
-            except Exception:
-                continue
-        return result
+            df = h.getJournalsWithDOAJSeal()
+            if df is not None and not df.empty:
+                result.extend(self._makeJournals(df))
+            for j in result:
+                for jid in j.getIds():
+                    seen_ids.add(jid)
+
+        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
 
     # -----------------------------------------
     # Category and Area queries
@@ -379,74 +493,59 @@ class BasicQueryEngine:
     def getAllCategories(self) -> List[Category]:
         result: List[Category] = []
         for h in self.categoryHandlers:
-            try:
-                df = h.getAllCategories()
-                if df is None or df.empty:
-                    continue
-                df = df.drop_duplicates(subset=["category_id", "quartile"])
-                for _, r in df.iterrows():
-                    result.append(Category(r["category_id"], r.get("quartile")))
-            except Exception:
+            df = h.getAllCategories()
+            if df is None or df.empty:
                 continue
-        return result
+            df = df.drop_duplicates(subset=["category_id","quartile"])
+            for _, r in df.iterrows():
+                result.append(Category(r["category_id"], r.get("quartile")))
+        return list(set(result))
 
     def getCategoriesWithQuartile(self, quartiles: Set[str]) -> List[Category]:
         result: List[Category] = []
         for h in self.categoryHandlers:
-            try:
-                df = h.getCategoriesWithQuartile(quartiles)
-                if df is None or df.empty:
-                    continue
-                for _, r in df.iterrows():
-                    result.append(Category(r["category_id"], r.get("quartile")))
-            except Exception:
+            df = h.getCategoriesWithQuartile(quartiles)
+            if df is None or df.empty:
                 continue
-        return result
+            for _, r in df.iterrows():
+                result.append(Category(r["category_id"], r.get("quartile")))
+        return list(set(result))
 
     def getAllAreas(self) -> List[Area]:
         result: List[Area] = []
         for h in self.categoryHandlers:
-            try:
-                df = h.getAllAreas()
-                if df is None or df.empty:
-                    continue
-                col = "area_id" if "area_id" in df.columns else "id"
-                df = df.drop_duplicates(subset=[col])
-                for _, r in df.iterrows():
-                    result.append(Area([r[col]]))
-            except Exception:
+            df = h.getAllAreas()
+            if df is None or df.empty:
                 continue
-        return result
+            col = "area_id" if "area_id" in df.columns else "id"
+            df = df.drop_duplicates(subset=[col])
+            for _, r in df.iterrows():
+                result.append(Area([r[col]]))
+        return list(set(result))
 
     def getCategoriesAssignedToAreas(self, areas: Set[str]) -> List[Category]:
         result: List[Category] = []
         for h in self.categoryHandlers:
-            try:
-                df = h.getCategoriesAssignedToAreas(areas)
-                if df is None or df.empty:
-                    continue
-                for _, r in df.iterrows():
-                    cid = r.get("category_id")
-                    if cid:
-                        result.append(Category(cid, r.get("quartile")))
-            except Exception:
+            df = h.getCategoriesAssignedToAreas(areas)
+            if df is None or df.empty:
                 continue
-        return result
+            for _, r in df.iterrows():
+                cid = r.get("category_id")
+                if cid:
+                    result.append(Category(cid, r.get("quartile")))
+        return list(set(result))
 
     def getAreasAssignedToCategories(self, categories: Set[str]) -> List[Area]:
         result: List[Area] = []
         for h in self.categoryHandlers:
-            try:
-                df = h.getAreasAssignedToCategories(categories)
-                if df is None or df.empty:
-                    continue
-                for _, r in df.iterrows():
-                    aid = r.get("area_id")
-                    if aid:
-                        result.append(Area([aid]))
-            except Exception:
+            df = h.getAreasAssignedToCategories(categories)
+            if df is None or df.empty:
                 continue
-        return result
+            for _, r in df.iterrows():
+                aid = r.get("area_id")
+                if aid:
+                    result.append(Area([aid]))
+        return list(set(result))
 
     # -----------------------------------------
     # Journal construction
@@ -457,74 +556,76 @@ class BasicQueryEngine:
         if df is None or df.empty:
             return journals
 
-        for _, r in df.iterrows():
-            try:
-                raw_id = r.get("all_ids") or r.get("id", "")
-                if raw_id is None:
-                    ids = []
-                else:
-                    ids = [s.strip() for s in str(raw_id).split(",") if s.strip()]
+        for _, r in tqdm(df.iterrows(), desc='Making Journal objects', total=len(df), unit='journal'):
+            raw_id = r.get("all_ids") or r.get("id", "")
+            if raw_id is None:
+                ids = []
+            else:
+                ids = [s.strip() for s in str(raw_id).split(",") if s.strip()]
 
-                langs_raw = r.get("languages")
-                if langs_raw is None or str(langs_raw).strip() in ("", "None", "nan"):
-                    langs = None
-                elif isinstance(langs_raw, str):
-                    langs = [s.strip() for s in langs_raw.split(",") if s.strip()] or None
-                elif isinstance(langs_raw, list):
-                    langs = [str(s).strip() for s in langs_raw if str(s).strip()] or None
-                else:
-                    langs = None
+            langs_raw = r.get("languages")
+            if langs_raw is None or str(langs_raw).strip() in ("", "None", "nan"):
+                langs = None
+            elif isinstance(langs_raw, str):
+                langs = [s.strip() for s in langs_raw.split(",") if s.strip()] or None
+            elif isinstance(langs_raw, list):
+                langs = [str(s).strip() for s in langs_raw if str(s).strip()] or None
+            else:
+                langs = None
 
-                title         = self._clean_str(r.get("title"))
-                publisher     = self._clean_str(r.get("publisher"))
-                license_clean = self._clean_str(r.get("license"))
-                seal = str(r.get("seal", "")).strip().lower() in ["true", "yes", "1"]
-                apc  = str(r.get("apc",  "")).strip().lower() in ["true", "yes", "1"]
+            title         = self._clean_str(r.get("title"))
+            publisher     = self._clean_str(r.get("publisher"))
+            license_clean = self._clean_str(r.get("license"))
+            seal = str(r.get("seal", "")).strip().lower() in ["true", "yes", "1"]
+            apc  = str(r.get("apc",  "")).strip().lower() in ["true", "yes", "1"]
 
-                journal = Journal(
-                    ids=ids,
-                    title=title,
-                    languages=langs,
-                    publisher=publisher,
-                    seal=seal,
-                    license=license_clean,
-                    apc=apc,
-                    categories=[],
-                    areas=[],
-                )
+            journal = Journal(
+                ids=ids,
+                title=title,
+                languages=langs,
+                publisher=publisher,
+                seal=seal,
+                license=license_clean,
+                apc=apc,
+                categories=[],
+                areas=[],
+            )
 
-                # Enrich with categories and areas from SQLite
-                cats_dict: dict = {}
-                areas_set: Set[str] = set()
+            
+            '''
+            
+            # Enrich with categories and areas from SQLite
+            cats_dict: dict = {}
+            areas_set: Set[str] = set()
 
-                for jid in ids:
-                    for h in self.categoryHandlers:
-                        try:
-                            df_rel = h.getById(jid)
-                            if df_rel is None or df_rel.empty:
-                                continue
-                            if "category_id" in df_rel.columns:
-                                for _, rr in df_rel.iterrows():
-                                    cid = rr.get("category_id")
-                                    if cid and str(cid).strip():
-                                        cid_str = str(cid).strip()
-                                        q = rr.get("category_quartile") or rr.get("quartile")
-                                        if cid_str not in cats_dict:
-                                            cats_dict[cid_str] = q
-                            if "area_id" in df_rel.columns:
-                                for _, rr in df_rel.iterrows():
-                                    aid = rr.get("area_id")
-                                    if aid and str(aid).strip():
-                                        areas_set.add(str(aid).strip())
-                        except Exception:
+            
+            for jid in ids:
+                for h in self.categoryHandlers:
+                    try:
+                        df_rel = h.getById(jid)
+                        if df_rel is None or df_rel.empty:
                             continue
+                        if "category_id" in df_rel.columns:
+                            for _, rr in df_rel.iterrows():
+                                cid = rr.get("category_id")
+                                if cid and str(cid).strip():
+                                    cid_str = str(cid).strip()
+                                    q = rr.get("category_quartile") or rr.get("quartile")
+                                    if cid_str not in cats_dict:
+                                        cats_dict[cid_str] = q
+                        if "area_id" in df_rel.columns:
+                            for _, rr in df_rel.iterrows():
+                                aid = rr.get("area_id")
+                                if aid and str(aid).strip():
+                                    areas_set.add(str(aid).strip())
+                    except Exception:
+                        continue
 
-                journal.hasCategory = [Category(cid, q) for cid, q in sorted(cats_dict.items())]
-                journal.hasArea     = [Area([aid]) for aid in sorted(areas_set)]
-                journals.append(journal)
+            journal.hasCategory = [Category(cid, q) for cid, q in sorted(cats_dict.items())]
+            journal.hasArea     = [Area([aid]) for aid in sorted(areas_set)]
+            '''
 
-            except Exception:
-                continue
+            journals.append(journal)
 
         return journals
 
@@ -534,6 +635,107 @@ class BasicQueryEngine:
 # ============================
 
 class FullQueryEngine(BasicQueryEngine):
+
+    # Funzione per verificare se la cella contiene almeno un ID valido
+    def controlla_id(self, cella, id_validi):
+        # Trasforma la cella in un set di stringhe pulite
+        set_cella = set(i.strip() for i in str(cella).split(','))
+        # Se l'intersezione tra i due set NON è vuota, restituisce True
+        return bool(set_cella & id_validi)
+
+    def get_journals_ids_based_on_categories_and_quartiles(self, category_ids: Set[str], quartiles: Set[str]) -> Set[str]:
+
+        condizioni = []
+
+        if category_ids:
+            cat_string = ', '.join(f"'{cid}'" for cid in category_ids)
+            condizioni.append(f"id IN ({cat_string})")
+
+        if quartiles:
+            quart_string = ', '.join(f"'{q}'" for q in quartiles)
+            condizioni.append(f"quartile IN ({quart_string})")
+
+        query = '''
+            SELECT *
+            FROM IdentifiableEntity 
+            LEFT JOIN HasCategory ON IdentifiableEntity.internalId = HasCategory.categoryId
+        '''
+        
+        if condizioni:
+            query += " WHERE " + " AND ".join(condizioni)
+        else:
+            query += " WHERE internalId LIKE 'category-%' "
+
+        df_finale=self.query_relational(query)
+        
+
+        
+        
+
+        journals_internal_ids=list(set(df_finale['journalId']))
+        l='(' + ', '.join(f"'{t}'" for t in journals_internal_ids) + ')'
+
+        query_for_journals_ids='''
+            SELECT ie.internalId, ie.id
+            FROM IdentifiableEntity as ie
+            WHERE ie.internalId IN
+        ''' + l
+
+        ids_relational = self.query_relational(query_for_journals_ids)
+
+        set_ids_relational = set()
+
+        for elem in journals_internal_ids:
+            df_filtered = ids_relational[ids_relational['internalId'] == elem]
+            current_set = set()
+            for id in df_filtered['id']:
+                current_set.add(id)
+            set_ids_relational.add(frozenset(current_set))
+
+        return set_ids_relational
+
+    def get_journals_ids_based_on_areas(self, areas_ids: Set[str]) -> Set[str]:
+        
+        query = '''
+            SELECT *
+            FROM IdentifiableEntity 
+            LEFT JOIN HasArea ON IdentifiableEntity.internalId = HasArea.areaId
+        '''
+
+        if areas_ids:
+            area_string = ', '.join(f"'{cid}'" for cid in areas_ids)
+            condizione = f"id IN ({area_string})"
+            query += " WHERE " + condizione
+        else:
+            query += " WHERE internalId LIKE 'area-%' "
+
+        df_finale=self.query_relational(query)
+
+        
+        
+
+        journals_internal_ids=list(set(df_finale['journalId']))
+        l='(' + ', '.join(f"'{t}'" for t in journals_internal_ids) + ')'
+
+        query_for_journals_ids='''
+            SELECT ie.internalId, ie.id
+            FROM IdentifiableEntity as ie
+            WHERE ie.internalId IN
+        ''' + l
+
+        ids_relational = self.query_relational(query_for_journals_ids)
+
+        set_ids_relational = set()
+
+        for elem in tqdm(journals_internal_ids):
+            df_filtered = ids_relational[ids_relational['internalId'] == elem]
+            current_set = set()
+            for id in df_filtered['id']:
+                current_set.add(id)
+            set_ids_relational.add(frozenset(current_set))
+
+        return set_ids_relational
+
 
     def _collect_ids_from_category_assignments(
         self,
@@ -596,7 +798,7 @@ class FullQueryEngine(BasicQueryEngine):
                 continue
         return ids
 
-    def _makeJournalsFromSQLiteIds(
+    def _makeJournalsFromSQLiteIds(         # THIS DOES NOT WORK
         self,
         all_ids: Set[str],
         blazegraph_ids: Set[str],
@@ -612,81 +814,72 @@ class FullQueryEngine(BasicQueryEngine):
             return result
 
         for h in self.categoryHandlers:
-            try:
-                engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
-                df_sql = pd.read_sql(
-                    "SELECT DISTINCT internalId, id FROM IdentifiableEntity WHERE internalId LIKE 'journal-%'",
-                    engine
-                )
-                if df_sql.empty:
-                    continue
-
-                groups = defaultdict(list)
-                for _, row in df_sql.iterrows():
-                    groups[row["internalId"]].append(row["id"])
-
-                seen: Set[str] = set()
-                for internal_id, ids in groups.items():
-                    if not any(i in sqlite_only_ids for i in ids):
-                        continue
-                    key = str(frozenset(ids))
-                    if key in seen:
-                        continue
-                    seen.add(key)
-
-                    if apc_filter is True:
-                        continue  # SQLite-only journals can't have confirmed APC
-
-                    cats_dict: dict = {}
-                    areas_set: Set[str] = set()
-                    for jid in ids:
-                        try:
-                            df_rel = h.getById(jid)
-                            if df_rel is None or df_rel.empty:
-                                continue
-                            if "category_id" in df_rel.columns:
-                                for _, rr in df_rel.iterrows():
-                                    cid = rr.get("category_id")
-                                    q = rr.get("category_quartile")
-                                    if cid and str(cid).strip() and str(cid).strip() not in cats_dict:
-                                        cats_dict[str(cid).strip()] = q
-                            if "area_id" in df_rel.columns:
-                                for _, rr in df_rel.iterrows():
-                                    aid = rr.get("area_id")
-                                    if aid and str(aid).strip():
-                                        areas_set.add(str(aid).strip())
-                        except Exception:
-                            continue
-
-                    result.append(Journal(
-                        ids=sorted(ids),
-                        title="",
-                        languages=[],
-                        publisher=None,
-                        seal=False,
-                        license="",
-                        apc=False,
-                        categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
-                        areas=[Area([aid]) for aid in sorted(areas_set)],
-                    ))
-            except Exception:
+            engine = _ce(f"sqlite:///{h.getDbPathOrUrl()}")
+            df_sql = pd.read_sql(
+                "SELECT DISTINCT internalId, id FROM IdentifiableEntity WHERE internalId LIKE 'journal-%'",
+                engine
+            )
+            if df_sql.empty:
                 continue
+
+            groups = defaultdict(list)
+            for _, row in df_sql.iterrows():
+                groups[row["internalId"]].append(row["id"])
+
+            seen: Set[str] = set()
+            for internal_id, ids in groups.items():
+                if not any(i in sqlite_only_ids for i in ids):
+                    continue
+                key = str(frozenset(ids))
+                if key in seen:
+                    continue
+                seen.add(key)
+
+                if apc_filter is True:
+                    continue  # SQLite-only journals can't have confirmed APC
+
+                cats_dict: dict = {}
+                areas_set: Set[str] = set()
+                for jid in ids:
+                    df_rel = h.getById(jid)
+                    if df_rel is None or df_rel.empty:
+                        continue
+                    if "category_id" in df_rel.columns:
+                        for _, rr in df_rel.iterrows():
+                            cid = rr.get("category_id")
+                            q = rr.get("category_quartile")
+                            if cid and str(cid).strip() and str(cid).strip() not in cats_dict:
+                                cats_dict[str(cid).strip()] = q
+                    if "area_id" in df_rel.columns:
+                        for _, rr in df_rel.iterrows():
+                            aid = rr.get("area_id")
+                            if aid and str(aid).strip():
+                                areas_set.add(str(aid).strip())
+
+                result.append(Journal(
+                    ids=sorted(ids),
+                    title="",
+                    languages=[],
+                    publisher=None,
+                    seal=False,
+                    license="",
+                    apc=False,
+                    categories=[Category(cid, q) for cid, q in sorted(cats_dict.items())],
+                    areas=[Area([aid]) for aid in sorted(areas_set)],
+                ))
 
         return result
 
-    def getJournalsInCategoriesWithQuartile(
+    def getJournalsInCategoriesWithQuartile_by_laura(
         self,
         category_ids: Set[str],
         quartiles: Set[str],
     ) -> List[Journal]:
         all_ids: Set[str] = set()
         for h in self.categoryHandlers:
-            try:
-                all_ids.update(
-                    self._collect_ids_from_category_assignments(h, category_ids, quartiles)
-                )
-            except Exception:
-                continue
+            all_ids.update(
+                self._collect_ids_from_category_assignments(h, category_ids, quartiles)
+            )
 
         if not all_ids:
             return []
@@ -696,23 +889,96 @@ class FullQueryEngine(BasicQueryEngine):
 
         # Journals found in Blazegraph
         for h in self.journalHandlers:
-            try:
-                df = h.getAllJournals()
-                if df is None or df.empty:
-                    continue
-                mask = df["id"].apply(lambda x: self._id_matches(x, all_ids))
-                matched = self._makeJournals(df[mask])
-                for j in matched:
-                    result.append(j)
-                    blazegraph_ids.update(j.getIds())
-            except Exception:
+            df = h.getAllJournals()
+            if df is None or df.empty:
                 continue
+            mask = df["id"].apply(lambda x: self._id_matches(x, all_ids))
+            matched = self._makeJournals(df[mask])
+            for j in matched:
+                result.append(j)
+                blazegraph_ids.update(j.getIds())
 
         # Journals present only in SQLite
         result.extend(self._makeJournalsFromSQLiteIds(all_ids, blazegraph_ids))
         return result
 
+
+    def getJournalsInCategoriesWithQuartile(
+        self,
+        category_ids: Set[str],
+        quartiles: Set[str],
+    ) -> List[Journal]:
+
+
+        set_ids_relational = self.get_journals_ids_based_on_categories_and_quartiles(category_ids, quartiles)
+
+        lista_df = []
+        for h in self.journalHandlers:      
+            df_parziale = h.getAllJournals()
+            lista_df.append(df_parziale)
+
+        if lista_df:
+            df_graph = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df_graph = pd.DataFrame()
+        
+
+        set_ids_graph = {frozenset(i.strip() for i in str(cella).split(',')) for cella in df_graph['id']}
+
+        print(len(set_ids_relational), len(set_ids_graph))
+        set_ids_to_output = set_ids_relational & set_ids_graph
+        print(len(set_ids_to_output))
+
+
+        tutti_gli_id_validi = set().union(*set_ids_to_output)
+
+        output_journals = self._makeJournals(df_graph[df_graph['id'].apply(lambda x: self.controlla_id(x, tutti_gli_id_validi))])
+
+        return list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+
     def getJournalsInAreasWithLicense(
+        self,
+        areas_ids: Set[str],
+        licenses: Set[str],
+    ) -> List[Journal]:
+
+
+        set_ids_relational = self.get_journals_ids_based_on_areas(areas_ids)
+
+        lista_df = []
+        if licenses:
+            for h in self.journalHandlers:     
+                df_parziale = h.getJournalsWithLicense(licenses)
+                lista_df.append(df_parziale)
+        else:
+            for h in self.journalHandlers:      
+                df_parziale = h.getAllJournals()
+                lista_df.append(df_parziale)
+
+        if lista_df:
+            df_graph = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df_graph = pd.DataFrame()
+
+
+
+        set_ids_graph = {frozenset(i.strip() for i in str(cella).split(',')) for cella in df_graph['id']}
+
+        print(len(set_ids_relational), len(set_ids_graph))
+        set_ids_to_output = set_ids_relational & set_ids_graph
+        print(len(set_ids_to_output))
+
+
+        tutti_gli_id_validi = set().union(*set_ids_to_output)
+
+        output_journals = self._makeJournals(df_graph[df_graph['id'].apply(lambda x: self.controlla_id(x, tutti_gli_id_validi))])
+
+        return list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+
+
+
+
+    def getJournalsInAreasWithLicense_by_laura(
         self,
         areas: Set[str],
         licenses: Set[str],
@@ -822,7 +1088,7 @@ class FullQueryEngine(BasicQueryEngine):
     # end Laura's methods for Peroni
     # ---------------------------------------------------------------
 
-    def getDiamondJournalsInAreasAndCategoriesWithQuartile(
+    def getDiamondJournalsInAreasAndCategoriesWithQuartile_by_laura(
         self,
         area_ids: Set[str],
         category_ids: Set[str],
@@ -882,3 +1148,42 @@ class FullQueryEngine(BasicQueryEngine):
         # Blazegraph journals with apc=True are already in blazegraph_ids and won't be re-added.
         result.extend(self._makeJournalsFromSQLiteIds(all_ids, blazegraph_ids, apc_filter=False))
         return result
+
+    def getDiamondJournalsInAreasAndCategoriesWithQuartile(
+        self,
+        area_ids: Set[str],
+        category_ids: Set[str],
+        quartiles: Set[str],
+    ) -> List[Journal]:
+
+
+        set_ids_relational_categories_quartiles = self.get_journals_ids_based_on_categories_and_quartiles(category_ids, quartiles)
+        set_ids_relational_areas = self.get_journals_ids_based_on_areas(area_ids)
+
+        lista_df = []
+        for h in self.journalHandlers:     
+            df_parziale = h.getAllJournals()
+            lista_df.append(df_parziale)
+
+
+        if lista_df:
+            df_graph = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df_graph = pd.DataFrame()
+
+
+
+        df_graph = df_graph[df_graph['apc']=='false']
+
+        set_ids_graph = {frozenset(i.strip() for i in str(cella).split(',')) for cella in df_graph['id']}
+
+        print(len(set_ids_relational_categories_quartiles), len(set_ids_relational_areas), len(set_ids_graph))
+        set_ids_to_output = set_ids_relational_categories_quartiles & set_ids_relational_areas & set_ids_graph
+        print(len(set_ids_to_output))
+
+
+        tutti_gli_id_validi = set().union(*set_ids_to_output)
+
+        output_journals = self._makeJournals(df_graph[df_graph['id'].apply(lambda x: self.controlla_id(x, tutti_gli_id_validi))])
+
+        return list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))

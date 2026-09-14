@@ -2,6 +2,10 @@ from baseHandler import  UploadHandler
 from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF, XSD
 import pandas as pd
+from tqdm.auto import tqdm
+from rich.console import Console
+console = Console()
+
 
 #implements the method of the superclass to handle the specific scenario
 #JournalUploadHandler to handle CSV files in input and to store their data in a graph database
@@ -10,6 +14,9 @@ class JournalUploadHandler(UploadHandler):
         super().__init__()
 
     def pushDataToDb(self, path):
+
+        db_tag = self.getDbPathOrUrl().replace('-', '_').replace('\\', '_').replace('/', '_').replace(':', '_').replace('.', '_')
+
         base_url = Namespace("https://brigata.github.org/")  
         self.graph = Graph()  # Create a new RDF graph
         self.graph.bind("base_url", base_url)  # Bind the base URL to the graph
@@ -43,7 +50,7 @@ class JournalUploadHandler(UploadHandler):
         last_index = self.get_last_journal_index(endpoint)
         
         for idx, row in journal.iterrows():
-            local_id = "journal_" + str(idx+last_index)  # internalId??
+            local_id = "journal_" + db_tag + '_' + str(idx+last_index)  # internalId??
             subject = URIRef(base_url[local_id]) # can automatically deal with the URL
             self.graph.add((subject, RDF.type, URIRef(base_url["Journal"]))) # add type
         
@@ -95,35 +102,40 @@ class JournalUploadHandler(UploadHandler):
         
         store.open((endpoint, endpoint))  # Open the SPARQL store
 
-        # instead of committing one by one (so slow), use SPARQL
-        insert_query = "INSERT DATA {\n" 
-        # Graph <urn:sofia:import:22-02-v2> {\n"
 
-        for triple in self.graph.triples((None, None, None)):
-            subject = triple[0]
-            predicate = triple[1] 
-            object_value = triple[2]
-            
 
-            text_value = str(object_value)
-            
-            text_value = text_value.replace('\\', '\\\\')  # \
-            text_value = text_value.replace('"', '\\"')    # ""
-            text_value = text_value.replace('\n', '\\n')   # \n
-            text_value = text_value.replace('\r', '\\r')   # \r
-            
-            line = f"{subject.n3()} {predicate.n3()} {object_value.n3()} .\n"
-            # line = "<" + str(subject) + "> <" + str(predicate) + "> \"" + text_value + "\" .\n"
-           
+        # DANIELE ADDED THIS (update in batches):
 
-            insert_query = insert_query + line
+        n_triples = len(self.graph)
+        print("We have " + str(n_triples) + " triples to insert into the graph database.")
+        batch_size = 10000
+        n_loops = n_triples // batch_size + 1
 
-        # end the query
-        insert_query = insert_query + "}"
+        for i in tqdm(range(n_loops), desc='Uploading triples'):
+            start_index = i * batch_size
+            end_index = min((i + 1) * batch_size, n_triples)
+            triples_to_insert = list(self.graph.triples((None, None, None)))[start_index:end_index]
 
-        # store every triples once
-        if len(self.graph) > 0:
-            store.update(insert_query)
+            insert_query = "INSERT DATA {\n"
+            for triple in triples_to_insert:
+                subject = triple[0]
+                predicate = triple[1]
+                object_value = triple[2]
+
+                text_value = str(object_value)
+                text_value = text_value.replace('\\', '\\\\')  # \
+                text_value = text_value.replace('"', '\\"')    # ""
+                text_value = text_value.replace('\n', '\\n')   # \n
+                text_value = text_value.replace('\r', '\\r')   # \r
+
+                line = f"{subject.n3()} {predicate.n3()} {object_value.n3()} .\n"
+                insert_query += line
+
+            insert_query += "}"
+
+            if len(triples_to_insert) > 0:
+                store.update(insert_query)
+
 
         # Close the store connection
         store.close()
