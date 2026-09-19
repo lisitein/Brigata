@@ -168,6 +168,19 @@ class BasicQueryEngine:
         tokens = {t.strip().lower() for t in str(license_str).split(',')}
         return any(lic.strip().lower() in tokens for lic in requested)
 
+    def complete_ids(self, t_result, set_ids_to_output):
+        for j in t_result:
+            obj_ids = j.getIds()
+            obj_ids_check = set(obj_ids)
+            tutti_id_lista = list(set_ids_to_output)
+            if obj_ids_check not in tutti_id_lista:
+                for el in tutti_id_lista:
+                    for i in obj_ids:
+                        if i in el:
+                            print(i,'\t =>  ',el, type(i), type(el))
+                            j.id=list(el)
+        return t_result
+
     def enrich_entity_with_categories_and_areas(self, obj: IdentifiableEntity, id: str) -> IdentifiableEntity:
         lista_df = []
 
@@ -219,6 +232,7 @@ class BasicQueryEngine:
 
         for obj in tqdm(output_journals, desc='Enriching journals'):
             obj_ids = obj.getIds()
+
             for obj_id in obj_ids:
                 df_with_areas_filtered = df_with_areas[df_with_areas['journal_id'] == obj_id]
                 obj.hasArea     = [Area([a]) for a in df_with_areas_filtered['area_id'].drop_duplicates().values]
@@ -226,8 +240,73 @@ class BasicQueryEngine:
                 obj.hasCategory = [Category(c,q) for c,q in df_with_categories_filtered[['category_id', 'quartile']].drop_duplicates().values]
                 if obj.hasCategory or obj.hasArea:
                     break 
-            
+           
         return output_journals
+
+    def add_missing_ids_daniele(self, journals):
+        query = 'SELECT * FROM IdentifiableEntity'
+        df = self.query_relational(query)
+        for j in journals:
+            for id in j.getIds():
+                if id in df['id']:
+                    id_to_use = id
+            internal_id = df.loc[df['id'] == id_to_use, 'internalId'].values[0]
+            #print(internal_id)
+            df_f = df[df['internalId'] == internal_id]
+            a=set(j.getIds())
+            b=set(df_f['id'])
+            if not a.isdisjoint(b) and not b.issubset(a):
+                new_ids = a.union(b)
+                j.id=list(new_ids)
+        return journals
+
+    def add_missing_ids(self, journals):
+        query = 'SELECT * FROM IdentifiableEntity'
+        df = self.query_relational(query)
+        
+        df_id_set = set(df['id'])
+        
+        for j in tqdm(journals, desc='Completing ids'):
+            j_ids = j.getIds()
+            
+            if not any(id in df_id_set for id in j_ids):
+                continue
+                
+            id_to_use = None
+            for id in j_ids:
+                if id in df_id_set:
+                    id_to_use = id
+            
+            internal_id = df.loc[df['id'] == id_to_use, 'internalId'].values[0]
+            #print(internal_id)
+            
+            df_f = df[df['internalId'] == internal_id]
+            a = set(j_ids)
+            b = set(df_f['id'])
+            
+            if not a.isdisjoint(b) and not b.issubset(a):
+                new_ids = a.union(b)
+                j.id = list(new_ids)
+                
+
+        lista_df = []
+        for h in self.journalHandlers:      
+            df_parziale = h.getAllJournals()
+            lista_df.append(df_parziale)
+
+        if lista_df:
+            df_graph = pd.concat(lista_df, ignore_index=True).drop_duplicates()
+        else:
+            df_graph = pd.DataFrame()
+
+        for j in tqdm(journals, desc='Completing journals'):
+            if j.getTitle() == '':
+                possible_ids='|'.join(j.getIds())
+                j_to_complete = df_graph[df_graph['id'].str.contains(possible_ids, na=False)]
+                for _, r in j_to_complete.iterrows():
+                    j = self._completeJournal(j, r)
+
+        return journals
 
 
 
@@ -330,6 +409,7 @@ class BasicQueryEngine:
         entity=self.getEntityById_core(id)
         if type(entity)==Journal:
             entity=self.enrich_entity_with_categories_and_areas(entity, id)
+            entity = self.add_missing_ids([entity])[0]
         return entity
 
     # -----------------------------------------
@@ -407,7 +487,7 @@ class BasicQueryEngine:
                         seen_ids.add(i)
             '''
 
-        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
+        return self.add_missing_ids(list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids))))
 
     def getJournalsWithTitle(self, title: str) -> List['Journal']:
         result: List[Journal] = []
@@ -421,7 +501,7 @@ class BasicQueryEngine:
                 for jid in j.getIds():
                     seen_ids.add(jid)
 
-        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
+        return self.add_missing_ids(list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids))))
 
     def getJournalsPublishedBy(self, publisher: str) -> List['Journal']:
         result: List[Journal] = []
@@ -435,7 +515,7 @@ class BasicQueryEngine:
                 for jid in j.getIds():
                     seen_ids.add(jid)
 
-        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
+        return self.add_missing_ids(list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids))))
 
     def getJournalsWithLicense(self, licenses: Set[str]) -> List['Journal']:
         if not licenses:
@@ -458,7 +538,7 @@ class BasicQueryEngine:
         
         seen_ids = set().union(*seen)
         
-        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
+        return self.add_missing_ids(list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids))))
 
     def getJournalsWithAPC(self) -> List['Journal']:
         result: List[Journal] = []
@@ -471,7 +551,7 @@ class BasicQueryEngine:
                 for jid in j.getIds():
                     seen_ids.add(jid)
 
-        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
+        return self.add_missing_ids(list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids))))
 
     def getJournalsWithDOAJSeal(self) -> List['Journal']:
         result: List[Journal] = []
@@ -484,7 +564,7 @@ class BasicQueryEngine:
                 for jid in j.getIds():
                     seen_ids.add(jid)
 
-        return list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids)))
+        return self.add_missing_ids(list(set(self.enrich_journals_with_categories_and_areas(result, seen_ids))))
 
     # -----------------------------------------
     # Category and Area queries
@@ -629,12 +709,50 @@ class BasicQueryEngine:
 
         return journals
 
+    def _completeJournal(self, journal, r) -> List['Journal']:
+
+        langs_raw = r.get("languages")
+        if langs_raw is None or str(langs_raw).strip() in ("", "None", "nan"):
+            langs = None
+        elif isinstance(langs_raw, str):
+            langs = [s.strip() for s in langs_raw.split(",") if s.strip()] or None
+        elif isinstance(langs_raw, list):
+            langs = [str(s).strip() for s in langs_raw if str(s).strip()] or None
+        else:
+            langs = None
+
+        title         = self._clean_str(r.get("title"))
+        publisher     = self._clean_str(r.get("publisher"))
+        license_clean = self._clean_str(r.get("license"))
+        seal = str(r.get("seal", "")).strip().lower() in ["true", "yes", "1"]
+        apc  = str(r.get("apc",  "")).strip().lower() in ["true", "yes", "1"]
+
+        journal.languages = langs
+        journal.publisher = publisher
+        journal.seal = seal
+        journal.licence = license_clean
+        journal.apc = apc
+        journal.title = title
+
+        return journal
 
 # ============================
 # FULL QUERY ENGINE
 # ============================
 
 class FullQueryEngine(BasicQueryEngine):
+
+    def intersect(self, rel, graph):
+
+        r = {
+                frozenset(f1 | f2) 
+                for f1 in tqdm(list(rel), desc="Intersecting journals ids")
+                for f2 in graph 
+                if not f1.isdisjoint(f2)
+            }
+
+        return r
+    
 
     # Funzione per verificare se la cella contiene almeno un ID valido
     def controlla_id(self, cella, id_validi):
@@ -926,15 +1044,23 @@ class FullQueryEngine(BasicQueryEngine):
         set_ids_graph = {frozenset(i.strip() for i in str(cella).split(',')) for cella in df_graph['id']}
 
         print(len(set_ids_relational), len(set_ids_graph))
-        set_ids_to_output = set_ids_relational & set_ids_graph
-        print(len(set_ids_to_output))
+
+        #set_ids_to_output = set_ids_relational & set_ids_graph
+        #print('Previous Len:', len(set_ids_to_output))
+
+        set_ids_to_output = self.intersect(set_ids_relational, set_ids_graph)
+        print('Intersection Len:', len(set_ids_to_output))
+
 
 
         tutti_gli_id_validi = set().union(*set_ids_to_output)
 
         output_journals = self._makeJournals(df_graph[df_graph['id'].apply(lambda x: self.controlla_id(x, tutti_gli_id_validi))])
 
-        return list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+        final_result = list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+
+        #return self.complete_ids(final_result, set_ids_to_output)
+        return self.add_missing_ids(final_result)
 
     def getJournalsInAreasWithLicense(
         self,
@@ -965,17 +1091,18 @@ class FullQueryEngine(BasicQueryEngine):
         set_ids_graph = {frozenset(i.strip() for i in str(cella).split(',')) for cella in df_graph['id']}
 
         print(len(set_ids_relational), len(set_ids_graph))
-        set_ids_to_output = set_ids_relational & set_ids_graph
-        print(len(set_ids_to_output))
+        set_ids_to_output = self.intersect(set_ids_relational, set_ids_graph)
+        print('Intersection Len:', len(set_ids_to_output))
 
 
         tutti_gli_id_validi = set().union(*set_ids_to_output)
 
         output_journals = self._makeJournals(df_graph[df_graph['id'].apply(lambda x: self.controlla_id(x, tutti_gli_id_validi))])
 
-        return list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+        final_result = list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
 
-
+        #return self.complete_ids(final_result, set_ids_to_output)
+        return self.add_missing_ids(final_result)
 
 
     def getJournalsInAreasWithLicense_by_laura(
@@ -1178,12 +1305,17 @@ class FullQueryEngine(BasicQueryEngine):
         set_ids_graph = {frozenset(i.strip() for i in str(cella).split(',')) for cella in df_graph['id']}
 
         print(len(set_ids_relational_categories_quartiles), len(set_ids_relational_areas), len(set_ids_graph))
-        set_ids_to_output = set_ids_relational_categories_quartiles & set_ids_relational_areas & set_ids_graph
-        print(len(set_ids_to_output))
+        set_ids_to_output_partial = self.intersect(set_ids_relational_categories_quartiles, set_ids_relational_areas)
+        set_ids_to_output = self.intersect(set_ids_to_output_partial, set_ids_graph)
+        print('Intersection Len:', len(set_ids_to_output))
 
 
         tutti_gli_id_validi = set().union(*set_ids_to_output)
 
         output_journals = self._makeJournals(df_graph[df_graph['id'].apply(lambda x: self.controlla_id(x, tutti_gli_id_validi))])
 
-        return list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+        final_result = list(set(self.enrich_journals_with_categories_and_areas(output_journals, tutti_gli_id_validi)))
+
+        #return self.complete_ids(final_result, set_ids_to_output)
+        return self.add_missing_ids(final_result)
+

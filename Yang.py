@@ -106,7 +106,9 @@ class JournalQueryHandler(QueryHandler):
         return self.general_method_for_journals_extraction(specific_filter=f'?journal :publisher ?publisher . FILTER(CONTAINS(LCASE(STR(?publisher)), LCASE("{partial_name}")))')
 
     def getJournalsWithLicense(self, licenses: set[str]) -> pd.DataFrame:   # laura does not call this method... but in the end the process works as well
-        return self.general_method_for_journals_extraction(specific_filter=f'?journal :license ?license . FILTER({" || ".join([f"LCASE(STR(?license)) = LCASE(\"{lic}\")" for lic in licenses])})')
+        s=" || ".join([f"LCASE(STR(?license)) = LCASE(\"{lic}\")" for lic in licenses])
+        filtro=f'?journal :license ?license . FILTER({s})'
+        return self.general_method_for_journals_extraction(specific_filter=filtro)
 
 
 
