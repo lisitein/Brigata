@@ -1183,6 +1183,15 @@ class FullQueryEngine(BasicQueryEngine):
             except Exception:
                 continue
 
+        # _makeJournals no longer fills in hasCategory/hasArea by itself (that
+        # is now done separately by enrich_journals_with_categories_and_areas),
+        # so without this step every journal here would have empty categories
+        # and areas and step 3 below would never keep anything.
+        title_ids: Set[str] = set()
+        for j in title_matches:
+            title_ids.update(j.getIds())
+        title_matches = self.enrich_journals_with_categories_and_areas(title_matches, title_ids)
+
         # Step 2: category and area names that contain the input string (from SQLite)
         matching_category_names: Set[str] = set()
         matching_area_names: Set[str] = set()
@@ -1318,4 +1327,3 @@ class FullQueryEngine(BasicQueryEngine):
 
         #return self.complete_ids(final_result, set_ids_to_output)
         return self.add_missing_ids(final_result)
-
