@@ -1,4 +1,5 @@
 from collections import Counter
+import pandas as pd
 from pprint import pprint
 from impl import CategoryUploadHandler, CategoryQueryHandler
 from impl import JournalUploadHandler, JournalQueryHandler
@@ -102,6 +103,7 @@ def test():
         
     print('*** CORRECT ***\n\n')
     return True
+
 
 load()
 status=test()
