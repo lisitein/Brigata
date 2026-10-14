@@ -3,7 +3,11 @@ from collections import defaultdict
 import pandas as pd
 from sqlalchemy import create_engine as _ce
 from Yang import JournalQueryHandler, CategoryQueryHandler
-from tqdm.auto import tqdm
+try:
+    from tqdm.auto import tqdm
+except ImportError:  # tqdm is optional: fall back to a plain iterator
+    def tqdm(iterable=None, *args, **kwargs):
+        return iterable
 
 
 # ============================
