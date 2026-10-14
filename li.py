@@ -2,9 +2,11 @@ from baseHandler import  UploadHandler
 from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF, XSD
 import pandas as pd
-from tqdm.auto import tqdm
-from rich.console import Console
-console = Console()
+try:
+    from tqdm.auto import tqdm
+except ImportError:  # tqdm is optional: fall back to a plain iterator
+    def tqdm(iterable=None, *args, **kwargs):
+        return iterable
 
 
 #implements the method of the superclass to handle the specific scenario
